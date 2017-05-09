@@ -1,0 +1,74 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+    <legend>Plato </legend>  
+            <form class="form-horizontal">
+                <div class="pull-right btn-group">
+                    <a class="btn" target="_blank" title="Imprimir los datos" onclick="impDetallesPlato('{{form.vars.data.id}}', this)"><i class="icon-print"></i></a>
+                </div>
+               {{ form_row(form.nombre) }}
+    {{ form_row(form.descripcion) }}
+<div class="control-group">
+    <label class="control-label">Foto de plato</label>
+    <div class="controls">
+        {%if path !=null%}
+                 <div>
+                     <a href="#" class="thumbnail span9 zoom-in" onclick="verFoto(this);" title="Ver imagen pantalla completa"><img data-src="holder.js/180x160" id="fotoDetalle"  src="{{asset('uploads/imagenes/')}}{{path}}"/></a>        
+                </div>
+            {%else%}
+            <h4> No hay fotos para mostrar.</h4>
+            {%endif%}
+    </div>
+</div>
+                
+                  
+    {{ form_row(form.precioCosto) }}
+    {{ form_row(form.margen) }}
+    {{ form_row(form.margenMin) }}
+    {{ form_row(form.precioVenta) }}
+    {{ form_row(form.iva) }}
+    {{ form_row(form.cantidad) }}
+    {{ form_row(form.cantidadMinima) }}
+    {{ form_row(form.tasa) }}
+    {{ form_row(form.categoria) }}
+                    
+            </form>
+      
+        <h3>Ingredientes</h3>
+                    <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                        <thead class="header">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Costo</th>
+                                <th>Obligatorio</th>
+                                <th style="text-align: center">Acciones</th>
+                            </tr> 
+                        </thead>
+                   {%for i in ingredientes%}                        
+                            <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this, 1);">{{i.productoProduccion}}</a></td>
+                            <td>{{i.cantidad}} {{i.tasa}}</td>
+                            <td style="text-align: right;">$ {{i.precioCosto}}</td>
+                            <td style="text-align: center;">{%if i.obligatorio%}<i class="fa-icon-ok"></i>{%else%}<i class="fa-icon-remove"></i>{%endif%}</td>
+                            <td style="text-align: center;width: fit-content" >
+                                <a href="{{ path('editarIngredientePlato', { 'id': i.id }) }}" target="_blank" title="Editar"><i class="fa-icon-edit"></i></a>                                
+                                <a href="#" title="Eliminar"  onclick="eliminarModalIng({{i.id}}, '{{i.productoProduccion}}');"><i class="fa-icon-trash"></i></a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+
+ {%block modal%}
+<div id="eliminarModalIng" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar el ingrediente: <strong id="txtElimIng">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarIng" class="btn btn-primary">Aceptar</a>
+  </div>
+</div> 
+{%endblock%}

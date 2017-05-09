@@ -1,0 +1,11 @@
+<div id="ciudad" name="ciudad">
+    <div>
+            <select id="sisgg_finalbundle_{{tipo}}_ciudad" name="sisgg_finalbundle_{{tipo}}[direccion][ciudad]" required="required">
+            {% for ciudad in ciudades %}
+                <option value="{{ciudad.id}}">
+                        {{ciudad}}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

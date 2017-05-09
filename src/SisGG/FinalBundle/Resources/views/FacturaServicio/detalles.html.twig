@@ -1,0 +1,109 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Factura de servicio </legend>
+            <form class="form-horizontal" >
+<div class="control-group">
+    <label class="control-label">Servicio</label>
+    <div class="controls">
+        <input value="{{fs.servicio.nombre}}" type="text" readonly="true" >
+    </div>
+</div>
+<div class="control-group">
+    <label class="control-label">Nombre de empresa</label>
+    <div class="controls">
+        <input value="{{fs.servicio.nombreEmpresa}}" type="text" readonly="true" >
+    </div>
+</div>  
+<div class="control-group">
+    <label class="control-label">CUIT</label>
+    <div class="controls">
+        <input value="{{fs.servicio.cuit}}" type="text" readonly="true" >
+    </div>
+</div>  
+<div class="control-group">
+    <label class="control-label">Código de cliente</label>
+    <div class="controls">
+        <div class="input-append">
+            <input type="text" value="{{fs.servicio.codigo}}" readonly="true" >
+        </div>
+    </div>
+</div>                 
+  <div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Factura de servicio</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+    </p><div class="control-group">
+        <label class="control-label" id="sisgg_finalbundle_facturaserviciotype_fechaFactura_lbl" for="sisgg_finalbundle_facturaserviciotype_fechaFactura"  disabled="disabled">Fecha de factura</label>
+        <div class="controls"><input type="text"  id="sisgg_finalbundle_facturaserviciotype_fechaFactura" autocomplete="off" value="{{fs.fechafactura | date('d/m/Y')}}" disabled="disabled"></div></div>  
+       <div class="control-group">
+        <label class="control-label" id="sisgg_finalbundle_facturaserviciotype_fechaFactura_lbl" for="sisgg_finalbundle_facturaserviciotype_fechaFactura"  disabled="disabled">Fecha de registro</label>
+        <div class="controls"><input type="text"  id="sisgg_finalbundle_facturaserviciotype_fechaFactura" autocomplete="off" value="{{fs.fechaEmision | date('d/m/Y H:i:s' )}}" disabled="disabled"></div></div>
+       <div class="input-prepend">
+           <div class="control-group"><label class="control-label" id="sisgg_finalbundle_facturaserviciotype_serie_lbl" for="sisgg_finalbundle_facturaserviciotype_serie">Serie</label><div class="controls"><input type="number" autocomplete="off" value="{{fs.serie}}" tipo="spinner" disabled="disabled"></div></div>  
+           <div class="control-group"><label class="control-label" id="sisgg_finalbundle_facturaserviciotype_numero_lbl" for="sisgg_finalbundle_facturaserviciotype_numero">Numero</label><div class="controls"><input type="number" autocomplete="off" value="{{fs.numero}}" tipo="spinner" disabled="disabled"></div></div>  
+       </div>
+        
+    <div class="control-group"><label class="control-label" id="sisgg_finalbundle_facturaserviciotype_periodo_lbl" for="sisgg_finalbundle_facturaserviciotype_periodo">Periodo</label><div class="controls"><input type="text" value="{{fs.periodo}}"  disabled="disabled"></div></div> 
+    <div class="control-group"><label class="control-label" id="sisgg_finalbundle_facturaserviciotype_total_lbl" for="sisgg_finalbundle_facturaserviciotype_total">Total</label><div class="controls"><div class="input-prepend input-append"><span class="add-on">$</span><input class="" type="text" value="{{fs.total}}" disabled="disabled"></div></div></div> 
+
+<p></p>
+
+</div>
+</div><!--/span-->
+</div>              
+<div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Pagos registrados</h2>
+</div>
+<div class="box-content">
+<p>
+    {%set total=0%}
+{%if fs.pagos | length > 0 %}
+<table class="table table-bordered table-hover" id="pagos">
+                <thead class="header">
+                    <th>Tipo de pago</th>
+                    <th>Aclaración</th>
+                    <th>Fecha</th>
+                    <th>Fecha de registro</th>
+                    <th>Importe en $</th>
+                </thead>
+                {%for i in fs.pagos%}
+                {%set total=i.importe + total %}
+                <tr>
+                <td>{{i.tipoCobro}} <button title="Mostrar detalles de tipo de pago." type="button" id="btn{{i.id}}" class="btn" onclick="pop('{{i.id}}', this);"><i class="fa-icon-eye-open"></i></button></td>
+                <td>{{i.aclaracion}}</td>
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td>{{i.fechaEmision | date("d/m/Y g:ia")}}</td>
+                <td style="text-align: right;" >{{i.importe}}</td>
+                </tr>
+                {%endfor%}
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><b class="pull-right">TOTAL en $</b></td>
+                        <td style="text-align: center;" id="totalPagosViejos"> {{ total}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+{%else%}
+<h3>No se han registrado pagos</h3>
+{%endif%}
+</p>
+</div>
+        </div><!--/span-->
+    </div> 
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,3 @@
+{%for tasa in producto.tasa.Um.tasas%}
+<option value="{{tasa.id}}" {%if tasa.id == producto.tasa.id %}selected=true{%endif%}>{{tasa}}</option>
+{%endfor%}

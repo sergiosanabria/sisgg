@@ -1,0 +1,8 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="form-horizontal">
+{{ form_row(form.apellido, {'required':false}) }}
+{{ form_row(form.nombre, {'required':false}) }}
+{{ form_row(form.email, {'required':false}) }}
+{{ form_row(form.username, {'required':false}) }}
+{{ form_row(form.role, {'required':false}) }}
+</div>

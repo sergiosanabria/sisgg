@@ -1,0 +1,1148 @@
+{% extends "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html_2.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .modal-dialog {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            overflow: no-display;
+        }
+
+        .modal-content {
+            overflow: no-display;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+
+        .mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 100px;
+            margin: 5px;
+        }
+
+        .carousel-inner>.item {
+            position:initial;
+        }
+
+        .row-fluid [class*="span"]:first-child .mesa, .row-fluid [class*="span"]:first-child .producto  {
+            margin:10px;
+        }
+
+        .sector{
+            width: 99%;
+            height: 30px;
+        }
+        .sectores{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .mesas{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: no-display;
+        }
+
+        .producto{
+            background-color: #005580;
+            width: 200px;
+            height: 100px;
+            margin: 20px;
+            border-radius: 2px;
+        }
+
+        .productos .producto p{
+            font-size: 15px;
+            color: white;
+            position: absolute;
+            top: 45%;
+            height: 50%;
+            padding: 2.5%;
+            width: 95%;
+            background-color: rgba(22, 21, 21, 0.5);
+        }
+        .categorias{
+            border: 1px solid #ddd;
+            height: 120px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .productos{
+            border: 1px solid #ddd;
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .numero{
+            font-size: xx-large;
+            color: white;
+        }
+        .total{
+            font-style: oblique;
+            font-weight: bold;
+        }
+        .descripcion{
+            font-style: oblique;
+        }
+
+        posisionable{
+            position: relative;
+            top: 32px;
+            left:32px;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Pedidos</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Editar Pedido Delivery</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <legend>Editar pedido   <small>Seleccione los productos para este pedido e ingrese los datos que se solicitan.</small></legend>
+                <form  class="form-horizontal" action="{{ path('editar_pedido_delivery') }}?id={{id}}" method="post">
+                    <fieldset id="formulario">
+                        <div class="span7 hidden-phone">
+                            <div class="box">
+                                <label style='font-weight: bold'>
+                                    Categorías
+                                </label>
+                                <div class="categorias" id="categorias">    
+                                    {%for categoria in categorias%}
+                                        <a class="quick-button-small span2 producto" onclick="{%if categoria.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoria.id}});">
+                                            <p>{{categoria.nombre}}</p>
+                                        </a>
+                                    {%endfor%}
+                                    </div>
+                                </div>
+                                <label style='font-weight: bold;float:left; '>
+                                    Productos
+                                </label>
+                                <div class="" style='float:right;'>
+                                    <div class="input-append">
+                                        <input id="txtProductos" type="text" class="search-query" placeholder='Ingrese su búsqueda aqui...'>
+                                    </div>
+                                </div>
+                                <div class="box span12" style="margin-left: 0px;">
+                                    <div class="productos" id="productos">
+                                    </div> 
+                                </div>
+                            </div>        
+                            <div class="span5">
+                               {{form_widget(form.itemPedido,{'attr':{'style':'display:none'} })}}
+                                    <legend style='font-size: 17px;'>Productos de este Pedido 
+                                        <small>
+                                            <a style='float:right' href="#categoriasProductosModal" role="button" class="btn hidden-desktop" data-toggle="modal">
+                                                <i class='icon icon-plus-sign'>
+                                                </i>
+                                            </a>
+                                            <ul class="nav nav-pills" id="myTab">
+                                                <li><a href="#general">General</a></li>
+                                                <li><a href="#historial">Cancelados</a></li>
+                                            </ul>    
+                                        </small>
+                                    </legend>
+                                    <div class='tab-content'>
+                                        <div class='tab-pane' id='general'>
+                                            <table id="tablaResumen" class="table table-hover table-condensed">
+                                                <tbody id="items">
+                                                {%set suma = 0.00%}
+                                                {%for item in form.itemPedido%}
+                                                        {%if item.vars.data.estado != 'Cancelado' and item.vars.data.estado != 'cancelado'%}    
+                                                        {%set total = item.cantidad.vars.data * (item.vars.data.productoVenta.precioVenta) - (item.vars.data.productoVenta.precioVenta * item.vars.data.productoVenta.porcentajeDescuento / 100)|number_format(2,'.','')%}
+                                                        {%set suma = total + suma%}
+                                                        <tr onclick="detallesLinea(event, '{{item.vars.name}}');" id = "{{item.vars.id}}_item" data-precioVenta="{{item.vars.data.productoVenta.precioVenta}}">
+                                                            <td>
+                                                                <div class="media">
+                                                                    <div style='float:left;margin: 2px;' href="#">
+                                                                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" src="{%if item.vars.data.productoVenta.foto %}{{asset('uploads/imagenes/')}}{{item.vars.data.productoVenta.foto.path}}{%else%}{{asset('uploads/imagenes/')}}{%endif%}">
+                                                                    </div>
+                                                                    <div class="media-body">
+                                                                        <h4 class="media-heading">{{item.vars.data.productoVenta}}({%for ingrediente in item.vars.data.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                                                                            {{item.vars.data.cantidad}} x $ {{((item.vars.data.productoVenta.precioVenta) - (item.vars.data.productoVenta.precioVenta * item.vars.data.productoVenta.porcentajeDescuento / 100))|number_format(2,'.','')}}<span class='total' style='float:right'>$ {{total|number_format(2,'.','')}}</span><br>
+                                                                        <label class='label {{item.vars.data.estado|capitalize}}'>{{item.vars.data.estado|capitalize}}</label>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                         {%endif%}   
+                                                {%endfor%}
+                                                    </tbody>
+                                                    <tfoot style='display: none;'><tr><td>Suma<span id ="suma" data-total="{{suma|number_format(2,'.','')}}" class="total" style='float:right'>$ {{suma|number_format(2,'.','')}}</span></td></tr></tfoot>
+                                                </table>
+                                                <table id="tablaRecargos" class="table table-condensed">
+                                                    <tbody id="itemsRecargos">
+                                                {%set recargos = 0.00%}
+                                                {%set i = 0%}
+                                                {%for item in form.vars.data.tipoPedido.recargosActivos%}
+                                                                {%set recargoTotal = 0.00%}
+                                                                {%if item.tipoPorcentaje%}
+                                                                        {%set recargoTotal = (suma * item.porcentaje /100)%}
+                                                            <tr id = '{{i}}_itemRecargo' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                                                {%else%}
+                                                                        {%set recargoTotal = item.importe%}
+                                                            <tr id = '{{i}}_itemRecargo' class ='Importe' data-importe='{{recargoTotal|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                                                {%endif%}
+                                                                {%set recargos = recargos + recargoTotal|number_format(2,'.','')%}
+                                                                {%set i = i +1%}
+                                                {%endfor%}
+                                                        </tbody>
+                                                        <tfoot><tr><td>Subtotal<span id ="subtotal" data-total="{{suma + recargos * 1|number_format(2,'.','')}}" class="total" style='float:right'>$ {{(suma + recargos * 1)|number_format(2,'.','')}}</span></td></tr></tfoot>
+                                                    </table>
+                                                    <table id="tablaDescuentos" class="table table-condensed">
+                                                        <tbody id="itemsDescuentos">
+                                                        {%set suma = suma + recargos%}    
+                                                        {%set descuentos = 0.00%}
+                                                        {%set i = 0%}
+                                                         {%if form.vars.data.cliente != null%}       
+                                                                {%for item in form.vars.data.cliente.descuentosActivos%}
+                                                                                {%set descuentoTotal = 0.00%}
+                                                                                {%if item.tipoPorcentaje%}
+                                                                                        {%set descuentoTotal = (suma * item.porcentaje /100)%}
+                                                                                        <tr id = '{{i}}_itemDescuento' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                                                                {%else%}
+                                                                                        {%set descuentoTotal = item.importe%}
+                                                                                        <tr id = '{{i}}_itemDescuento' class ='Importe' data-importe='{{descuentoTotal|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                                                                {%endif%}
+                                                                                {%set descuentos = descuentos + descuentoTotal|number_format(2,'.','')%}
+                                                                                {%set i = i +1%}
+                                                                {%endfor%}
+                                                         {%endif%}                               
+                                                            </tbody>
+                                                            <tfoot><tr><td>Total <span id ="total" data-total="" class="total" style='float:right'>$ {{form.vars.data.precio|number_format(2,'.','')}}</span></td></tr></tfoot>
+                                                        </table>
+                                                    </div>
+                                                    <div class='tab-pane' id='historial'>
+                                                        <table id="tabla_cancelados" class="table table-hover table-condensed">
+                                                            <tbody id="items_cancelados">
+                                                {%for item in form.itemPedido%}
+                                                    {%if item.vars.data.estado == 'Cancelado' or item.vars.data.estado == 'cancelado' %}    
+                                                    {%set total = item.vars.data.cantidad * item.vars.data.productoVenta.precioVenta%}
+                                                    {%set suma = total + suma%}
+                                                                    <tr onclick="detallesLinea(event, '{{item.vars.name}}');" id = "{{item.vars.id}}_item_cancelado" data-precioVenta="{{item.vars.data.productoVenta.precioVenta}}">
+                                                                        <td>
+                                                                            <div class="media">
+                                                                                <div class="" style='margin:2px;float:left;' href="#">
+                                                                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" src="{%if item.vars.data.productoVenta.foto %}{{asset('uploads/imagenes/')}}{{item.vars.data.productoVenta.foto.path}}{%else%}{{asset('uploads/imagenes/')}}{%endif%}">
+                                                                                </div>
+                                                                                <div class="media-body">
+                                                                                    <h4 class="media-heading">{{item.vars.data.productoVenta}}({%for ingrediente in item.vars.data.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                                                                            {{item.vars.data.cantidad}} x $ {{item.vars.data.productoVenta.precioVenta}}<span class='total' style='float:right'>$ {{total}}</span><br>
+                                                                                    <label class='label {{item.vars.data.estado|capitalize}}'>{{item.vars.data.estado|capitalize}}</label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                     {%endif%}   
+                                            {%endfor%}
+                                                                </tbody>
+                                                                <tfoot><tr><td></td></tr></tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="box-content span12" style="margin-left: 0px;">
+                                                    <div id="datosCliente" class="span12">
+                                                        <div class='span6'>
+                                            {{form_row(form.cliente)}}
+                                            {{form_row(form.solicitante,{'attr':{'class':' span7'} })}}
+                                                                <div class='control-group'>
+                                                                    <label class='control-label'>Provincia (*)</label>
+                                                                    <div class='controls controls-row'>
+                                                                        <select id="provincias" name="provincias" class="provincias span7" onClick="cambio();">
+                                                                {% for provincia in provincias%}
+                                                                                <option id="{{provincia.id}}" name="{{provincia.id}}" value="{{provincia}}">
+                                                                                {{provincia}} 
+                                                                                    </option>
+                                                                {% endfor %}
+                                                                                </select>
+                                                                                <a class="btn span2" onclick="buscarCiudad();"><i class="icon-search"></i></a>    
+                                                                            </div>    
+                                                                        </div>    
+                                                                {{form_row(form.direccion.ciudad,{'attr':{'class':'ciudad span7'} })}}
+                                                                {{form_row(form.direccion.calle,{'attr':{'class':'span9'} })}}    
+                                                                {{form_row(form.direccion.numero,{'attr':{'class':'span9'} })}}    
+                                                                    </div>
+                                                                    <div class='span6'>    
+                                                                {{form_row(form.direccion.manzana,{'attr':{'class':'span9'} })}}    
+                                                                {{form_row(form.direccion.edificio,{'attr':{'class':'span9'} })}}    
+                                                                {{form_row(form.direccion.escalera,{'attr':{'class':'span9'} })}}    
+                                                                {{form_row(form.direccion.piso,{'attr':{'class':'span9'} })}}                                
+                                                                {{form_row(form.direccion.departamento,{'attr':{'class':'span9'} })}} 
+                                                                {{form_rest(form)}}
+                                                                        </div>        
+                                                                    </div>
+                                                            </fieldset>
+                                                            <div class="form-actions">
+                                                                <button type="submit" onclick="validarItems(event);" class="btn btn-primary">Enviar Pedido</button>
+                                                                <a href="{{path('pedidos')}}" class="btn">Cancelar</a>
+                                                            </div> 
+                                                        </form>
+                                                    </div>
+                                                </div><!--/span-->
+                                            </div><!--/row-->
+                                            <hr>
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                                            <div class="modal hide fade" id="aviso">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                                    <h3>Atencion</h3>
+                                                </div>
+                                                <div id="dataAviso" class="modal-body">
+                                                    <p>Here settings can be configured...</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a href="#" class="btn" data-dismiss="modal">Ignorar</a>
+                                                    <a href="#" class="btn btn-primary" id="borrarItem" >Borrar Item</a>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="modal hide fade" id="categoriasProductosModal">
+                                                <div class="modal-body" style='margin: 0px; padding: 0px;'>
+                                                    <div class="navbar" style='margin: 0px; padding: 0px;'>
+                                                        <div class="navbar-inner">
+                                                            <ul class="nav" id='categoriasModal'>
+                                        {%for categoria in categorias%}
+                                                                    <li style='cursor:pointer;'>
+                                                                        <a onclick="{%if categoria.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoria.id}});"><b>{{categoria.nombre}}{%if categoria.hijo|length >0%}<i class='icon icon-white icon-chevron-down'></i>{%endif%}</b></a>
+                                                                    </li>        
+                                        {%endfor%}                                            
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="productosModal" class="modal-body" style='margin: 0px; padding: 0px; height: 100%;' >
+                                                        <div id="myCarousel" class="carousel slide" style='margin: 0px; padding: 0px; height: 100%;'>
+                                                            <ol id='productosCabeceraModal' class="carousel-indicators">
+                                                            </ol>
+                                                            <div id='productosCuerpoModal' class="carousel-inner" style='margin: 0px; padding: 0px; height: 100%; min-height: 100%;'>
+
+                                                            </div>
+                                                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+                                                            <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
+                                                        </div>  
+                                                    </div>
+                                                </div>
+
+
+                                                <form class='form-horizontal'>
+                                                    <div class="modal hide fade" id="detallesLinea">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                                            <h3>Detalles</h3>
+                                                        </div>
+                                                        <div id="dataDetalles" class="modal-body" >
+
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a href="#" class="btn" id='cancelarItem'>Cancelar Item</a>
+                                                            <a href="#" class="btn btn-primary" data-dismiss="modal">Cerrar</a>
+                                                        </div>
+                                                    </div>
+                                                </form>        
+
+                                                <div class="modal hide fade" id="busqueda">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                                        <h3>Buscar...</h3>
+                                                    </div>
+                                                    <div id="dataBusqueda" class="modal-body">
+                                                        <p>Here settings can be configured...</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal hide fade" id="faltantes">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                                        <h3>Atencion</h3>
+                                                    </div>
+                                                    <div id="datafaltantes" class="modal-body">
+                                                        Los siguientes items parecen no poder ser elaborados:
+                                                        <ul>
+                {%for faltante in faltantes%}
+                                                                <li>
+                    {{faltante.itemPedido.cantidad}}    
+                    {{faltante.itemPedido.productoVenta}} - (No se dispone de: 
+                        {%for ingrediente in faltante.ingredientes%}
+                            {{ingrediente.productoProduccion}}
+                        {%endfor%}
+                                                                        )</li>
+                {%endfor%}
+                                                                    <ul>
+                                                                        <div id="faltantesCargando" style="text-align: center"></div>    
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <div id="faltantesOpciones">
+                                                                                <a href="#" class="btn" data-dismiss="modal">No enviar</a>
+                                                                                <a href="#" onclick="preguntarACocina();" class="btn btn-primary" id="borrarItem" >Preguntar a Cocina</a>
+                                                                            </div>
+                                                                        </div>
+                                                                        </div>
+
+                                                                        <div class="modal hide fade" id="validarItems">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Atención</h3>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <p>Debe ingresar al menos un item para el pedido</p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Aceptar</a>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="modal hide fade" id="reactivarItem">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Atención</h3>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <p>Este item se encuentra cancelado.¿Desea reactivarlo?</p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                                <a href="#" class="btn btn-primary" id='reactivarItemAceptar'>Aceptar</a>
+                                                                            </div>
+                                                                        </div>
+{%endblock%}        
+{%block javascripts%}
+{{parent()}}
+                                                                        <script type=text/javascript>
+var esperaRespuesta = 0;
+var cambio = false;
+
+$().ready(function() {
+    $(".item_cancelado").each(function() {
+        var linea = $(this);
+        var index = linea.data('index');
+        var precio = linea.data('precioventa');
+        var cantidad = $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val();
+        var imagen = $("#pedidodeliverytype_itemPedido_" + index + "_item img").attr('src');
+        var total = parseFloat(cantidad * precio).toFixed(2);
+        linea.click(function() {
+            $("#reactivarItem").modal("show");
+            $("#reactivarItemAceptar").click(function() {
+                $("#reactivarItem").modal("hide");
+                $("#pedidodeliverytype_itemPedido_" + index + "_estado").val('nuevo');
+                var nombre = $("#pedidodeliverytype_itemPedido_" + index + "_productoVenta option:selected").html();
+                var ingredientes = "(";
+                $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option:selected").each(function() {
+                    ingredientes = ingredientes + $(this).html();
+                });
+                ingredientes = ingredientes + ")";
+                if (ingredientes === '()') {
+                    ingredientes = '';
+                }
+                var estado = $("#pedidodeliverytype_itemPedido_" + index + "_estado option:selected").html();
+                $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + precio + "<span class='total pull-right'>$ " + total + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+                linea.appendTo("#items");
+                var suma = parseFloat(parseFloat($("#suma").data('total')) * 1 + (total * 1)).toFixed(2);
+                $("#suma").data('total', suma).html("$ " + suma);
+                $("#items_empty").remove();
+                if ($("#items_cancelados tr").length < 1) {
+                    $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+                }
+                linea.unbind('click');
+                linea.attr('onclick', 'detallesLinea(event,' + index + ');');
+            });
+        });
+    });
+
+    $('#myTab1 a').click(function(e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    $('#myTab1 a').click();
+    $("#pedidodeliverytype_solicitante").after("<a class='btn span2' onclick='buscarCliente();' ><i class='icon-search'></i></a>");
+    $(".provincia").after("<a class='btn span2' onclick='buscarProvincia();'><i class='icon-search'></i></a>");
+    $(".ciudad").after("<a class='btn span2' onclick='buscarCiudad();'><i class='icon-search'></i></a>");
+    $("#pedidodeliverytype_solicitante").change(function() {
+        $("#pedidodeliverytype_cliente").val(null);
+    });
+    if ($("#items tr").length < 1) {
+        $("#items").html("<td id='items_empty' style='height:64px'>Seleccione los productos para este pedido</td>");
+    }
+    if ($("#items_cancelados tr").length < 1) {
+        $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+    }
+                                                                            {%if faltantes|length > 0%}
+    $("#faltantes").modal("show");
+                                                                            {%endif%}
+    $("#txtProductos").keypress(function(event) {
+        if (event.keyCode == 13) {
+            if ($("#txtProductos").val() === '') {
+                $("#productos").html('');
+            } else {
+                buscarProductos();
+            }
+            event.preventDefault();
+        }
+    });
+    $(".productoVenta").each(function() {
+        var index = ($(this).attr("id").split("_"))[2];
+        var ingredientesSeleccionados = new Array();
+        $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option:selected").each(function() {
+            ingredientesSeleccionados.push($(this).val());
+        });
+        var tasaSeleccionada = null;
+        tasaSeleccionada = $("#pedidodeliverytype_itemPedido_" + index + "_tasa option:selected").val();
+        $.getJSON("{{path('productoVenta')}}", {'id': $(this).val()}).done(function(data) {
+            var ingredientes = '';
+            data.ingredientes.forEach(function(p) {
+                ingredientes = ingredientes + "<option value=" + p.id + ">" + p.nombre + "</option>";
+            });
+            var tasas = '';
+            data.tasas.forEach(function(t) {
+                tasas = tasas + "<option value=" + t.id + ">" + t.nombre + "</option>";
+            });
+            $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes").html(ingredientes).removeAttr("class");
+            $("#pedidodeliverytype_itemPedido_" + index + "_tasa").html(tasas).removeAttr("class");
+            ingredientesSeleccionados.forEach(function(i) {
+                $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option[value=" + i + "]").attr('selected', 'selected');
+            });
+            $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option[value=" + tasaSeleccionada + "]").attr('selected', 'selected');
+            $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes_chzn").remove();
+            $("#pedidodeliverytype_itemPedido_" + index + "_tasa_chzn").remove();
+            $('[data-rel="chosen"],[rel="chosen"]').chosen();
+        });
+        $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta', $("#pedidodeliverytype_itemPedido_" + index + "_item").attr("data-precioVenta"));
+        $("#pedidodeliverytype_itemPedido_" + index + "_item").hover(function() {
+            $("#pedidodeliverytype_itemPedido_" + index + "_item .borrar").attr('style', 'display:block');
+            $("#pedidodeliverytype_itemPedido_" + index + "_item .editar").attr('style', 'display:block');
+        }, function() {
+            $("#pedidodeliverytype_itemPedido_" + index + "_item .borrar").attr('style', 'display:none');
+            $("#pedidodeliverytype_itemPedido_" + index + "_item .editar").attr('style', 'display:none');
+        });
+    });
+    /*$("#formulario").submit(function(event) {
+     event.preventDefault();
+     comprobarDisponibilidad();
+     });*/
+
+    //$("#formulario").submit(function(event){event.preventDefault();comprobarDisponibilidad();});
+});
+
+function buscarProvincia() {
+    var idPais = $(".pais").val();
+    $.get("{{path('provincias')}}", {id: idPais}).done(
+            function(data) {
+                $("#dataBusqueda").html(data);
+                $('.datatable').dataTable({
+                    "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                    "sPaginationType": "bootstrap",
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ Registros por página",
+                        "sSearch": "Buscar:",
+                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sZeroRecords": "Ningun registro encontrado",
+                        "oPaginate": {
+                            "sPrevious": "Anterior",
+                            "sNext": "Siguiente"
+                        }
+                    }
+                });
+                $("#busqueda").modal("show");
+            }
+    );
+}
+function buscarLocalidad() {
+    var idProvincia = $(".provincia").val();
+    $.get("{{path('localidades')}}", {id: idProvincia}).done(
+            function(data) {
+                $("#dataBusqueda").html(data);
+                $('.datatable').dataTable({
+                    "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                    "sPaginationType": "bootstrap",
+                    "oLanguage": {
+                        "sLengthMenu": "_MENU_ Registros por página",
+                        "sSearch": "Buscar:",
+                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sZeroRecords": "Ningun registro encontrado",
+                        "oPaginate": {
+                            "sPrevious": "Anterior",
+                            "sNext": "Siguiente"
+                        }
+                    }
+                });
+                $("#busqueda").modal("show");
+            }
+    );
+}
+
+
+                            function buscarCliente() {
+                                $.get("{{path('clientes')}}").done(
+                                        function(data) {
+                                            $("#dataBusqueda").html(data);
+                                            $('#clientes').dataTable({
+                                                "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                                                "sPaginationType": "bootstrap",
+                                                "aLengthMenu": [[5,10, 25, 50, 100, -1], [5,10, 25, 50, 100, "Todos"]],
+                                                "oLanguage": {
+                                                    "sLengthMenu": "_MENU_ Registros por página",
+                                                    "sSearch": "Buscar:",
+                                                    "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                                                    "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                                                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                                    "sZeroRecords": "Ningun registro encontrado",
+                                                    "oPaginate": {
+                                                        "sPrevious": "",
+                                                        "sNext": ""
+                                                    }
+                                                }
+                                            });
+                                            $("select[name='clientes_length']").val(5);
+                                            $("select[name='clientes_length']").change();
+                                            $("#busqueda").modal("show");
+                                        }
+                                );
+                            }
+
+function mostrarProductos(id) {
+    $("#productos").html("<img src='{{asset('images/ajax-loader.gif')}}' alt='Cargando...' />");
+    $("#productos").attr("style", "text-align:center;vertical-align:middle;");
+    $.getJSON("{{path('pedido_productos')}}", {'id': id}).done(function(data) {
+        var productos = new Array();
+        var productosModal = new Array();
+        var cabecerasModal = new Array();
+        var i = 0;
+        $.each(data, function() {
+            if (this.descuento > 0.00) {
+                var producto = $("<a class = 'btn quick-button-small span2 producto' style='background: url({{asset('uploads/imagenes/')}}" + this.imagen + ") transparent;background-size: 100% 100%;' onclick = 'seleccionarProducto(this);' ><p>" + this.nombre + "</p><span class='notification green' style='font-size:12px;'>-" + this.descuento.toFixed(2) + "%</span></a>");
+            } else {
+                var producto = $("<a class = 'btn quick-button-small span2 producto' style='background: url({{asset('uploads/imagenes/')}}" + this.imagen + ") transparent;background-size: 100% 100%;' onclick = 'seleccionarProducto(this);' ><p>" + this.nombre + "</p></a>");
+            }
+            var productoModal = $("<div id='slide_" + i + "' class='item' style='margin: 0px; padding: 0px; height: 100%;'><img src='{{asset('uploads/imagenes/')}}" + this.imagen + "' style='width: 100%;height: 100%' alt=''><div class='carousel-caption hidden-phone'><h4>" + this.nombre + "</h4><p>" + this.descripcion + "</p></div><a class='btn' style='position: absolute; left: 10px;top:15px;' onclick = 'seleccionarProducto('#slide_" + i + "');'>Pedir</a></div>");
+            if (i == 0) {
+                productoModal = $("<div id='slide_" + i + "' class='item active' style='margin: 0px; padding: 0px; height: 100%;'><img src='{{asset('uploads/imagenes/')}}" + this.imagen + "' style='width: 100%;height: 100%' alt=''><div class='carousel-caption hidden-phone'><h4>" + this.nombre + "</h4><p>" + this.descripcion + "</p></div><a  class='btn' style='position: absolute; left: 10px;top:15px;' onclick = 'seleccionarProducto(\"#slide_" + i + "\");'>Pedir</a></div>");
+            }
+            var cabeceraModal = $("<li data-target='#myCarousel' data-slide-to=" + i + "></li>");
+            $(producto).data('id', this.id);
+            $(producto).data('nombre', this.nombre);
+            $(producto).data('ingredientes', this.ingredientes);
+            $(producto).data('precioVenta', this.precioVenta);
+            $(producto).data('tasas', this.tasas);
+            $(producto).data('tasa', this.tasa);
+            $(producto).data('imagen', this.imagen);
+            $(producto).data('descuento', this.descuento);
+            $(producto).data('descripcion', this.descripcion);
+            $(productoModal).data('id', this.id);
+            $(productoModal).data('nombre', this.nombre);
+            $(productoModal).data('ingredientes', this.ingredientes);
+            $(productoModal).data('precioVenta', this.precioVenta);
+            $(productoModal).data('tasas', this.tasas);
+            $(productoModal).data('tasa', this.tasa);
+            $(productoModal).data('imagen', this.imagen);
+            $(productoModal).data('descripcion', this.descripcion);
+            $(productoModal).data('descuento', this.descuento);
+            productos.push($(producto));
+            productosModal.push($(productoModal));
+            cabecerasModal.push($(cabeceraModal));
+            i = i + 1;
+        });
+        $("#productos").empty();
+        $("#productosCuerpoModal").empty();
+        $("#productosCabeceraModal").empty();
+        productos.forEach(function(p) {
+            p.appendTo("#productos");
+        });
+        productosModal.forEach(function(p) {
+            p.appendTo("#productosCuerpoModal");
+        });
+        cabecerasModal.forEach(function(p) {
+            p.appendTo("#productosCabeceraModal");
+        });
+        $('.carousel').carousel('pause');
+    }).fail(function(data) {
+        $("#productos").html("Imposible obtener datos. Intente de nuevo mas tarde");
+    });
+}
+
+function buscarProductos() {
+    var tag = $("#txtProductos").val();
+    $("#productos").html("<img src='{{asset('images/ajax-loader.gif')}}' alt='Cargando...' />");
+    $("#productos").attr("style", "text-align:center;vertical-align:middle;");
+    $.getJSON("{{path('pedido_productos_by_tag')}}", {'tag': tag}).done(function(data) {
+        var productos = new Array();
+        $.each(data, function() {
+            if (this.descuento > 0.00) {
+                var producto = $("<a class = 'btn quick-button-small span2 producto' style='background: url({{asset('uploads/imagenes/')}}" + this.imagen + ") transparent;background-size: 100% 100%;' onclick = 'seleccionarProducto(this);' ><p>" + this.nombre + "</p><span class='notification green' style='font-size:12px;'>-" + this.descuento.toFixed(2) + "%</span></a>");
+            } else {
+                var producto = $("<a class = 'btn quick-button-small span2 producto' style='background: url({{asset('uploads/imagenes/')}}" + this.imagen + ") transparent;background-size: 100% 100%;' onclick = 'seleccionarProducto(this);' ><p>" + this.nombre + "</p></a>");
+            }
+            $(producto).data('id', this.id);
+            $(producto).data('nombre', this.nombre);
+            $(producto).data('ingredientes', this.ingredientes);
+            $(producto).data('precioVenta', this.precioVenta);
+            $(producto).data('tasas', this.tasas);
+            $(producto).data('tasa', this.tasa);
+            $(producto).data('imagen', this.imagen);
+            $(producto).data('descuento', this.descuento);
+            productos.push($(producto));
+        });
+        $("#productos").empty();
+        if (productos.length > 0) {
+            productos.forEach(function(p) {
+                p.appendTo("#productos");
+            });
+        } else {
+            $("#productos").html('No se han encontrado productos para esta busqueda...');
+        }
+
+    }).fail(function(data) {
+        $("#productos").html("Imposible obtener datos. Intente de nuevo mas tarde");
+    });
+}
+
+
+
+function mostrarCategorias(id) {
+    $("#categorias").load("{{path('pedido_categorias')}}", {'id': id, 'tipo': ''});
+    $("#categoriasModal").load("{{path('pedido_categorias')}}", {'id': id, 'tipo': 'modal'});
+}
+
+function mostrarCategoriasPadre() {
+    $("#categorias").load("{{path('pedido_categorias')}}", {'tipo': ''});
+    $("#categoriasModal").load("{{path('pedido_categorias')}}", {'tipo': 'modal'});
+}
+
+function seleccionarProducto(producto) {
+    var collectionHolder = $("#pedidodeliverytype_itemPedido");
+    var prototype = collectionHolder.data('prototype');
+    var index = collectionHolder.data('index');
+    var newForm = prototype.replace(/__name__/g, index);
+    collectionHolder.data('index', index + 1);
+    collectionHolder.append(newForm); //Agrega un Nuevo Item
+    $("#pedidodeliverytype_itemPedido_" + index + "_productoVenta").val($(producto).data('id'));
+    var ingredientes = '';
+    $(producto).data('ingredientes').forEach(function(p) {
+        ingredientes = ingredientes + "<option value=" + p.id + ">" + p.nombre + "</option>";
+    });
+    var tasas = '';
+    $(producto).data('tasas').forEach(function(t) {
+        tasas = tasas + "<option value=" + t.id + ">" + t.nombre + "</option>";
+    });
+    $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes").html(ingredientes);
+    $("#pedidodeliverytype_itemPedido_" + index + "_tasa").html(tasas);
+    $("#pedidodeliverytype_itemPedido_" + index + "_tasa").val($(producto).data('tasa').id);
+    $("#pedidodeliverytype_itemPedido_" + index + "_descuento").val($(producto).data('descuento').toFixed(2));
+    $("#pedidodeliverytype_itemPedido_" + index + "_precioUnitario").val($(producto).data('precioVenta'));
+    $('[data-rel="chosen"],[rel="chosen"]').chosen();
+    nuevaLinea(producto, index);
+}
+
+function nuevaLinea(producto, index) {
+    var precio = $(producto).data('precioVenta');
+    var nombre = $(producto).data('nombre');
+    var descuento = $(producto).data('descuento');
+    $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val(1);
+    var cantidad = 1;
+    var total = (cantidad * precio) - (cantidad * precio * descuento / 100);
+    var estado = 'Nuevo';
+    var linea = "";
+    if (descuento > 0.00) {
+        linea = $("<tr style='cursor:pointer;' onclick=\"detallesLinea(event,'" + index + "')\" id='pedidodeliverytype_itemPedido_" + index + "_item'><td><div class='media'><div style='float:left; margin:2px;'><img class='media-object' data-src='holder.js/64x64' style='width: 64px; height: 64px;' src='{{asset('uploads/imagenes/')}}" + $(producto).data('imagen') + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + "</h4>" + cantidad + " x $ " + ((precio) - (precio * descuento / 100)).toFixed(2) + "<span class='total' style='float:right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td></tr>");
+    } else {
+        linea = $("<tr style='cursor:pointer;' onclick=\"detallesLinea(event,'" + index + "')\" id='pedidodeliverytype_itemPedido_" + index + "_item'><td><div class='media'><div style='float:left; margin:2px;'><img class='media-object' data-src='holder.js/64x64' style='width: 64px; height: 64px;' src='{{asset('uploads/imagenes/')}}" + $(producto).data('imagen') + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + "</h4>" + cantidad + " x $ " + (precio * 1).toFixed(2) + "<span class='total' style='float:right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td></tr>");
+    }
+    linea.appendTo("#items");
+    $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta', precio);
+    var suma = parseFloat(parseFloat($("#suma").data('total')) + total).toFixed(2);
+    $("#suma").data('total', suma).html("$ " + suma);
+    calcularRecargos();
+    calcularDescuentos();
+    calcularTotal();
+    $("#items_empty").remove();
+}
+
+
+
+function calcularRecargos() {
+    var subtotal = parseFloat($("#suma").data('total')).toFixed(2);
+
+    $("#itemsRecargos .Porcentual").each(function() {
+        if ($(this).data('bonificacion') == "0.00" || $(this).data('bonificacion') == '' || parseFloat($(this).data('bonificacion')) > subtotal) {
+            var totalP = ((subtotal * parseFloat($(this).data("porcentaje")).toFixed(2)) / 100).toFixed(2);
+            $("#" + $(this).attr("id") + "_total").data("total", totalP);
+            $("#" + $(this).attr("id") + "_total").html("$ " + totalP);
+            $("#" + $(this).data("id") + "_totalRecargo").val(totalP);
+        } else {
+            $("#" + $(this).attr("id") + "_total").data("total", "0.00");
+            $("#" + $(this).attr("id") + "_total").html("$ 0.00");
+            $("#" + $(this).data("id") + "_totalRecargo").val(0.00);
+        }
+    });
+    $("#itemsRecargos .Importe").each(function() {
+        if ($(this).data('bonificacion') == "0.00" || $(this).data('bonificacion') == '' || parseFloat($(this).data('bonificacion')) > subtotal) {
+            var totalP = parseFloat($(this).data("importe")).toFixed(2);
+            $("#" + $(this).attr("id") + "_total").data("total", totalP);
+            $("#" + $(this).attr("id") + "_total").html("$ " + totalP);
+            $("#" + $(this).data("id") + "_totalRecargo").val(totalP);
+        } else {
+            $("#" + $(this).attr("id") + "_total").data("total", "0.00");
+            $("#" + $(this).attr("id") + "_total").html("$ 0.00");
+            $("#" + $(this).data("id") + "_totalRecargo").val(0.00);
+        }
+    });
+
+
+}
+
+function calcularDescuentos() {
+    var subtotal = parseFloat($("#suma").data('total')).toFixed(2);
+    var recargos = 0.00;
+    $("#itemsRecargos tr").each(function() {
+        recargos = recargos + parseFloat($("#" + $(this).attr("id") + "_total").data("total"));
+    });
+    subtotal = parseFloat(subtotal) + recargos;
+    $("#itemsDescuentos .Porcentual").each(function() {
+        var minimo = $(this).data('minimo');
+        if (minimo == null || minimo == "0.00" || minimo == '' || parseFloat(minimo) < subtotal) {
+            var totalP = ((parseFloat(subtotal) * parseFloat($(this).data("porcentaje")).toFixed(2)) / 100).toFixed(2);
+            totalP = parseFloat(totalP).toFixed(2);
+            $("#" + $(this).attr("id") + "_total").data("total", totalP);
+            $("#" + $(this).attr("id") + "_total").html("- $ " + totalP);
+        } else {
+            $("#" + $(this).attr("id") + "_total").data("total", "0.00");
+            $("#" + $(this).attr("id") + "_total").html("$ 0.00");
+        }
+    });
+    $("#itemsDescuentos .Importe").each(function() {
+        var minimo = $(this).data('minimo');
+        if (minimo == null || minimo == "0.00" || minimo == '' || parseFloat(minimo) < subtotal) {
+            var totalP = parseFloat($(this).data("importe")).toFixed(2);
+            $("#" + $(this).attr("id") + "_total").data("total", totalP);
+            $("#" + $(this).attr("id") + "_total").html("- $ " + totalP);
+        } else {
+            $("#" + $(this).attr("id") + "_total").data("total", "0.00");
+            $("#" + $(this).attr("id") + "_total").html("$ 0.00");
+        }
+    });
+}
+
+function calcularTotal() {
+    var subtotal = parseFloat($("#suma").data('total')).toFixed(2);
+    var total = parseFloat(subtotal);
+    $("#itemsRecargos tr").each(function() {
+        var recargo = parseFloat($("#" + $(this).attr("id") + "_total").data("total"));
+        total = total + recargo;
+        $("#subtotal").data("total", total);
+        $("#subtotal").html("$ " + parseFloat(total).toFixed(2));
+    });
+    $("#itemsDescuentos tr").each(function() {
+        var descuento = parseFloat($("#" + $(this).attr("id") + "_total").data("total"));
+        total = total - descuento;
+    });
+    if (total < 0.00) {
+        total = 0.00;
+    }
+    $("#total").html("$ " + parseFloat(total).toFixed(2));
+}
+
+function detallesLinea(ev, index) {
+    ev.preventDefault();
+    var precio = $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta');
+    var cantidad = $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val();
+    var descuento = $("#pedidodeliverytype_itemPedido_" + index + "_descuento").val();
+    var imagen = $("#pedidodeliverytype_itemPedido_" + index + "_item img").attr('src');
+    var totalOriginal = (cantidad * precio) - (cantidad * precio * descuento / 100);
+    cambio = false;
+    $($("#pedidodeliverytype_itemPedido_" + index)).appendTo("#dataDetalles");
+    $("#detallesLinea").modal("show");
+    $('#detallesLinea').unbind("hide");
+    $('#cancelarItem').unbind('click');
+    $('#cancelarItem').click(function() {
+        event.preventDefault();
+        $('#detallesLinea').unbind("hide");
+        $('#detallesLinea').on('hide', function(e) {
+            if ($("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val() > 0) {
+                $($("#pedidodeliverytype_itemPedido_" + index)).appendTo("#pedidodeliverytype_itemPedido");
+                $("#pedidodeliverytype_itemPedido_" + index + "_cantidad_error").remove();
+                var nombre = $("#pedidodeliverytype_itemPedido_" + index + "_productoVenta option:selected").html();
+                $("#pedidodeliverytype_itemPedido_" + index + "_estado").val('cancelado');
+                var estado = $("#pedidodeliverytype_itemPedido_" + index + "_estado option:selected").html();
+                var precio = $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta');
+                var cantidad = $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val();
+                var total = parseFloat((cantidad * precio) - (cantidad * precio * descuento / 100)).toFixed(2);
+                var ingredientes = "(";
+                $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option:selected").each(function() {
+                    ingredientes = ingredientes + $(this).html();
+                });
+                ingredientes = ingredientes + ")";
+                if (ingredientes === '()') {
+                    ingredientes = '';
+                }
+                var linea = $("#pedidodeliverytype_itemPedido_" + index + "_item");
+                $("#items_cancelados_empty").remove();
+                linea.appendTo("#items_cancelados");
+                linea.removeAttr('onclick');
+                linea.click(function() {
+                    $("#reactivarItem").modal("show");
+                    $("#reactivarItemAceptar").click(function() {
+                        $("#reactivarItem").modal("hide");
+                        $("#pedidodeliverytype_itemPedido_" + index + "_estado").val('nuevo');
+                        var estado = $("#pedidodeliverytype_itemPedido_" + index + "_estado option:selected").html();
+                        if (descuento > 0.00) {
+                            $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + ((precio) - (precio * descuento / 100)).toFixed(2) + "<span class='total pull-right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+                        } else {
+                            $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + (precio * 1).toFixed(2) + "<span class='total pull-right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+                        }
+                        linea.appendTo("#items");
+                        var suma = parseFloat(parseFloat($("#suma").data('total')) * 1 + (total * 1)).toFixed(2);
+                        $("#suma").data('total', suma).html("$ " + suma);
+                        calcularRecargos();
+                        calcularDescuentos();
+                        calcularTotal();
+                        $("#items_empty").remove();
+                        if ($("#items_cancelados tr").length < 1) {
+                            $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+                        }
+                        linea.unbind('click');
+                        linea.attr('onclick', 'detallesLinea(event,' + index + ');');
+                    });
+                });
+                if (descuento > 0.00) {
+                    $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + ((precio) - (precio * descuento / 100)).toFixed(2) + "<span class='total pull-right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+                } else {
+                    $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + (precio * 1).toFixed(2) + "<span class='total pull-right'>$ " + (total * 1).toFixed(2) + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+                }
+                $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precio', precio);
+                var suma = parseFloat(parseFloat($("#suma").data('total')) - (totalOriginal)).toFixed(2);
+                $("#suma").data('total', suma).html("$ " + suma);
+                calcularRecargos();
+                calcularDescuentos();
+                calcularTotal();
+            } else {
+                $("#pedidodeliverytype_itemPedido_" + index + "_cantidad_error").remove();
+                $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").after(" <label id=pedidodeliverytype_itemPedido_" + index + "_cantidad_error style='color:red;'>La cantidad debe ser mayor a cero</label");
+                e.preventDefault();
+            }
+            if ($("#items tr").length < 1) {
+                $("#items").html("<td id='items_empty' style='height:64px'>Seleccione los productos para este pedido</td>");
+            }
+            if ($("#items_cancelados tr").length < 1) {
+                $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+            }
+        });
+        $('#detallesLinea').modal('hide');
+    });
+    $('#detallesLinea').on('hide', function(e) {
+        if ($("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val() > 0) {
+            $($("#pedidodeliverytype_itemPedido_" + index)).appendTo("#pedidodeliverytype_itemPedido");
+            $("#pedidodeliverytype_itemPedido_" + index + "_cantidad_error").remove();
+            var precio = $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta');
+            var nombre = $("#pedidodeliverytype_itemPedido_" + index + "_productoVenta option:selected").html();
+            if (cambio) {
+                $("#pedidodeliverytype_itemPedido_" + index + "_estado").val('actualizado');
+            }
+            var estado = $("#pedidodeliverytype_itemPedido_" + index + "_estado option:selected").html();
+            var cantidad = $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val();
+            var total = parseFloat(cantidad * precio - (cantidad * precio * descuento / 100)).toFixed(2);
+            var ingredientes = "(";
+            $("#pedidodeliverytype_itemPedido_" + index + "_ingredientes option:selected").each(function() {
+                ingredientes = ingredientes + $(this).html();
+            });
+            ingredientes = ingredientes + ")";
+            if (ingredientes === '()') {
+                ingredientes = '';
+            }
+            if (descuento > 0.00) {
+                $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + ((precio) - (precio * descuento / 100)).toFixed(2) + "<span class='total pull-right'>$ " + total + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+            } else {
+                $("#pedidodeliverytype_itemPedido_" + index + "_item").html("<td><div class='media'><div style='margin:2px; float:left;'><img class='media-object' data-src='holder.js/64x64' alt='64x64' style='width: 64px; height: 64px;' src='" + imagen + "'></div><div class='media-body'><h4 class='media-heading'>" + nombre + ingredientes + "</h4>" + cantidad + " x $ " + precio + "<span class='total pull-right'>$ " + total + "</span><br><label class='label " + estado + "'>" + estado + "</label></div></div></td>");
+            }
+            $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precio', precio);
+            var suma = parseFloat(parseFloat($("#suma").data('total')) + (total - totalOriginal)).toFixed(2);
+            $("#suma").data('total', suma).html("$ " + suma);
+            calcularRecargos();
+            calcularDescuentos();
+            calcularTotal();
+        } else {
+            $("#pedidodeliverytype_itemPedido_" + index + "_cantidad_error").remove();
+            $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").after(" <label id=pedidodeliverytype_itemPedido_" + index + "_cantidad_error style='color:red;'>La cantidad debe ser mayor a cero</label");
+            e.preventDefault();
+        }
+        if ($("#items tr").length < 1) {
+            $("#items").html("<td id='items_empty' style='height:64px'>Seleccione los productos para este pedido</td>");
+        }
+        if ($("#items_cancelados tr").length < 1) {
+            $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+        }
+    });
+
+}
+
+function hayCambio() {
+    cambio = true;
+}
+
+function borrarLinea(ev, index) {
+    ev.preventDefault();
+    var precio = $("#pedidodeliverytype_itemPedido_" + index + "_item").data('precioVenta');
+    var cantidad = $("#pedidodeliverytype_itemPedido_" + index + "_cantidad").val();
+    var total = cantidad * precio;
+    var suma = parseFloat(parseFloat($("#suma").data('total')) - total).toFixed(2);
+    $("#suma").data('total', suma).html("$ " + suma);
+    $("#pedidodeliverytype_itemPedido_" + index + "_item").remove();
+    $("#pedidodeliverytype_itemPedido_" + index).remove();
+    if ($("#items tr").length < 1) {
+        $("#items").html("<td id='items_empty' style='height:64px'>Seleccione los productos para este pedido</td>");
+    }
+}
+
+function verificarDisponibilidad(id) {
+    if ($("#pedidodeliverytype_itemPedido_" + id + "_productoVenta").val() != "" && $("#pedidodeliverytype_itemPedido_" + id + "_cantidad").val() != "") {
+        var idProducto = $("#pedidodeliverytype_itemPedido_" + id + "_productoVenta").val();
+        var idTasa = $("#pedidodeliverytype_itemPedido_" + id + "_tasa option:selected").attr('id')
+        var cantidad = $("#pedidodeliverytype_itemPedido_" + id + "_cantidad").val();
+        $.get("{{ path('verificar_disponibilidad') }}", {"idProducto": idProducto, "idTasa": idTasa, "cantidad": cantidad}).done(
+                function(data) {
+                    $("#dataAviso").html(data);
+                    $("#borrarItem").click(function() {
+                        $('#aviso').modal('hide');
+                        eliminarFila(event, 'pedidodeliverytype_itemPedido_' + id);
+                    });
+                    $('#aviso').modal('show');
+                });
+    }
+}
+
+function preguntarACocina() {
+    var url = "{{path('enviar_solicitud_delivery')}}";
+    var datos = $("#formulario").serialize();
+    $.get(url, datos).done(function(resultado) {
+        var img = document.createElement('img');
+        img.src = '{{asset('images/respuesta.gif')}}';
+        $("#faltantesCargando").append(img);
+        $("#faltantesCargando").append("Esperando respuesta...");
+        $("#faltantesOpciones").html("<a href='#' onclick='cancelarPregunta();' class='btn'>Cancelar</a>");
+        esperaRespuesta = setInterval(function() {
+            obtenerRespuesta(resultado);
+        }, 2000);
+    });
+}
+
+function obtenerRespuesta(id) {
+    $.get("{{ path('obtener_respuesta_solicitud') }}", {"idSolicitud": id}).done(
+            function(data) {
+                clearInterval(esperaRespuesta);
+                $("#datafaltantes").html(data);
+                var resp = $("#respuesta").val();
+                if (resp == 1) {
+                    $("#faltantesOpciones").html("<a href='#' class='btn' data-dismiss='modal'>No enviar</a><a href='#' onclick='enviarPedido(" + id + ");' class='btn btn-primary' id='borrarItem' >Enviar</a>");
+                } else {
+                    $("#faltantesOpciones").html("<a href='#' class='btn' data-dismiss='modal'>No enviar</a>");
+                }
+            });
+}
+
+function enviarPedido(idSolicitud) {
+    var url = "{{path('nuevo_pedido_delivery')}}";
+    $("#formulario").append("<input id='idSolicitud' name='idSolicitud' type='hidden' value='" + idSolicitud + "'/>");
+    var datos = $("#formulario").serialize();
+    $.post(url, datos).done(function(resultado) {
+        $("#faltantes").modal("hide");
+        location.href = "{{path('pedidos')}}";
+    });
+}
+
+function cancelarPregunta() {
+    $("#faltantesCargando").empty();
+    $("#faltantesOpciones").html("<a href='#' class='btn' data-dismiss='modal'>No enviar</a><a href='#' onclick='preguntarACocina();' class='btn btn-primary' id='borrarItem' >Preguntar a Cocina</a>");
+}
+
+function seleccionarCliente(id,cliente, provincia, ciudad, calle, numero, manzana, edificio, escalera, piso, departamento) {
+    var existe = false;
+    $("#pedidodeliverytype_cliente option").each(function (){
+        if($(this).val() == id)
+            existe = true;
+    });
+    if (!existe){
+        $("#pedidodeliverytype_cliente").append('<option value="'+id+'">'+cliente+'</option>');
+    }
+    $("#pedidodeliverytype_cliente").val(id);
+    $("#pedidodeliverytype_direccion_ciudad").val(ciudad);
+    $("#pedidodeliverytype_direccion_calle").val(calle);
+    $("#pedidodeliverytype_direccion_numero").val(numero);
+    $("#pedidodeliverytype_direccion_manzana").val(manzana);
+    $("#pedidodeliverytype_direccion_edificio").val(edificio);
+    $("#pedidodeliverytype_direccion_escalera").val(escalera);
+    $("#pedidodeliverytype_direccion_piso").val(piso);
+    $("#pedidodeliverytype_direccion_departamento").val(departamento);
+    $("#provincias").val(provincia);
+    $("#pedidodeliverytype_cliente").val(id);
+    $("#pedidodeliverytype_solicitante").val($("#pedidodeliverytype_cliente option:selected").html());
+    $.getJSON("{{path('cliente')}}", {"id": id}).done(function(data) {
+        var collectionHolder = $("#pedidodeliverytype_itemsDescuento");
+        var prototype = collectionHolder.data('prototype');
+        var index = 0;
+        var descuentos = data.descuentos;
+        collectionHolder.empty();
+        $("#itemsDescuentos").empty();
+        $(descuentos).each(function() {
+            var newForm = prototype.replace(/__name__/g, index);
+            collectionHolder.append(newForm); //Agrega un Nuevo Item
+            $("#pedidodeliverytype_itemsDescuento_" + index + "_descuento").val(this.id);
+            $("#pedidodeliverytype_itemsDescuento_" + index + "_detalle").val(this.nombre);
+            $("#pedidodeliverytype_itemsDescuento_" + index + "_totalDescuento").val(0.00);
+            var html = "";
+            if (this.isPorcentaje) {
+                html = "<tr id='pedidodeliverytype_itemsDescuento_" + index + "_itemDescuento' data-id='pedidodeliverytype_itemsDescuento_" + index + "' class='Porcentual' data-porcentaje='" + this.porcentaje + "' data-importe='" + this.importe + "' data-minimo='" + this.minimo + "' data-maximo='" + this.maximo + "' ><td>Descuento " + this.nombre + " (-" + (this.porcentaje * 1).toFixed(2) + "%) <span id='pedidodeliverytype_itemsDescuento_" + index + "_itemDescuento_total' data-total='0.00' class='total' style='float:right'>$ 0.00</span></td></tr>";
+            } else {
+                html = "<tr id='pedidodeliverytype_itemsDescuento_" + index + "_itemDescuento' data-id='pedidodeliverytype_itemsDescuento_" + index + "' class='Importe' data-porcentaje='" + this.porcentaje + "' data-importe='" + this.importe + "' data-minimo='" + this.minimo + "' data-maximo='" + this.maximo + "' ><td>Descuento " + this.nombre + " <span id='pedidodeliverytype_itemsDescuento_" + index + "_itemDescuento_total' data-total='0.00' class='total' style='float:right'>$ 0.00</span></td></tr>";
+            }
+            $(html).appendTo($("#itemsDescuentos"));
+            index = index + 1;
+        });
+        calcularRecargos();
+        calcularDescuentos();
+        calcularTotal();
+    });
+    $("#busqueda").modal("hide");
+}
+
+function cambioCliente(element) {
+    $.get("{{ path('cliente') }}", {"id": $(element).val(), "tipoPedido": "delivery"}).done(
+            function(data) {
+                $("#datosCliente").html(data);
+                $("#pedidodeliverytype_cliente").after("<a class='btn' onclick='buscarCliente();' ><i class='icon-search'></i></a>");
+                });
+}
+
+function validarItems(ev) {
+    if ($("#items tr").length < 1) {
+        $("#validarItems").modal("show");
+        ev.preventDefault();
+    }
+}
+                                                                            </script>
+                                                                            
+
+{%endblock%}
+

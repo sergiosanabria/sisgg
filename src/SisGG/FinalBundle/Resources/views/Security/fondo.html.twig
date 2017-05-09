@@ -1,0 +1,60 @@
+{% extends "::base.html.twig" %}
+{%block title%}Productos pre-elaborados{%endblock%}
+{%block ruta%}
+<li>
+    <a href="#">Productos producción</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Productos pre-elaborados</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<form action="{{path('eF')}}"  {{ form_enctype(form) }}method="post">
+    <button onclick ="mostrar()" type="button"> ver</button>
+   <fieldset>
+    <legend>Datos {{n}}</legend>
+    <div class="span3 pull-right">
+            {{ form_widget(form.file) }}
+            {{ form_widget(form.name) }}    
+            <a href="#" class="thumbnail" title="Cambiar Foto" onclick="$('input[id={{form.file.get('id')}}]').click();"><img id="imagen" data-src="holder.js/180x160" style="width: 180px; height: 160px;" src="{{n}}"/></a>        
+        </div>
+    <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+
+    </div>
+    {{ form_rest(form) }}
+  </fieldset>
+</form> 
+                  </div>
+    </div>
+    </div>
+{%endblock%}
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+    
+function handleFileSelect(evt) {
+    var files = evt.target.files; 
+    for (var i = 0, f; f = files[i]; i++) {
+      if (!f.type.match('image.*')) {
+        continue;
+      }
+
+      var reader = new FileReader();
+
+      reader.onload = (function(theFile) {
+        return function(e) {
+          document.getElementById('imagen').src = e.target.result;
+        };
+      })(f);
+      reader.readAsDataURL(f);
+    }
+  }
+    document.getElementById('{{form.file.get('id')}}').addEventListener('change', handleFileSelect, false);
+   </script>
+{% endblock%}

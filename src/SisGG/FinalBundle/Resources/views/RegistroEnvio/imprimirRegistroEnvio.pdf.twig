@@ -1,0 +1,122 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Registro de Envio{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div padding-top='20'>
+    <h1 >Detalles de Envios: </h1>
+</div>
+<div font-size="10" font-type="helvetica" width='100%'>
+
+    <div>
+        <b>Número de Registro: </b> {{registroEnvio.numeroRegistro}}
+    </div> 
+    <div>
+        <b>Fecha y Hora: </b> {{registroEnvio.fecha|date('d/m/Y g:ia')}}
+    </div>
+    <div>
+        <b>Empleado: </b> {{registroEnvio.empleado}}
+    </div>
+    <p></p>
+    {%for pedido in registroEnvio.pedido%}
+    <table breakable="false" border.type="none" width='100%' font-size="9" >
+        <tr>
+            <td border.type="none" background.color='lightgray' colspan='2' font-size='10'>Pedido {{pedido.id}} </td>
+        </tr>
+        <tr>
+            <td border.type="none" >Cliente: {{pedido.solicitante}}</td>
+            <td border.type="none" text-align='right'></td>
+        </tr>
+        <tr>
+            <td border.type="none" colspan="2" >Dirección: {{pedido.direccion}}</td>
+        </tr>
+        <tr>
+            <td border.type="none" >Items</td>
+            <td border.type="none" text-align='right'></td>
+        </tr>   
+                {%set precioTotal = 0.00%}
+                {%set suma = 0.00%}
+                {% for item in pedido.itemPedido%}
+                    {%set total = (item.cantidad * (item.productoVenta.precioVenta) - (item.descuento * item.productoVenta.precioVenta / 100))|number_format(2,'.','')%}
+                    {%set suma = total + suma%}
+                    {%if item.estado != 'cancelado' and item.estado != 'Cancelado'%}
+                    <tr>
+                        <td border.type="none"  padding-left='10'>{{item.cantidad}} - {{item.ProductoVenta}}(
+                            {%for ingrediente in item.ingredientes%}
+                                {{ingrediente.exclusion}}
+                            {%endfor%} )   
+                        </td>
+                        <td border.type="none" padding-left='10' text-align='right'>$ {{total}}</td>
+                    </tr>
+                    {%endif%}
+                {%else%}
+                    <tr>
+                        <td border.type="none" colspan='2' >No hay pedidos para este registro</td>
+                    </tr>  
+                    <tr>
+                        <td border.type="none" colspan='2' ><p></p></td>
+                    </tr> 
+                {% endfor %}
+                {%set recargos = 0.00%}
+                {%for item in pedido.tipoPedido.recargosActivos%}
+                                    {%set recargoTotal = 0.00%}
+                                    {%if item.tipoPorcentaje%}
+                                            {%set recargoTotal = (suma * item.porcentaje /100)%}
+                                                <tr>
+                                                    <td border.type="none"  padding-left='10'>Recargo por {{item}}</td>
+                                                    <td border.type="none" padding-left='10' text-align='right'>$ {{recargoTotal}}</td>
+                                                </tr>
+                                    {%else%}
+                                            {%set recargoTotal = item.importe%}
+                                                <tr>
+                                                    <td border.type="none"  padding-left='10'>Recargo por {{item}}</td>
+                                                    <td border.type="none" padding-left='10' text-align='right'>$ {{item.importe}}</td>
+                                                </tr>
+                                    {%endif%}
+                                    {%set recargos = recargos + recargoTotal|number_format(2,'.','')%}                    
+                {% endfor %}
+                {%set descuentos = 0.00%}    
+                        {%if pedido.cliente != null%}       
+                               {%for item in pedido.cliente.descuentosActivos%}
+                                               {%set descuentoTotal = 0.00%}
+                                               {%if item.tipoPorcentaje%}
+                                                       {%set descuentoTotal = (pedido.subtotal * item.porcentaje /100)%}
+                                                       <tr>
+                                                            <td border.type="none"  padding-left='10'>Descuento {{item}}</td>
+                                                            <td border.type="none" padding-left='10' text-align='right'>-$ {{descuentoTotal|number_format(2,'.','')}}</td>
+                                                        </tr>
+                                               {%else%}
+                                                       {%set descuentoTotal = item.importe%}
+                                                       <tr>
+                                                            <td border.type="none"  padding-left='10'>Descuento {{item}}</td>
+                                                            <td border.type="none" padding-left='10' text-align='right'>-$ {{descuentoTotal|number_format(2,'.','')}}</td>
+                                                        </tr>
+                                               {%endif%}
+                                               {%set descuentos = descuentos + descuentoTotal|number_format(2,'.','')%}
+                               {%endfor%}
+                        {%endif%}                                
+         <tr>
+             <td border.type="none" background.color='lightgray' colspan='2' font-size='10' text-align='right'>$ {{pedido.precio|number_format(2)}} </td>
+             {%set precioTotal = precioTotal + pedido.precio *1%}
+         </tr>           
+    </table> 
+    <p></p>
+    {%endfor%}
+    <div width='100%' text-align='right' background.color='lightgray'>Total de Registro <span width='100%'  background.color='lightgray'>$ {{registroEnvio.totalPedidos}}</span> </div>
+    {%if img!=''%}
+    <div breakable="false" font-size="20" height="100%" width='100%' text-align='center' border-color="gray" border-size="0.5" >
+                        <img  float="left"  width="100%" height="100%" {%if img!=''%}src="/tmp/map.png"{%else%}src="{{pdf_image('SisGGFinalBundle:foto-no-disponible.jpg')}}"{%endif%} />
+    </div>
+    {%else%}
+    <p>Para obtener la ubicación de los puntos de envio en un mapa conectese a internet</p>
+    {%endif%}
+</div>
+{%endblock%}
+

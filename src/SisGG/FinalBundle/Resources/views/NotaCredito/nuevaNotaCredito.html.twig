@@ -1,0 +1,215 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .add-on{
+            display: none;
+        }
+        .lineaVenta{
+            height: 50px;
+        }
+        .cabecera{
+            background-color: #08c;
+            color: white;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Registrar Venta</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <form id='formVenta' class="form-horizontal" action="{{ path('anular_venta') }}?id={{id}}" method="post">
+                    <legend>Registro de Nota de Credito <small>Complete el formulario con los datos solicitados.</small></legend>
+                    <fieldset id="formNuevaVenta">
+                        <div class="span6 pull-left">
+                                    {{form_row(form.fecha,{'attr':{'class':'span12'} })}}
+                                <div style='display: none;'>
+                                        {{form_row(form.factura,{'attr':{'class':'span12'} })}}
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'>Venta (*)</label>   
+                                        <div class='controls'>
+                                            <input type='text' disabled="disabled" class='span12' value='{{form.factura.vars.data}}'/>
+                                        </div>
+                                    </div>
+                                    <div class='control-group {%if form.serie.vars.errors|length > 0%}error{%endif%}'>
+                                        <label class='control-label'>Número de Nota de Crédito (*)</label>   
+                                        <div class='controls'>
+                                                {{form_widget(form.serie,{'attr':{'class':'span3'},'value':"%04d"|format(form.serie.vars.data) })}} 
+                                                {{form_widget(form.numero,{'attr':{'class':'span9'} ,'value':"%08d"|format(form.numero.vars.data) })}}
+                                            </div>
+                                            <div class='controls'>
+                                                {{form_errors(form.serie)}}
+                                                </div>    
+                                            </div>
+                                        </div>
+                                        <div class="span6 pull-left">
+                                            {{form_row(form.nombre,{'attr':{'class':'span12'} })}}
+                                            {{form_row(form.condicionIva,{'attr':{'class':'span12'} })}}
+                                            {{form_row(form.cuit,{'attr':{'class':'span12'} })}}
+                                                <div id='cliente' style='display:none;'>    
+                                                    {{form_row(form.cliente,{'attr':{'class':'span12'} })}}
+                                                    </div>    
+
+                                                </div> 
+                                                <div class="span12 pull-right">
+                                                    <div style="margin-left: 0px;" class="span12 pull-left">
+                                                {%set totalFactura = 0.00%}
+                                                            <table id="tableLineas" class="table table-bordered table-hover">
+                                                                <thead class="cabecera">
+                                                                <th>Cantidad</th>    
+                                                                <th>Descripcion del Producto</th>
+                                                                <th>Precio Unitario</th>
+                                                                <th>Bonificación</th>
+                                                                <th>Precio Neto</th>
+                                                                </thead>
+                                                                <tbody>                                                          
+                                                        {%for linea in form.factura.vars.data.lineasVenta%}
+                                                                        <tr class='lineaVenta'>
+                                                                            <td>{{linea.cantidad|number_format(2,'.','')}}</td>
+                                                                            <td>{{linea.descripcion}}</td>
+                                                                            <td style="text-align: right">$ {{(linea.precioUnitarioSinIva)|number_format(2,'.','')}}</td>
+                                                                            <td style="text-align: right">{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                                                                            <td style="text-align: right">$ {{(linea.precioNetoSinIva|number_format(2,'.',''))}}</td>
+                                                                        </tr>
+                                                        {%endfor%}
+                                                        {%for itemRecargo in form.factura.vars.data.itemsRecargoVenta%}
+                                                                        <tr class='lineasVenta'>
+                                                                            <td>1.00</td>
+                                                                            <td>{{itemRecargo.recargo.descripcion}}</td>
+                                                                            <td style="text-align: right">${{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                            <td style="text-align: right">0.00%</td>
+                                                                            <td style="text-align: right">$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                        </tr>
+                                                        {%endfor%}        
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr><td></td><td></td><td></td><td>Subtotal</td><td style="text-align: right">$ {{form.factura.vars.data.subtotalSinIva|number_format(2,'.','')}}</td></tr>
+                                                            {%for itemDescuento in form.factura.vars.data.itemsDescuentoVenta%}
+                                                                        {%if itemDescuento.totalDescuento > 0.00%}
+                                                                        <tr><td></td><td></td><td></td><td>Descuento {{itemDescuento.detalle}}</td><td style="text-align: right"> - $ {{itemDescuento.totalDescuentoSinIva|number_format(2,'.','')}}</td></tr>
+                                                                        {%endif%}    
+                                                            {%endfor%}
+                                                            {%for item in form.factura.vars.data.itemsIvaVenta%}
+                                                                        <tr><td></td><td></td><td></td><td>IVA {{item.tasa|number_format(2,'.')}}</td><td style="text-align: right">$ {{item.total|number_format(2,'.','')}}</td></tr>
+                                                            {%endfor%}      
+                                                                        <tr><td></td><td></td><td></td><td id='totalmayor' data-total='{{form.factura.vars.data.total}}'>Total</td><td style="text-align: right">$ {{form.factura.vars.data.total|number_format(2,'.','')}}</td></tr>        
+                                                                    <tfoot>
+                                                                </table>
+                                                            {%set totalFactura = form.factura.vars.data.total%}
+                                                                    <table id="tableCobrosVisible" class="table table-bordered table-hover">
+                                                                        <thead class='cabecera'>
+                                                                        <th>Tipo de Cobro</th>
+                                                                        <th>Descripcion</th>
+                                                                        <th>Aclaracion</th>
+                                                                        <th>Importe</th>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                {%set i = 0%}
+                                                                {%set importes = 0.00%}        
+                                                                {%for cobro in form.factura.vars.data.cobros%}
+                                                                    {%set c = cobro%}
+                                                                    {%set importes = importes + cobro.importe%}
+                                                                    {%set i = i+1%}
+                                                                                <tr id='ventatype_cobros_{{i}}_visible'><td>{{c.tipoCobro}}</td><td></td><td>{%for campo in c.valores%}{{campo.campo.nombre}}: {{campo.valor}}<br>{%endfor%}</td><td style='text-align: right;'>$<span class='importe'>{{c.importe|number_format(2,'.','')}}</span></td></tr>
+                                                                    {%endfor%}    
+                                                                                    </tbody>  
+                                                                                    <tfoot>
+                                                                                        <tr><td></td><td></td><td>Total</td><td style="text-align:right;"><span id='totalimportes'>$ {{importes|number_format(2,'.','')}}</span></td></tr>
+                                                                                        <tr><td></td><td></td><td>Cambio</td><td style="text-align:right;"><span id="cambio"  disabled="disabled"  type="text" autocomplete="off" >{%if importes > totalFactura%}$ {{(totalFactura - importes)|number_format(2,'.','')}}{%else%}$ 0.00{%endif%}</span></td></tr>
+                                                                                    </tfoot>    
+                                                                                </table>
+                                                                                
+                                                                                <div style='display:none'>{{form_rest(form)}}</div>
+                                                                                </fieldset>
+                                                                                <div class="form-actions">
+                                                                                    <button type="submit" class="btn btn-primary" action='guardar'>Guardar Cambios</button>
+                                                                                    <button onclick='history.back();' type="button"class="btn">Cancelar</button>
+                                                                                </div>    
+                                                                                </form>
+                                                                            </div>
+                                                                        </div><!--/span-->
+                                                                        </div><!--/row-->
+                                                                        <hr>
+{% endblock %}
+{%block modal%}
+                                                                        <div class="modal hide fade" id="busqueda">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Buscar...</h3>
+                                                                            </div>
+                                                                            <div id="dataBusqueda" class="modal-body">
+                                                                                <p>Here settings can be configured...</p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal hide fade" id="aperturaCaja">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Apertura de Caja</h3>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <div id="dataAperturaCaja">
+                                                                                </div>
+                                                                                Importante: Para poder registrar ventas es necesario que realize una Apertura de Caja.    
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                                <a href="#" onclick='enviarFormulario(event);' class="btn btn-primary">Aceptar</a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <form id="formCobro" class='form-horizontal'>    
+                                                                            <div class="modal hide fade" id="cobroModal">
+                                                                                <div class="modal-header">
+                                                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                    <h3>Registrar Cobro</h3>
+                                                                                </div>
+
+                                                                                <div  class="modal-body">
+                                                                                    <div id="dataCobro" class='form-horizontal'>
+                                                                                    </div>               
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <a href="#" class="btn" onclick='cancelar(event);'>Cancelar</a>
+                                                                                    <input type="submit" class="btn btn-primary" value="Aceptar">
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </form>        
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                                                                        <script type="text/javascript">
+                                                                                    var accion = 'guardar';
+
+                                                                                    $().ready(function() {
+                                                                                                        {%if not habilitado%}
+                                                                                        $.get("{{path('apertura_caja')}}").done(
+                                                                                                function(data) {
+                                                                                                    $("#dataAperturaCaja").html(data);
+                                                                                                    $("#aperturaCaja").modal("show");
+                                                                                                    $('#aperturaCaja').on('hidden', function() {
+                                                                                                        history.back();
+                                                                                                    });
+                                                                                                }
+                                                                                        );
+                                                                                                        {%endif%}
+                                                                                        
+                                                                                    });
+                                                                            </script>
+
+{%endblock%}
+{% block ajax %}
+{% endblock %}
+

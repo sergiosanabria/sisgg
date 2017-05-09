@@ -1,0 +1,78 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Compras{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Compras</div>
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+        <table  font-type="helvetica" font-size="9">
+            <tr background-color="#FAFAFA" >
+                <td padding="2px" style=" text-align: left;vertical-align: middle;"><b>Fecha</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Número</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Tipo</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Proveedor</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Estado</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Total $</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Total pagos $</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Difer. $</b></td>
+            </tr>
+                    {%set total=0%}
+                    {%set totalPagos=0%}
+                    {%set totalDif=0%}
+
+               {% for i in items%}
+            <tr>
+                <td padding="2px" style="text-align: center;">{{i.fechaFactura|date("d/m/Y")}}</td>
+                <td padding="2px" style=" text-align: center;">{{i.serie}} - {{i.numero}}</td>
+                <td padding="2px" style="text-align: center;" width="50px">{{i.tipo}}</td>
+                <td padding="2px" style=" text-align: center;" width="250px">{{i.proveedor}}</td> 
+                <td padding="2px" style=" text-align: center;" width="50px">
+                    {%if i.estado==0%}P.P.{%endif%}
+                    {%if i.estado==1%}T.P.{%endif%}</td> 
+
+                    {%set total=total + i.total%}
+                    {%set totalPagos=totalPagos + i.TotalPagos%}
+                    {%set totalDif=(i.total - i.TotalPagos) + totalDif%}
+                <td padding="2px" style=" text-align: right;">{{i.total |  number_format(2,'.', '')}}</td>
+                <td padding="2px" style=" text-align: right;">{{((i.TotalPagos)|  number_format(2,'.', ''))}}</td> 
+                <td padding="2px" style=" text-align: right;">{{((i.total - i.TotalPagos)|  number_format(2,'.', ''))}}</td>
+                    
+            </tr>   
+            {% endfor %}
+            <tr background-color="#FAFAFA">
+                <td padding="2px" style="text-align: center;"></td>
+                <td padding="2px" style=" text-align: center;"></td>
+                <td padding="2px" style="text-align: center;" width="50px"></td>
+                <td padding="2px" style=" text-align: center;" width="250px"></td> 
+                <td padding="2px" style=" text-align: center;"><b>TOTAL</b></td> 
+                <td padding="2px" style=" text-align: right;"><b>$ {{total |  number_format(2,'.', '')}}</b></td>
+                <td padding="2px" style=" text-align: right;"><b>$ {{((totalPagos)|  number_format(2,'.', ''))}}</b></td> 
+                <td padding="2px" style=" text-align: right;"><b>$ {{((totalDif)|  number_format(2,'.', ''))}}</b></td>
+                    
+            </tr>
+            
+           
+        </table>
+        {%if img!=''%}
+            <div breakable="false" text-align='center'  >
+                    <div  padding-bottom="10px" font-size="17">Gráfico de compras</div>
+                    <div  font-size="20"  margin-left="100px" width="800px" height="400px"  border-color="gray" border-size="0.5" >
+                                <img  float="center"  width="800px" height="400px" {%if img!=''%}src="/tmp/compra.png"{%else%}src="{{pdf_image('SisGGFinalBundle:foto-no-disponible.jpg')}}"{%endif%} />
+                    </div>
+                </div>
+            {%else%}
+            <p>Error al imprimir el gráfico</p>
+            {%endif%}
+
+{%endblock%}

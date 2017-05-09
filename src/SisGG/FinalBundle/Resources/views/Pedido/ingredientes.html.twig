@@ -1,0 +1,5 @@
+{%for ingrediente in ingredientes%}
+{%if not ingrediente.obligatorio%}
+<option value="{{ingrediente.id}}">{{ingrediente.exclusion}}</option>
+{%endif%}
+{%endfor%}

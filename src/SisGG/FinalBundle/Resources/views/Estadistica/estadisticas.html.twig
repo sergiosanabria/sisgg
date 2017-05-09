@@ -1,0 +1,248 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Estadisticas</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="row-fluid">
+
+        <a id='estadisticaVentas' class="quick-button span2" onclick='mostrarVentas();'>
+            <i class="fa-icon-money"></i>
+            <p>Ventas</p>
+        </a>
+        <a class="quick-button span2">
+            <i class="fa-icon-group"></i>
+            <p>Clientes</p>
+        </a>
+
+    </div>
+    <hr>
+</div>
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content span12">
+            <form class='form-horizontal'>
+                <div id='cuerpoEstadistica' class='span12'>
+
+                </div>
+                <div id='prueba' class='span12'>
+                    
+                </div>    
+            </form>        
+        </div>
+    </div><!--/span-->
+</div><!--/row-->
+<hr>
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+<script type="text/javascript">
+            $().ready(function() {
+                $('#estadisticaVentas').trigger('click');
+            })
+
+            function mostrarVentas() {
+                var previousPoint = null;
+
+                $("#cuerpoEstadistica").load("{{path('estadisticas_ventas')}}", function() {
+                    
+                    $("#tipoProductos").change(function() {
+                        if ($(this).val() == 1) {
+                            $('#productosSeleccionados').attr('style','display:none;');
+                            $('#categoriasSeleccionados').attr('style','display:none;');
+                        }else if($(this).val() == 2){
+                            $('#productosSeleccionados').attr('style','display:none;');
+                            $('#categoriasSeleccionados').attr('style','display:block;');
+                        }else{    
+                            $('#productosSeleccionados').attr('style','display:block;');
+                            $('#categoriasSeleccionados').attr('style','display:none;');
+                        }
+                    });
+                    
+                    $("#periodoSeleccionado").change(function() {
+                        if ($(this).val() == 1) {
+                            $('#seleccionarMensual').attr('style','display:none;');
+                            $('#seleccionarDia').attr('style','display:block;');
+                            $('#seleccionarTemporada').attr('style','display:none;');
+                            $('#seleccionarAnual').attr('style','display:none;');
+                        }else if($(this).val() == 2){
+                            $('#seleccionarMensual').attr('style','display:block;');
+                            $('#seleccionarDia').attr('style','display:none;');
+                            $('#seleccionarTemporada').attr('style','display:none;');
+                            $('#seleccionarAnual').attr('style','display:none;');
+                        }else if($(this).val() == 3){    
+                            $('#seleccionarMensual').attr('style','display:none;');
+                            $('#seleccionarDia').attr('style','display:none;');
+                            $('#seleccionarTemporada').attr('style','display:block;');
+                            $('#seleccionarAnual').attr('style','display:none;');
+                        }else if($(this).val() == 4){
+                            $('#seleccionarMensual').attr('style','display:none;');
+                            $('#seleccionarDia').attr('style','display:none;');
+                            $('#seleccionarTemporada').attr('style','display:none;');
+                            $('#seleccionarAnual').attr('style','display:block;');
+                        }
+                    });
+                    
+                    $('.datepicker').datepicker();
+                    
+                    if ($("#sincos").length)
+                    {
+                        var sin = [];
+
+                        for (var i = 0; i < 14; i += 0.5) {
+                            sin.push([i, Math.sin(i) / i]);
+                        }
+
+                        var plot = $.plot($("#sincos"),
+                                [{data: sin, label: "Ventas"}], {
+                            series: {
+                                lines: {show: true,
+                                    lineWidth: 2,
+                                },
+                                points: {show: true},
+                                shadowSize: 2
+                            },
+                            grid: {hoverable: true,
+                                clickable: true,
+                                tickColor: "#dddddd",
+                                borderWidth: 0
+                            },
+                            yaxis: {min: -1.2, max: 1.2},
+                            colors: ["#FA5833", "#2FABE9"]
+                        });
+
+                        function showTooltip(x, y, contents) {
+                            $('<div id="tooltip">' + contents + '</div>').css({
+                                position: 'absolute',
+                                display: 'none',
+                                top: y + 5,
+                                left: x + 5,
+                                border: '1px solid #fdd',
+                                padding: '2px',
+                                'background-color': '#dfeffc',
+                                opacity: 0.80
+                            }).appendTo("body").fadeIn(200);
+                        }
+
+                        var previousPoint = null;
+                        $("#sincos").bind("plothover", function(event, pos, item) {
+                            $("#x").text(pos.x.toFixed(2));
+                            $("#y").text(pos.y.toFixed(2));
+
+                            if (item) {
+                                if (previousPoint != item.dataIndex) {
+                                    previousPoint = item.dataIndex;
+
+                                    $("#tooltip").remove();
+                                    var x = item.datapoint[0].toFixed(2),
+                                            y = item.datapoint[1].toFixed(2);
+
+                                    showTooltip(item.pageX, item.pageY,
+                                            item.series.label + " of " + x + " = " + y);
+                                }
+                            }
+                            else {
+                                $("#tooltip").remove();
+                                previousPoint = null;
+                            }
+                        });
+
+
+
+                        $("#sincos").bind("plotclick", function(event, pos, item) {
+                            if (item) {
+                                $("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+                                plot.highlight(item.series, item.datapoint);
+                            }
+                        });
+                    }
+                });
+            }
+
+            function actualizar(ev){
+                ev.preventDefault();
+                $.post("{{path('estadisticas_ventas')}}",{pasos:$('#pasos').val(),graficar: $('#graficar').val(),tipoProducto: $('#tipoProductos').val(), productos : $('#productos').val(),categorias:$('#categorias').val(),periodoSeleccionado:$('#periodoSeleccionado').val(),
+                diaDesde:$('#diaDesde').val(),diaHasta:$('#diaHasta').val(),mesDesde:$('#mesDesde').val(),añoMesDesde:$('#añoMesDesde').val(),mesHasta:$('#mesHasta').val(),añoMesHasta:$('#añoMesHasta').val(),temporadaDesde:$('#temporadaDesde').val(),añoTemporadaDesde:$('#añoTemporadaDesde').val(),temporadaHasta:$('#temporadaHasta').val(),
+                añoTemporadaHasta:$('#añoTemporadaHasta').val(),añoAnualDesde:$('#añoAnualDesde').val(),añoAnualHasta:$('#añoAnualHasta').val()},function(data){
+                        var sin = [];
+                        alert(data);
+                        var obj = jQuery.parseJSON(data);
+                        //alert(obj[0].length);
+                        for (var i = 0; i < obj[0].length; i += 1) {
+                             sin.push([i, i]);
+                        }
+
+                        var plot = $.plot($("#sincos"),
+                                [{data: sin, label: "Ventas"}], {
+                            series: {
+                                lines: {show: true,
+                                    lineWidth: 2,
+                                    fill: true, fillColor: { colors: [ { opacity: 0.08 }, { opacity: 0.01 } ] }
+                                },
+                                points: {show: true},
+                                shadowSize: 2
+                            },
+                            grid: {hoverable: true,
+                                clickable: true,
+                                tickColor: "#dddddd",
+                                borderWidth: 0
+                            },
+                            yaxis: {min: 0, max: 50},
+                            colors: ["#FA5833", "#2FABE9"]
+                        });
+
+                        function showTooltip(x, y, contents) {
+                            $('<div id="tooltip">' + contents + '</div>').css({
+                                position: 'absolute',
+                                display: 'none',
+                                top: y + 5,
+                                left: x + 5,
+                                border: '1px solid #fdd',
+                                padding: '2px',
+                                'background-color': '#dfeffc',
+                                opacity: 0.80
+                            }).appendTo("body").fadeIn(200);
+                        }
+
+                        var previousPoint = null;
+                        $("#sincos").bind("plothover", function(event, pos, item) {
+                            $("#x").text(pos.x.toFixed(2));
+                            $("#y").text(pos.y.toFixed(2));
+
+                            if (item) {
+                                if (previousPoint != item.dataIndex) {
+                                    previousPoint = item.dataIndex;
+
+                                    $("#tooltip").remove();
+                                    var x = item.datapoint[0].toFixed(2),
+                                            y = item.datapoint[1].toFixed(2);
+
+                                    showTooltip(item.pageX, item.pageY,
+                                            item.series.label + " of " + x + " = " + y);
+                                }
+                            }
+                            else {
+                                $("#tooltip").remove();
+                                previousPoint = null;
+                            }
+                        });
+
+
+
+                        $("#sincos").bind("plotclick", function(event, pos, item) {
+                            if (item) {
+                                $("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+                                plot.highlight(item.series, item.datapoint);
+                            }
+                        });
+                });
+            }
+
+    </script>    
+{%endblock%}

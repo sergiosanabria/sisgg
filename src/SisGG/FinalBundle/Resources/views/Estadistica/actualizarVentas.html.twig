@@ -1,0 +1,5 @@
+<h1>Ventas x Fecha:</h1>
+{%for p in productosVendidos%}
+    {{p.fecha|date('d/m/Y')}}
+    {{p[1]}}
+{%endfor%}

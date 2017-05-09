@@ -1,0 +1,67 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Puntos de Venta</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Puntos de Venta</legend>
+            <label><a href="{{path('nuevo_punto_venta')}}"><i class="icon icon-plus-sign"></i>Nuevo Punto de Venta</a></label><br>
+            <table class="table table-striped table-bordered" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Numero de Punto de Venta</th>
+                        <th>Factura Base</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for puntoVenta in puntosVenta%}
+                        <tr>
+                            <td>{{puntoVenta.numero}}</td>
+                            <td>{{puntoVenta.numerofacturaBase}}</td>
+                            <td>
+                                <a rel="tooltip" title="Editar" href="{{path('editar_punto_venta')}}?id={{puntoVenta.id}}"><i class="icon-edit"></i></a>
+                                <a rel="tooltip" title="Eliminar" href="#{{puntoVenta.id}}" data-toggle="modal"><i class="icon-remove"></i></a>
+                            </td>                
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>    
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+    <hr>
+{% endblock %}
+{%block ajax%}
+        <label><a href="{{path('nuevo_punto_venta')}}"><i class="icon icon-plus-sign"></i>Nuevo Punto de Venta</a></label><br>
+            <table class="table table-striped table-bordered" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for puntoVenta in puntosVenta%}
+                        <tr>
+                            <td>{{puntoVenta.nombre}}</td>
+                            <td>{{puntoVenta.estado}}</td>
+                            <td>
+                                <a rel="tooltip" title="Editar" href="{{path('editar_puntoVenta')}}?id={{puntoVenta.id}}"><i class="icon-edit"></i></a>
+                                <a rel="tooltip" title="Eliminar" href="#{{puntoVenta.id}}" data-toggle="modal"><i class="icon-remove"></i></a>
+                            </td>                
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>
+{%endblock%}    
+
+

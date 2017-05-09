@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- start: Meta -->
+        <meta charset="utf-8">
+        <title>Sistema Gestión Gastronómico</title>
+        <meta name="author" content="Herrera Fernando Martin - Snabria Sergio Javier">
+        <!-- end: Meta -->
+
+        <!-- start: Mobile Specific -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- end: Mobile Specific -->
+
+        <!-- start: CSS -->
+        <link id="bootstrap-style" href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ui.css')}}" rel="stylesheet">
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/fancyBox/jquery.fancybox.css') }}" />
+
+        {%block css%}
+        <style type="text/css">
+
+        .header{
+            background-color: #08c;
+            color: white;
+        }
+                .zoom-in {
+                    cursor: -webkit-zoom-in;
+                    cursor: -moz-zoom-in;
+                    }
+
+                .zoom-out {
+                    cursor: -webkit-zoom-out;
+                    cursor: -moz-zoom-out;
+                    }
+                    
+                .modal-dialog {
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                }
+
+                .modal-content {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 0;
+                }
+            </style>
+        {%endblock%}
+            <!--[if lt IE 7 ]>
+            <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+            <![endif]-->
+            <!--[if IE 8 ]>
+            <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+            <![endif]-->
+            <!--[if IE 9 ]>
+            <![endif]-->
+
+            <!-- end: CSS -->
+
+
+            <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+            <!--[if lt IE 9]>
+              <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+
+            <!-- start: Favicon -->
+            <link rel="shortcut icon" href="{{ asset('favicon.ico')}}">
+            <!-- end: Favicon -->
+        </head>
+
+        <body>
+            <div id="overlay">
+                <ul>
+                    <li class="li1"></li>
+                    <li class="li2"></li>
+                    <li class="li3"></li>
+                    <li class="li4"></li>
+                    <li class="li5"></li>
+                    <li class="li6"></li>
+                </ul>
+            </div>	
+            <!-- start: Header -->
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="index"> <img class="hidden-phone" src="{{ asset('img/icono_restaurantes.png')}}"  height="32" width="32"/><img class="hidden-phone" src="{{ asset('img/icono_restaurantes.png')}}"  height="16" width="16"/> <span class="hidden-phone">SisGG</span></a>
+
+                        <!-- start: Header Menu -->
+                        <div class="nav-no-collapse header-nav">
+                            <ul class="nav pull-right">
+                            {% if  app.user%}
+                                    <!-- start: Notifications Dropdown -->
+
+                                    </li>
+                                    <!-- start: Notifications Dropdown -->
+                                    <audio id="player" src="{{asset('sounds/alertacocina.mp3')}}"> </audio>
+                                    <li id="noti1" class="dropdown hidden-phone" onclick="marcarLeidoMsj()">
+
+
+                                    </li>
+
+                                    <!-- end: Notifications Dropdown -->
+                                    <!-- start: Message Dropdown -->
+                                    <!-- end: Message Dropdown -->
+                                    <li>
+                                        <a class="btn" href="#">
+                                            <i class="icon-wrench icon-white"></i>
+                                        </a>
+                                    </li>
+                            {%endif%}
+                                    <!-- start: User Dropdown -->
+                                    <li class="dropdown">
+                                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <i class="icon-user icon-white"></i>
+                                    {% if  app.user%}{{app.user}}{%endif%}
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                    {% if  app.user%}
+                                                <li><a href="#"><i class="icon-user"></i> Profile</a></li>
+                                                <li><a href="{{path('logout')}}"><i class="icon-off"></i> Logout</a></li>
+                                    {%else%}
+                                                    <li><a href="login"><i class="icon-off"></i> Login</a></li>
+                                    {%endif%}
+                                                    </ul>
+                                                </li>
+                                                <!-- end: User Dropdown -->
+                                            </ul>
+                                        </div>				
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end: Header Menu -->
+                            <!-- start: Header -->
+                            <div class="container-fluid">
+                                <div class="row-fluid">
+                                    <!-- Main Menu start-->
+                {%if app.user%}
+                                    <div class="span2 main-menu-span">
+                                        <div class="nav-collapse sidebar-nav">
+                                            <ul class="nav nav-tabs nav-stacked main-menu">
+                                        {%block opciones%}
+                                                    <li><a href="index.html"><i class="icon-home icon-white"></i><span class="hidden-tablet"> Dashboard</span></a></li>
+                                                    <li><a href="ui.html"><i class="icon-eye-open icon-white"></i><span class="hidden-tablet"> UI Features</span></a></li>
+                                                    <li><a href="form.html"><i class="icon-edit icon-white"></i><span class="hidden-tablet"> Forms</span></a></li>
+                                                    <li><a href="chart.html"><i class="icon-list-alt icon-white"></i><span class="hidden-tablet"> Charts</span></a></li>
+                                                    <li>
+                                                        <a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Dropdown</span></a>
+                                                        <ul>
+                                                            <li><a class="submenu" href="submenu.html"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Sub Menu 1</span></a></li>
+                                                            <li><a class="submenu" href="submenu.html"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Sub Menu 2</span></a></li>
+                                                            <li><a class="submenu" href="submenu.html"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Sub Menu 3</span></a></li>
+                                                        </ul>	
+                                                    </li>
+                                                    <li><a href="typography.html"><i class="icon-font icon-white"></i><span class="hidden-tablet"> Typography</span></a></li>
+                                                    <li><a href="gallery.html"><i class="icon-picture icon-white"></i><span class="hidden-tablet"> Gallery</span></a></li>
+                                                    <li><a href="table.html"><i class="icon-align-justify icon-white"></i><span class="hidden-tablet"> Tables</span></a></li>
+                                                    <li><a href="calendar.html"><i class="icon-calendar icon-white"></i><span class="hidden-tablet"> Calendar</span></a></li>
+                                                    <li><a href="grid.html"><i class="icon-th icon-white"></i><span class="hidden-tablet"> Grid</span></a></li>
+                                                    <li><a href="file-manager.html"><i class="icon-folder-open icon-white"></i><span class="hidden-tablet"> File Manager</span></a></li>
+                                                    <li><a href="icon.html"><i class="icon-star icon-white"></i><span class="hidden-tablet"> Icons</span></a></li>
+                                                    <li><a href="login.html"><i class="icon-lock icon-white"></i><span class="hidden-tablet"> Login Page</span></a></li>
+                            {%endblock%}
+                                                            </ul>
+                                                
+                                                        </div><!--/.well -->
+                                                    </div>
+                    {%endif%}
+                                                    <!--/span-->
+                                                    <!-- Main Menu end-->
+
+                                                    <noscript>
+                                                    <div class="alert alert-block span10">
+                                                        <h4 class="alert-heading">Warning!</h4>
+                                                        <p>You need to have <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a> enabled to use this site.</p>
+                                                    </div>
+                                                    </noscript>
+
+                                                    <div id="content" {%if app.user%}class="span10"{%endif%}>
+                                                        <!-- start: Content -->
+                    {%if app.user%}
+                                                        <div>
+                                                            <hr>
+                                                            <ul class="breadcrumb">
+                            {%block ruta%}
+                                                                    <li>
+                                                                        <a href="#">Home</a> <span class="divider">/</span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="#">Dashboard</a>
+                                                                    </li>
+                            {%endblock%}
+                                                                </ul>
+                                                                <hr>
+                                                            </div>			
+                    {%else%}
+                                                            <div id="myCarousel" class="carousel slide">
+                                                                <div class="carousel-inner">
+                                                                    <div class="item active">
+                                                                        <img src="{{asset('img/imagen1.jpg')}}" alt="">
+                                                                        <div class="container">
+                                                                            <div class="carousel-caption">
+                                                                                <h1>Gestion integral.</h1>
+                                                                                <p class="lead">Provee un entorno sencillo para el manejo total de todas las tareas relacionadas con el manejo de cursos, alumnos, docentes, etc.</p>
+                                                                                <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="item">
+                                                                        <img src="{{asset('img/imagen2.jpg')}}" alt="">
+                                                                        <div class="container">
+                                                                            <div class="carousel-caption">
+                                                                                <h1>Control de Tutores.</h1>
+                                                                                <p class="lead">Los tutores de los alumnos pueden acceder a los datos de los alumnos sin tener que acercarse a la institución donde se encuentran.</p>
+                                                                                <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="item">
+                                                                        <img src="{{asset('img/imagen3.jpg')}}" alt="">
+                                                                        <div class="container">
+                                                                            <div class="carousel-caption">
+                                                                                <h1>Entorno distribuido.</h1>
+                                                                                <p class="lead">Al ser una plataforma web, se puede acceder a las calificaciones de los alumnos desde distintas partes y en todo momento.</p>
+                                                                                <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+                                                                <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                                                            </div>
+                    {%endif%}
+                    {%block content%}
+
+                    {%endblock%}
+                                                            <!-- end: Content -->
+                                                        </div>
+                                                        <!--/#content.span10-->
+                                                    </div>
+                                                    <!--/fluid-row-->
+            {%block modal%}
+                                                    <div class="modal hide fade" id="myModal">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                                            <h3>Settings</h3>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Here settings can be configured...</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a href="#" class="btn" data-dismiss="modal">Close</a>
+                                                            <a href="#" class="btn btn-primary">Save changes</a>
+                                                        </div>
+                                                    </div>
+            {%endblock%}
+                                                    <div class="clearfix"></div>
+
+                                                    <footer>
+                                                        <p>
+                                                            <span style="text-align:right;float:right">&copy; Martin &amp; Sergio 2013</span>
+                                                        </p>
+
+                                                    </footer>
+
+                                                </div>
+                                                <!--/.fluid-container-->
+{%block javascripts%}
+                                                <!-- start: JavaScript-->
+                                                <script src="{{ asset('js/jquery-1.9.1.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery-migrate-1.0.0.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery-ui-1.10.0.custom.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.ui.touch-punch.js')}}"></script>
+
+                                                <script src="{{ asset('js/bootstrap.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.cookie.js')}}"></script>
+
+                                                <script src="{{ asset('js/fullcalendar.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.dataTables.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/excanvas.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.flot.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.flot.pie.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.flot.stack.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.flot.resize.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.chosen.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.uniform.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.cleditor.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.noty.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.elfinder.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.raty.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.iphone.toggle.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.uploadify-3.1.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.gritter.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.imagesloaded.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.masonry.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.knob.js')}}"></script>
+
+                                                <script src="{{ asset('js/jquery.sparkline.min.js')}}"></script>
+
+                                                <script src="{{ asset('js/custom.js')}}"></script>
+
+                                                <script type="text/javascript" src={{asset('tree/dtree.js')}}></script>
+
+                                                <script type="text/javascript" src={{asset('css/bootstrap/table/jquery.dataTables.js')}}></script>
+
+                                                <script type="text/javascript" src={{asset('css/bootstrap/table/DT_bootstrap.js')}}></script>
+
+                                                <script type="text/javascript" src={{asset('css/bootstrap/fancyBox/jquery.fancybox.js')}}></script>
+
+                                                <script type="text/javascript" src={{asset('css/bootstrap/fancyBox/jquery.fancybox.pack.js')}}></script>
+
+                                                <script type="text/javascript" src={{ asset('fc.js') }}></script>     
+
+                                                <script type="text/javascript">
+
+                                        function message_welcome1() {
+                                            var unique_id = $.gritter.add({
+                                                // (string | mandatory) the heading of the notification
+                                                title: 'Bienvenido Marcelitto',
+                                                // (string | mandatory) the text inside the notification
+                                                text: 'Espero que te guste',
+                                                // (string | optional) the image to display on the left
+                                                image: 'img/avatar.jpg',
+                                                // (bool | optional) if you want it to fade out on its own or just sit there
+                                                sticky: false,
+                                                // (int | optional) the time you want it to be alive for before fading out
+                                                time: '',
+                                                // (string | optional) the class name you want to apply to that specific message
+                                                class_name: 'my-sticky-class'
+                                            });
+                                        }
+
+                                        function message_welcome2() {
+                                            var unique_id = $.gritter.add({
+                                                // (string | mandatory) the heading of the notification
+                                                title: 'Perfectum is Amazing Theme',
+                                                // (string | mandatory) the text inside the notification
+                                                text: 'Perfectum works on all devices, computers, tablets and smartphones. Perfectum has lots of great features. Try It!',
+                                                // (string | optional) the image to display on the left
+                                                image: 'img/avatar.jpg',
+                                                // (bool | optional) if you want it to fade out on its own or just sit there
+                                                sticky: false,
+                                                // (int | optional) the time you want it to be alive for before fading out
+                                                time: '',
+                                                // (string | optional) the class name you want to apply to that specific message
+                                                class_name: 'my-sticky-class'
+                                            });
+                                        }
+
+                                        function message_welcome3() {
+                                            var unique_id = $.gritter.add({
+                                                // (string | mandatory) the heading of the notification
+                                                title: 'Buy Perfectum!',
+                                                // (string | mandatory) the text inside the notification
+                                                text: 'This great template can be yours today.',
+                                                // (string | optional) the image to display on the left
+                                                image: 'img/avatar.jpg',
+                                                // (bool | optional) if you want it to fade out on its own or just sit there
+                                                sticky: false,
+                                                // (int | optional) the time you want it to be alive for before fading out
+                                                time: '',
+                                                // (string | optional) the class name you want to apply to that specific message
+                                                class_name: 'gritter-light'
+                                            });
+                                        }
+
+                                        function mostrarNotificacionesNoLeidos() {
+                                            $('#noti1').load("{{ path('mostrarNotificacionesNoLeidos')}}", function() {
+                                            });
+                                        }
+                                        function mostrarMjsNuevos() {
+
+                                            $.getJSON("{{path ('mostrarNuevos')}}", function(json) {
+
+                                                if ((json[0].id != 0)) {
+                                                    document.getElementById('player').play();
+                                                    for (var i = 0; i < json.length; i++) {
+
+                                                        var unique_id = $.gritter.add({
+                                                            // (string | mandatory) the heading of the notification
+                                                            title: 'Mensaje nuevo!',
+                                                            // (string | mandatory) the text inside the notification
+                                                            text: json[i].mensaje,
+                                                            // (bool | optional) if you want it to fade out on its own or just sit there
+                                                            sticky: false,
+                                                            // (int | optional) the time you want it to be alive for before fading out
+                                                            time: 5000,
+                                                            // (string | optional) the class name you want to apply to that specific message
+                                                            class_name: 'my-sticky-class'
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        function marcarLeidoMsj() {
+                                            // $('#'+li).remove();
+                                            $.post('{{path('marcarLeido')}}', function(data) {
+                                            });
+
+                                        }
+                                        function eliminarMsj(ele, li, id) {
+
+                                            $.post('{{path('eliminarMsj')}}', {id: id}, function(data) {
+                                            });
+                                            mostrarNotificacionesNoLeidos();
+
+                                        }
+                                        function eliminarTodosMsj(ele) {
+
+                                            $.post('{{path('eliminarTodosMsj')}}', function(data) {
+                                            });
+                                            mostrarNotificacionesNoLeidos();
+
+                                        }
+
+
+                                        $(document).ready(function() {
+                                            mostrarNotificacionesNoLeidos();
+//                                            setInterval(function() {
+//                                                setTimeout("mostrarMjsNuevos ()", 2000);
+//                                                if (!($('#noti1').attr('class') == 'dropdown hidden-phone open'))
+//                                                    mostrarNotificacionesNoLeidos();
+//
+//                                            }, 7000);
+                                            
+                                            //setTimeout("message_welcome2()",10000);	
+                                            //setTimeout("message_welcome3()",15000);
+
+                                        });
+
+
+                                                    </script>
+{%endblock%}            
+                                                    <!-- end: JavaScript-->
+                                                </body>
+                                            </html>

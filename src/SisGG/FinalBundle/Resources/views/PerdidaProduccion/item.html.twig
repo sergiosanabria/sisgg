@@ -1,0 +1,20 @@
+ <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                        <thead class="header">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                 <th>Tasa</th>
+                                <th>Costo</th>
+                                <th>Utilizado</th>
+                            </tr> 
+                        </thead>
+                   {%for i in items%}
+                        <td onmouseover="mostrarPopProducto('{{i.producto.id}}','{{i.producto}}', this)">{{i.producto}}</td>
+                        <td style="text-align: right">{{i.cantidad}}</td>
+                        <td>{{i.tasa}}</td>
+                            <td  style="text-align: right">{{i.costo}}</td>
+                            <td style="text-align: center;width: fit-content" >{% if i.utilizado %}<i class="icon icon-ok"> {% else %}<i class="icon icon-remove"> {% endif %}</td>
+                        </tr>
+                        {%endfor%}
+</table>
+

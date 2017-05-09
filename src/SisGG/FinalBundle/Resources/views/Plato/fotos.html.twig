@@ -1,0 +1,93 @@
+{% extends "::base.html.twig" %}
+{%block title%}Productos pre-elaborados{%endblock%}
+{%block ruta%}
+<li>
+    <a href="#">Productos producción</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Productos pre-elaborados</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+
+       <legend>Fotos {{platos | length}}</legend>
+    
+<div class="container">
+			<!-- Codrops top bar -->
+            <!--/ Codrops top bar -->
+			<header>
+				<h1>CSS3 <span>Lightbox</span></h1>
+				<h2>A simple CSS-only lightbox experiment</h2>
+				<p class="codrops-demos">
+					<a class="current-demo" href="index.html">Demo 1</a>
+					<a href="index2.html">Demo 2</a>
+					<a href="index3.html">Demo 3</a>
+				</p>
+			</header>
+			<section>
+				<ul class="lb-album">
+                                     {%for producto in platos%}
+					<li>
+						<a href="#image-1">
+							<img {%if producto.foto is defined and producto.foto is not null%}   {%if producto.foto.path!=null%}src="{{asset('uploads/imagenes/')}}{{producto.foto.path}}"   {%else%} src="{{asset('images/plato.jpg')}}"{%endif%}{%else%}src="{{asset('images/plato.jpg')}}"{%endif%} />
+							<span>Pointe</span>
+						</a>
+						<div class="lb-overlay" id="image-1">
+							<a href="#page" class="lb-close">x Close</a>
+                                                        <img {%if producto.foto is defined and producto.foto is not null%}   {%if producto.foto.path!=null%}src="{{asset('uploads/imagenes/')}}{{producto.foto.path}}"   {%else%} src="{{asset('images/plato.jpg')}}"{%endif%}{%else%}src="{{asset('images/plato.jpg')}}"{%endif%} />
+							<div>
+								<h3>pointe <span>/point/</h3>
+								<p>Dance performed on the tips of the toes</p>
+							</div>
+							
+						</div>
+					</li>
+                                        {%endfor%}
+					
+				</ul>
+			</section>
+        </div>
+       </div>
+        </div>
+    </div>
+{%endblock%}
+ {% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+    
+$(document).ready(function  (){ 
+    $('#photo-demo img').on('click', function() {
+ 				if (BigScreen.element !== this) {
+
+					BigScreen.request(this, onPhotoEnterFullscreen, onPhotoExitFullscreen);
+
+				}
+				else {
+					BigScreen.exit();
+				}
+			});
+    
+    });
+    
+            function onPhotoEnterFullscreen() {
+				$(this).removeClass('zoom-in').addClass('zoom-out');
+			}
+
+        function onPhotoExitFullscreen() {
+				$(this).removeClass('zoom-out').addClass('zoom-in');
+			}
+
+
+
+   </script>
+{% endblock%}      
+       
+   {%block parcheCSS%}
+        <link rel="stylesheet" type="text/css" href="{{ asset('parcheCSS/demo.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('parcheCSS/style.css') }}" />       
+{%endblock%}     

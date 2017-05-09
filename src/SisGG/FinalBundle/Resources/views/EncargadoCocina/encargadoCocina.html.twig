@@ -1,0 +1,94 @@
+{% extends "::base.html.twig" %}
+{% block opciones %}
+<li>
+    <a href="{{ path('pagina_principal') }}">
+        <i class="icon-home icon-white">
+        </i>
+        <span class="hidden-tablet">Inicio</span>
+    </a>
+</li>
+<li>
+    <a href="{{ path('elaboracion_pedidos') }}">
+        <i class="icon-briefcase icon-white">
+        </i>
+        <span class="hidden-tablet">Cocina</span>
+    </a>
+</li>
+<li>
+    <a href="{{path('clientes')}}">
+        <i class="icon-briefcase icon-white">
+        </i>
+        <span class="hidden-tablet">Clientes</span>
+    </a>
+</li>
+<li>
+    <a href="{{path('pedidos')}}">
+        <i class="icon-briefcase icon-white">
+        </i>
+        <span class="hidden-tablet">Pedidos</span>
+    </a>
+</li>
+<li>
+    <a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Ventas</span></a>
+    <ul style="display: none;">
+        <li><a class="submenu" href="{{path('ventas')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Ventas</span></a></li>
+        <li><a class="submenu" href="{{path('nueva_venta')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Nueva Venta</span></a></li>
+    </ul>	
+</li>
+<li> 
+    <a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Caja</span></a>
+    <ul style="display: none;">
+        <li><a class="submenu" href="{{path('apertura_caja')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Apertura de Lote</span></a></li>
+        <li><a class="submenu" href="{{path('movimientos')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Movimientos</span></a></li>
+        <li><a class="submenu" href="{{path('lotes')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Lotes</span></a></li>
+        <li><a class="submenu" href="{{path('cierre_caja')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Cierre de Lote</span></a></li>
+    </ul>	
+</li>
+<li> 
+    <a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Seguridad</span></a>
+    <ul style="display: none;">
+        <li><a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Roles</span></a>
+            <ul style="display: none;">
+                <li style="list-style:none;"><a class="submenu" href="{{path('gestion_roles')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Roles</span></a></li>
+                <li style="list-style:none;"><a class="submenu" href="{{path('rol_nuevo')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Nuevo Rol</span></a></li>
+            </ul>
+        </li>
+        <li><a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Usuarios</span></a>
+            <ul style="display: none;">
+                <li style="list-style:none;"><a class="submenu" href="{{path('usuarios')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Usuarios</span></a></li>
+                <li style="list-style:none;"><a class="submenu" href="{{path('usuario_nuevo')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Nuevo Usuario</span></a></li>
+            </ul>
+        </li>
+    </ul>	
+</li>
+<li>
+    <a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Configuracion</span></a>
+    <ul style="display: none;">
+        <li><a class="submenu" href="{{path('empresa')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Empresa</span></a></li>
+        <li><a class="submenu" href="{{path('editar_caja')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Caja</span></a></li>
+        <li><a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Sectores</span></a>
+            <ul style="display: none;">
+                <li style="list-style:none;"><a class="submenu" href="{{path('sectores')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Sectores</span></a></li>
+                <li style="list-style:none;"><a class="submenu" href="{{path('nuevo_sector')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Nuevo Sector</span></a></li>
+            </ul>
+        </li>
+        <li><a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Formas de Cobro</span></a>
+            <ul style="display: none;">
+                <li style="list-style:none;"><a class="submenu" href="{{path('tipos_cobro')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Formas de Cobro</span></a></li>
+                <li style="list-style:none;"><a class="submenu" href="{{path('nuevo_tipo_cobro')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Nueva Forma de Cobro</span></a></li>
+            </ul>
+        </li>
+        <li><a class="dropmenu" href="#"><i class="fa-icon-folder-close-alt"></i><span class="hidden-tablet"> Conceptos</span></a>
+            <ul style="display: none;">
+                <li style="list-style:none;"><a class="submenu" href="{{path('conceptos')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Ver Conceptos</span></a></li>
+                <li style="list-style:none;"><a class="submenu" href="{{path('nuevo_concepto')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Nuevo Concepto</span></a></li>
+            </ul>
+        </li>
+    </ul>	
+</li>
+{% endblock %}
+{% block content %}
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+{%endblock%}

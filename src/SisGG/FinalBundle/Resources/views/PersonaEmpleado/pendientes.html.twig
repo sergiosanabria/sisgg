@@ -1,0 +1,118 @@
+{% extends "::base.html.twig" %}
+{%block title%}Pagos pendientes{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Pagos pendientes</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form>
+        <legend>Pagos pendientes {{error}}</legend>
+  {#      {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}#}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+            <a title="Ver lista de notas de pedidos" href="{{path('notas')}}" class="btn"><i class="icon-list-alt"></i></a>
+            <a class="btn"><i class="icon-print"></i></a>
+        </div>
+        <div><br> <br></div>
+
+
+{%if registros | length > 0 %}
+<table class="table table-bordered table-hover" id="pagos">
+                <thead class="header">
+                    <th>Periodo</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Descripcion</th>
+                </thead>
+                {%set total = 0%}
+                {%for i in registros%}
+                {%set total=i.monto + total %}
+                <tr>
+                <td>{{i.inicio | date("d/m/Y")}} - {{i.fin | date("d/m/Y")}}</td>    
+                <td style="text-align: right">{{i.monto}}</td>
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td>{{i.descripcion}}</td>
+                </tr>
+                {%endfor%}
+                <tfoot>
+                    <tr>
+                        <td style="text-align: right"><b>TOTAL</b></td>
+                        <td style="text-align: left"><b>$ {{total | number_format(2, '.')}}</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+{%else%}
+<h3>No se han pagos pendientes.</h3>
+{%endif%}
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="button" onclick="verModal('1');" title="Regitra el primer pago del empleado"  >Registrar primer pago</button>
+                    <button class="btn btn-primary" type="button" onclick="verModal('2');"  title="Regitra el todos los pagos del empleado"  >Registrar todos los pagos</button>
+                    <a type="button" href="{{path('empleados')}}" class="btn">Cancelar</a>
+                </div>
+</form>
+        </div>
+    </div>
+</div>        
+{%endblock%}
+
+{%block modal%}
+
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Registro de empleados</h3>
+  </div>
+  <div class="modal-body">
+      Está seguro que desea registrar el pago?
+  </div>
+        <form id="form" method="post">      
+  <div class="modal-footer">
+      <button class="btn btn-primary" type="submit" >Aceptar</button>
+      <button class="btn" type="button" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+</form>
+</div>
+{%endblock%}
+
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+    
+$(document).ready(function  (){});
+    
+          
+function verModal (tipo){
+    var id='{{id}}';
+    var url = "{{path('registrarPagoEmpleado', { 'id': id, 'tipo':'__tipo__' })}}".replace(/__tipo__/g, tipo);;
+    url= url.replace('amp;', ''); 
+    $("#form").attr("action", url);
+    $('#verModal').modal('toggle');
+}
+
+
+   </script>
+{% endblock%}     

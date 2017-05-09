@@ -1,0 +1,81 @@
+<form id="fAtr"  class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" >{{tp.atr1}}</label>
+            <div class="controls">              
+                {%if tp.tipo1==0%}
+                    <input id="atr1" type="number" id="" min="0" onkeypress="return isOnlyNumberKey(event);"  placeholder="{{tp.atr1}}">
+                {%elseif tp.tipo1==1%}
+                    <input type="number" id="atr1"  min="0" id="" onkeypress="return isOnlyNumberKey(event);" required="required"  placeholder="{{tp.atr1}}">
+                {%elseif tp.tipo1==2%}
+                    <input type="text" id="atr1" id="" placeholder="{{tp.atr1}}">
+                {%elseif tp.tipo1==3%}
+                    <input type="text" id="atr1" id=""  required="required"  placeholder="{{tp.atr1}}">
+                {%endif%}
+            </div>
+        </div>
+        
+        {%if tp.atr2!=null%}
+        <div class="control-group">
+            <label class="control-label" >{{tp.atr2}}</label>
+            <div class="controls">              
+                {%if tp.tipo2==0%}
+                <input type="number" id="atr2" id="" min="0" onkeypress="return isOnlyNumberKey(event);"  placeholder="{{tp.atr2}}">
+                {%elseif tp.tipo2==1%}
+                    <input type="number"  id="atr2" min="0" id="" onkeypress="return isOnlyNumberKey(event);" required="required"  placeholder="{{tp.atr2}}">
+                {%elseif tp.tipo2==2%}
+                    <input type="text" id="atr2" id="" placeholder="{{tp.atr2}}">
+                {%elseif tp.tipo2==3%}
+                    <input type="text" id="atr2" id=""  required="required"  placeholder="{{tp.atr2}}">
+                {%endif%}
+            </div>
+        </div>
+        {%endif%}
+        {%if tp.atr3!=null%}
+        <div class="control-group">
+            <label class="control-label" >{{tp.atr3}}</label>
+            <div class="controls">              
+                {%if tp.tipo3==0%}
+                <input type="number" id="atr3" id="" min="0" onkeypress="return isOnlyNumberKey(event);"  placeholder="{{tp.atr3}}">
+                {%elseif tp.tipo3==1%}
+                    <input type="number" id="atr3"  min="0" id="" onkeypress="return isOnlyNumberKey(event);" required="required"  placeholder="{{tp.atr3}}">
+                {%elseif tp.tipo3==2%}
+                    <input type="text" id="atr3" id="" placeholder="{{tp.atr3}}">
+                {%elseif tp.tipo3==3%}
+                    <input type="text" id="atr3" id=""  required="required"  placeholder="{{tp.atr3}}">
+                {%endif%}
+            </div>
+        </div>
+        {%endif%}{%if tp.atr4!=null%}
+        <div class="control-group">
+            <label class="control-label" >{{tp.atr4}}</label>
+            <div class="controls">              
+                {%if tp.tipo4==0%}
+                <input type="number" id="atr4" id="" min="0" onkeypress="return isOnlyNumberKey(event);"  placeholder="{{tp.atr4}}">
+                {%elseif tp.tipo4==1%}
+                    <input type="number" id="atr4"  min="0" id="" onkeypress="return isOnlyNumberKey(event);" required="required"  placeholder="{{tp.atr4}}">
+                {%elseif tp.tipo4==2%}
+                    <input type="text" id="atr4" id="" placeholder="{{tp.atr4}}">
+                {%elseif tp.tipo4==3%}
+                    <input type="text" id="atr4" id=""  required="required"  placeholder="{{tp.atr4}}">
+                {%endif%}
+            </div>
+        </div>
+        {%endif%}
+        {%if tp.atr5!=null%}
+        <div class="control-group">
+            <label class="control-label" >{{tp.atr5}}</label>
+            <div class="controls">              
+                {%if tp.tipo5==0%}
+                <input type="number" id="atr5" id="" min="0" onkeypress="return isOnlyNumberKey(event);"  placeholder="{{tp.atr5}}">
+                {%elseif tp.tipo5==1%}
+                    <input type="number" id="atr5"  min="0" id="" onkeypress="return isOnlyNumberKey(event);" required="required"  placeholder="{{tp.atr5}}">
+                {%elseif tp.tipo5==2%}
+                    <input type="text" id="atr5" id="" placeholder="{{tp.atr5}}">
+                {%elseif tp.tipo5==3%}
+                    <input type="text" id="atr5" id=""  required="required"  placeholder="{{tp.atr5}}" value="{{atr.atr5}}">
+                {%endif%}
+            </div>
+        </div>
+        {%endif%}
+        
+</form>

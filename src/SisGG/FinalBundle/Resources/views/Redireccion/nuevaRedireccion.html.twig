@@ -1,0 +1,35 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "::base.html_1.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Redireccionar <small>Haga lo que quiera</small></legend>
+            <form name="cliente" class="form-horizontal" action="{{ path('nueva_redireccion') }}" method="post">
+                <fieldset id="formNuevaRedireccion">
+                    <div class="span6 pull-left">
+                            {{form_row(form.usuarioA,{'attr':{'class':'span9'} })}}
+                            <div style='display:none;'>{{form_row(form.url,{'attr':{'class':'span9'} })}}</div>
+                            </div>
+                        {{form_rest(form)}}
+                        </fieldset>
+                        <div class="form-actions">
+                            <a href='{{form.url.vars.data}}' class="btn btn-primary">Abrir aquí</a>
+                            <button type='submit' class="btn btn-primary">Redireccionar</button>
+                            <a onclick='history.back()'  class="btn">Cancelar</a>
+                        </div>    
+                    </form>
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}   
+{%endblock%}

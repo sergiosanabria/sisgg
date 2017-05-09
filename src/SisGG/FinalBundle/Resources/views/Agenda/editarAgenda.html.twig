@@ -1,0 +1,56 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="agendaForm" onsubmit="modificarAgenda(event);">
+    {%if error %}
+     <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                {{error}}
+            </div>
+        {%endif%}
+<fieldset id="datosAgenda">
+
+    {{form_widget(form)}}
+   
+    {{form_rest(form)}}
+
+        <div id="divCuenta" style="display: none"> <input type="hidden" id="idAgenda" name="idAgenda"> </div>
+        <div class="form-actions">
+            <button class="btn btn-primary"  type="submit">Modificar</button>
+            <button class="btn btn-danger" onclick="abrirModalEliminarEvento();" type="button">Eliminar</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        </div>
+         
+</fieldset>
+</form>
+<div id="eliminarEventoModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar evento</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Está seguro que desea eliminar el evento?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarEvento"  class="btn btn-primary" onclick="eliminarAgenda();">Aceptar</a>
+  </div>
+</div>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    El evento se ha modificado correctamente.
+</div>
+{%elseif r==2 %}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    El evento se ha eliminado correctamente.
+</div>
+{%endif%}

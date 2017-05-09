@@ -1,0 +1,389 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .Listo{
+            border-color: #5AAD34;
+            background-color: #78CD51;
+        }
+
+        .Nuevo,.Iniciado,.Actualizado{
+            border-color: #2FABE9;
+            background-color: #67C2EF;
+        }
+
+        .transformarMesas>.mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 50px;
+            margin: 5px;
+        }
+
+        .mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            background-size: 100% 100%;
+            width: 15%;
+            height: 100px;
+            margin: 5px;
+        }
+
+        .row-fluid [class*="span"]:first-child .mesa, .row-fluid [class*="span"]:first-child .producto  {
+            margin:10px;
+        }
+
+        .sector{
+            width: 99%;
+            height: 30px;
+        }
+        .sectores{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .mesas{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: no-display;
+        }
+
+        .producto{
+            background-color: #005580;
+            width: 200px;
+            height: 100px;
+            margin: 20px;
+        }
+        .categorias{
+            border: 1px solid #ddd;
+            height: 120px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .productos{
+            border: 1px solid #ddd;
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .numero{
+            font-size: xx-large;
+            color: white;
+        }
+        .item,.total{
+            font-style: oblique;
+            font-weight: bold;
+        }
+        .descripcion{
+            font-style: oblique;
+        }
+
+        posisionable{
+            position: relative;
+            top: 32px;
+            left:32px;
+        }
+
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Sectores</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <form class="form-horizontal" action="{{ path('nuevo_pedido_mostrador') }}" method="post">
+                    <fieldset id="formulario">
+                        <legend>Sectores y Mesas <div class="btn-group" style='float:right;'>
+                                <a title="Nuevo Sector" href="{{path('nuevo_sector')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                            </div><small>
+                                <ul class="nav nav-pills" id="myTab3">
+                                    <li><a href="#general">General</a></li>
+                                    <li><a href="#historial">Historial</a></li>
+                                </ul></small>
+                        </legend>        
+                        <div class="tab-content">
+                            <div class="tab-pane " id="general">
+                                <div class="span7" id="sectores1">
+                                    <div class="tabbable tabs-left">
+                                        <ul class="nav nav-tabs" id="myTab1">
+                                        {%for sector in sectores%}
+                                                <li><a href="#mesa{{sector.id}}">{{sector.nombre|capitalize}}</a></li>
+                                        {%endfor%}
+                                                </ul>
+
+                                                <div class="tab-content" id='mesas1'>
+                                            {%for sector in sectores%}
+                                                        <div class="tab-pane " id="mesa{{sector.id}}">
+                                                        {%for mesa in sector.mesas%}
+                                                                <a class="quick-button-small span2 mesa" onclick="seleccionarMesa({{mesa.id}}, event);">
+                                                                    <p id="numero" class="numero">{{mesa.numero}}</p>
+                                                                    <span id="estado{{mesa.id}}" class="notification {%if mesa.estado == "Ocupado" %}red{%endif%}" {%if mesa.estado == "Ocupado" %}data-idpedido='{{mesa.pedidoActivo.id}}'{%endif%}>{{mesa.estado}}</span>
+                                                                </a>
+                                                        {%endfor%}
+                                                            </div>
+                                            {%endfor%}
+                                                        </div>
+                                                    </div>
+                                                </div>        
+                                                <div class="span5 hidden-phone" id='resumen'>
+
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane" id='historial'>
+                                                <table class="table table-striped table-bordered" id="tableHistorial">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>N°</th>
+                                                            <th>Fecha y Hora</th>
+                                                            <th>Estado</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                            {%set n=1%}                
+                            {%for pedido in historialPedidos%}
+                                {%if pedido.isMesa%}
+                                                            <tr style='cursor:pointer;' onclick="seleccionarPedidoMostrador({{pedido.id}}, '{{pedido.solicitante}}',{{n}})">
+                                                                <td>{{n}}</td>
+                                                                <td>{{pedido.fechaPedido|date("d/m/Y g:ia")}}</a></td>
+                                                                <td>{{pedido.estado}}</td>
+                                                                <td>$ {{pedido.precio}}</td>
+                                                            </tr>
+                                            {%set n = n+1%}
+                                {%endif%}    
+                            {%endfor%}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </fieldset> 
+                                    </form>
+
+                                </div>
+                            </div><!--/span-->
+                        </div><!--/row-->
+                        <hr>
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                        <div class="modal hide fade" id="cambioMesa">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3>Atencion</h3>
+                            </div>
+                            <div id="dataCambioMesa" class="modal-body">
+                                Selecccione la mesa a la que desea mover este pedido.
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                <a href="#" class="btn btn-primary" onclick='elegirMesa(event);'>Aceptar</a>
+                            </div>
+                        </div>
+                        <div class="modal hide fade" id="cancelar">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3>Atención</h3>
+                            </div>
+                            <div id="dataCancelar" class="modal-body">
+                                <p>¿Está seguro que desea cancelar este pedido?</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+                            </div>
+                        </div>
+
+                        <div class="modal hide fade" id="detalles">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3>Detalles</h3>
+                            </div>
+                            <div id="dataDetalles" class="modal-body">
+                                <p>¿Está seguro que desea cancelar este pedido?</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+                            </div>
+                        </div>
+
+                        <form id='formularioCambio'> 
+                            <div class="modal hide fade" id="transformar">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                    <h3>Pasar a ...</h3>
+                                </div>
+
+                                <div id="dataTransformar" class="modal-body">
+
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                    <button type="submit" class="btn btn-primary" id='enviar'>Aceptar</button>
+                                </div>
+
+                            </div>
+                        </form>        
+
+{% endblock %}                    
+{%block javascripts%}
+{{parent()}}
+                        <script type=text/javascript>
+                                                                    var cambioMesa = false;
+                                                                    var idMesaCambiada = null;
+                                                                    var idMesa = null;
+                                                                    $(function() {
+                                                                        $('#myTab1 a').click(function(e) {
+                                                                            e.preventDefault();
+                                                                            $(this).tab('show');
+                                                                        });
+                                                                        $('#myTab3 a').click(function(e) {
+                                                                            e.preventDefault();
+                                                                            $(this).tab('show');
+                                                                        });
+                                                                        $('#myTab1 a:first').tab('show');
+                                                                        $('#myTab3 a:first').tab('show');
+                                                                        if ($(window).height() > 768) {
+                                                                            $(".mesa:first").click();
+                                                                        }
+                                                                        $('#formularioCambio').submit(function(e) {
+                                                                            e.preventDefault();
+                                                                            var id = $('#enviar').data('id');
+                                                                            $.post('{{path('cambiar_pedido')}}?id=' + id, $("#formularioTransformar").serialize(), function(data) {
+                                                                                $('#transformar').modal('hide');
+                                                                                document.location.href = '{{path('sectores_mesas')}}';
+                                                                            });
+                                                                            alert(id);
+                                                                            alert($("#formularioTransformar").serialize());
+                                                                        });
+                                                                    })
+
+                                                                    function seleccionarMesa(id, ev) {
+                                                                        ev.preventDefault();
+                                                                        if (cambioMesa === false) {
+                                                                            if ($(window).height() < 768) {
+                                                                                $('#dataDetalles').load('{{path('detalles_mesa')}}?id=' + id);
+                                                                                $('#detalles').modal('show');
+                                                                            }
+                                                                            $('#resumen').load('{{path('detalles_mesa')}}?id=' + id, function() {
+                                                                                $('#tabDetalles a').click(function(e) {
+                                                                                    e.preventDefault();
+                                                                                    $(this).tab('show');
+                                                                                });
+                                                                                $('#tabDetalles a:first').click();
+                                                                                if ($("#items_cancelados tr").length < 1) {
+                                                                                    $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+                                                                                }
+                                                                            });
+                                                                        } else {
+                                                                            idMesa = id;
+                                                                            $("#dataCambioMesa").html("Esta seguro que desea mover el pedio a esta mesa.");
+                                                                            $("#cambioMesa").modal('show');
+                                                                        }
+
+                                                                    }
+
+                                                                    function cambiarMesa(id, ev) {
+                                                                        ev.preventDefault();
+                                                                        idMesaCambiada = id;
+                                                                        $("#dataCambioMesa").html("Selecccione la mesa a la que desea mover este pedido.");
+                                                                        $("#cambioMesa").modal('show');
+                                                                        $('#detalles').modal('hide');
+                                                                    }
+
+                                                                    function elegirMesa(ev) {
+                                                                        ev.preventDefault();
+                                                                        if (cambioMesa === false) {
+                                                                            cambioMesa = true;
+                                                                            $("#cambioMesa").modal('hide');
+                                                                        } else {
+                                                                            $("#mesas1").load("{{path('cambiar_pedido_mesa')}}?idMesaCambiada=" + idMesaCambiada + "&idMesa=" + idMesa, function() {
+                                                                                cambioMesa = false;
+                                                                                idMesaCambiada = null;
+                                                                                $('#resumen').load('{{path('detalles_mesa')}}?id=' + idMesa, function() {
+                                                                                $('#tabDetalles a').click(function(e) {
+                                                                                    e.preventDefault();
+                                                                                    $(this).tab('show');
+                                                                                });
+                                                                                $('#tabDetalles a:first').click();
+                                                                                if ($("#items_cancelados tr").length < 1) {
+                                                                                    $("#items_cancelados").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+                                                                                }
+                                                                            });
+                                                                                idMesa = null;
+                                                                                $('#myTab1 a').click(function(e) {
+                                                                                    e.preventDefault();
+                                                                                    $(this).tab('show');
+                                                                                });
+                                                                                $($("#myTab1 li[class='active'] a").attr('href')).addClass('active');
+                                                                                $("#cambioMesa").modal('hide');
+                                                                            });
+                                                                        }
+
+                                                                    }
+
+                                                                    function transformar(id, ev) {
+                                                                        ev.preventDefault();
+                                                                        $('#dataTransformar').load('{{path('transformar_pedido')}}?id=' + id, function() {
+                                                                            $("#transformar").modal("show");
+                                                                            $(".tipo").change(function() {
+                                                                                recargar(id);
+                                                                            });
+                                                                            $('#myTab a').click(function(e) {
+                                                                                e.preventDefault();
+                                                                                $(this).tab('show');
+                                                                            });
+                                                                            $('#myTab a:first').tab('show');
+                                                                            $('#enviar').data('id', id);
+                                                                        });
+                                                                    }
+
+                                                                    function recargar(id) {
+                                                                        $.post('{{path('transformar_pedido')}}?id=' + id, $("#formularioTransformar").serialize(), function(data) {
+                                                                            $('#dataTransformar').html(data);
+                                                                            $('#pedidotype .help-inline').remove();
+                                                                            $(".tipo").change(function() {
+                                                                                recargar(id);
+                                                                            });
+                                                                            $('#myTab a').click(function(e) {
+                                                                                e.preventDefault();
+                                                                                $(this).tab('show');
+                                                                            });
+                                                                            $('#myTab a:first').tab('show');
+                                                                            $('#enviar').data('id', id);
+                                                                        });
+                                                                    }
+
+                                                                    function cancelar(pedido, ev) {
+                                                                        ev.preventDefault();
+                                                                        $('#detalles').modal('hide');
+                                                                        $.get("{{path('cancelar_pedido')}}", {id: pedido}).done(function(data) {
+                                                                            $("#cancelar").html(data);
+                                                                            $("#cancelar").modal("show");
+                                                                            $("#cancelarPedido").click(function(event) {
+                                                                                event.preventDefault();
+                                                                                $.post("{{path('cancelar_pedido')}}", {id: pedido}).done(function(data) {
+                                                                                    document.location.href = "{{path('sectores_mesas')}}";
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    }
+
+                                                                    function seleccionarMesaTransformar(id, ev) {
+                                                                        ev.preventDefault();
+                                                                        $("#pedidotype_mesa").val(id);
+                                                                    }
+
+                            </script>    
+{%endblock%}
+{%block ajax%}
+{%endblock%}    
+

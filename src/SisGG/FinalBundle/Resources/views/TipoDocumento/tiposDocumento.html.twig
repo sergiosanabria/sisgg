@@ -1,0 +1,128 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Tipos de Documento</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+            <div class="box-content">
+            {% set activos = 0%}
+            {% set inactivos = 0%}    
+            {% for tipoDocumento in tiposDocumento%}
+                {%if tipoDocumento.estado=='activo'%}
+                    {% set activos = activos+1%}
+                {% elseif tipoDocumento.estado=='inactivo'%}
+                    {% set inactivos = inactivos+1%}
+                {% endif %}
+            {% endfor %}     
+            <legend>Tipos de Documento
+                <div class="btn-group" style='float:right;'>
+                    <a title="Nuevo tipo" href="{{path('nuevo_tipo_documento')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                    <a class="btn"><i class="icon-print"></i></a>
+                </div>
+                <small class='filtros'>
+                    <ul class="nav nav-pills" id="myTab1">
+                    <li class='filtro {%if (estado=='activo') or (estado==null)%}active{%endif%}'><a href='{{path('tipos_documento')}}' >Activos({{activos}})</a></li>
+                    <li class='filtro {%if estado=='inactivo'%}active{%endif%}'><a href='{{path('tipos_documento')}}?estado=inactivo' >Inactivos({{inactivos}})</a></li> 
+                    <li class='filtro {%if estado=='todos'%}active{%endif%}' ><a href='{{path('tipos_documento')}}?estado=todos' >Todos({{activos+inactivos}})</a></li>
+                    </ul>
+                </small>                
+            </legend>
+            <table class="table table-striped table-bordered" id="clientes">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Abreviatura</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%if estado==null%}
+                        {%set estado='activo'%}        
+                {% endif %}        
+                {% for tipoDocumento in tiposDocumento%}
+                     {%if estado=='todos' or tipoDocumento.estado==estado%}   
+                        <tr>
+                            <td>{{tipoDocumento.nombre}}</td>
+                            <td>{{tipoDocumento.abreviatura}}</td>
+                            <td class='estado'>{%if tipoDocumento.estado=='activo'%}<span class="label label-success">Activo</span>{%elseif tipoDocumento.estado=='inactivo'%}<span class="label label-important">Inactivo</span>{%endif%}</td>
+                            {%if tipoDocumento.estado=='activo'%}
+                            <td>
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_editar') %}
+                                    <a rel="tooltip" title="Editar" href="{{path('editar_tipo_documento')}}?id={{tipoDocumento.id}}"><i class="icon-edit"></i></a>
+                                {%endif%}
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_borrar') %}
+                                    <a class='borrar' href='#' rel="tooltip" title="Pasar a Inactivo" data-tipoDocumento='{{tipoDocumento}}' data-id='{{tipoDocumento.id}}'><i class="icon-remove"></i></a>
+                                {%endif%}    
+                            </td>
+                            {%else%}
+                            <td>
+                                <a rel="tooltip" title="Pasar a Activo" href="{{path('activar_tipo_documento')}}?id={{tipoDocumento.id}}"><i class="fa-icon-plus-sign"></i></a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                     {% endif %}       
+                {% endfor %}       
+                    </tbody>
+                </table>  
+            
+                
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                <div class="modal hide fade" id="eliminarOperacion">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Atención!!!</h3>
+                    </div>
+                    <div id="dataEliminar" class="modal-body">
+                        ¿Esta seguro que desea pasar el tipoDocumento <span id='tipoDocumento' style='font: bold cursive;'></span> a estado Inactivo?
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                        <a class="btn btn-primary" id='borrar'>Confirmar</a>
+                    </div>
+                </div>
+{%endblock%} 
+{%block javascripts%}
+{{parent()}}    
+    <script type="text/javascript">
+        $().ready(function(){
+            $('.borrar').each(function(){
+               $(this).click(function(ev){
+                   ev.preventDefault();
+                   $('#dataEliminar #tipoDocumento').html($(this).data('tipodocumento'));
+                   $('#borrar').attr('href','{{path('borrar_tipo_documento')}}?id='+$(this).data('id'));
+                   $('#eliminarOperacion').modal('show');
+               }); 
+            });
+        })        
+    </script>    
+{%endblock%}    
+{%block ajax%}
+            <table class="table table-striped table-bordered table-hover" id="tiposdocumento">
+                <thead class="header">
+                    <tr>
+                        <th>Abreviatura</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for tipoDocumento in tiposDocumento%}
+                        <tr onclick='seleccionarTipoDocumento({{tipoDocumento.id}},"{{tipoDocumento}}");' style='cursor:pointer;'>
+                            <td>{{tipoDocumento}}</td>
+                            <td>{{tipoDocumento.nombre}}</td>               
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>
+{%endblock%} 

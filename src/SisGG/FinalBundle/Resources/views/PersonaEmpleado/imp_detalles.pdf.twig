@@ -1,0 +1,189 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Datos del  empleado {{empleado.nombre}}{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Datos del empleado {{empleado.nombre}} {{empleado.apellido}}</div>
+<div font-size="11" font-type="helvetica">
+    <h2>Datos personales</h2>
+    <table>
+    <tr>
+        <td text-align="left" border.type="none">
+            <div>
+                <b>Nombres: </b> {{empleado.nombre}}
+            </div>
+            <div>
+                <b>Apellido: </b> {{empleado.apellido}}
+            </div>
+            <div>
+                <b>Sexo: </b> {{empleado.tipoSexo}}
+            </div>
+            <div>
+                <b>Fecha de nacimiento: </b>  {{(empleado.fechaNac |  date("d/m/Y"))}}
+            </div>
+            <div>
+                <b>Edad: </b> {{empleado.edad}} años
+            </div>
+            <div>
+                <b>E-mail: </b> {{ empleado.email}}
+            </div>
+            <div>
+                <b>Dirección: </b> {{empleado.direccion}}
+            </div>
+            <div>
+                <b>Telefonos: </b> {%set ite=0%}{%for i in empleado.telefonos%}{%set ite=ite+1%} ({{i.nacional}}){{i.caracteristica}}-{{i.numero}} {%if ite>1%} | {%endif%} {%endfor%}
+            </div>
+                
+                <div>
+                <b>Nombre: </b> {{empleado.cargo.nombre}}
+            </div>
+            <div>
+                <b>Descripción: </b> {{empleado.cargo.descripcion}}
+            </div>
+            <div>
+                <h2>Datos del cargo</h2>
+                <b>Forma de pago: </b> {%if empleado.cargo.tipo==0%} Cada {{empleado.cargo.porFecha}} de cada mes{%elseif empleado.cargo.tipo==1%}Cada {{empleado.cargo.porDia}} días{%elseif empleado.cargo.tipo==2%}
+                        {%if empleado.cargo.porDiaSemana==0%} Cada Domingo
+                        {%elseif empleado.cargo.porDiaSemana==1%} Cada Lunes
+                        {%elseif empleado.cargo.porDiaSemana==2%} Cada Martes
+                        {%elseif empleado.cargo.porDiaSemana==3%} Cada Miércoles
+                        {%elseif empleado.cargo.porDiaSemana==4%} Cada Jueves
+                        {%elseif empleado.cargo.porDiaSemana==5%} Cada Viernes
+                        {%elseif empleado.cargo.porDiaSemana==6%} Cada Sábado
+                        {%endif%}
+                    {%endif%}
+            </div>
+            <div>
+                <b>Monto: </b>$ {{empleado.cargo.monto| number_format(2,'.', '')}}
+            </div>    
+             <div>
+                <b>Retiro sin haber: </b>$ {{empleado.cargo.negativo| number_format(2,'.', '')}}
+            </div> 
+        </td>
+        <td border.type="none" height="150px" style="text-align: left"> {%if empleado.foto is defined and empleado.foto is not null%}   {%if empleado.foto.path!=null%}<div border-color="black" border-size="2"><img width="100%" height="100%" id="imagen"  src="{{empleado.foto.AbsolutePath}}"/></div>{%else%} No tiene foto disponible{%endif%}{%else%}No tiene foto disponible{%endif%}</td>
+       
+        </tr>
+    </table>
+
+    {%if chk1==1%}
+    <div text-align="center" padding-bottom="10px" font-size="14" text-decoration="underline">Resumen</div>
+    <table>
+        <tr background-color="#F8F8F8">
+            <td>Haber</td>
+            <td>Debe</td>
+            <td>Saldo</td>
+        </tr>        
+        <tr>
+            <td id="haber" color="blue"  >{{empleado.cuenta.haber | number_format(2,'.', '')}}</td>    
+            <td id="debe" color="red" >{{empleado.cuenta.debe| number_format(2,'.', '')}}</td>
+            {%set saldo= empleado.cuenta.haber - empleado.cuenta.debe %}
+            <td id="saldo" >{{saldo | number_format(2,'.', '')}}</td>
+        </tr>
+    </table>
+    {#Separador#} <div padding-top="15px" padding-bottom="15px" ></div>
+    {%endif%}
+    {%if chk2==1%}
+    <div text-align="center" padding-bottom="10px" font-size="14" text-decoration="underline">Movimientos</div>
+    
+    {%if empleado.cuenta.movimientos | length > 0 %}
+    <table font-size="9">
+        <tr background-color="#F8F8F8">
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>#</b></td> 
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Monto</b></td>
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Clase</b></td>
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Tipo</b></td>
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Descripcion</b></td>
+        <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Fecha de emisión</b></td>
+
+        </tr>   {%set n =1%}
+    {%for i in empleado.cuenta.movimientos %}
+        <tr>
+        <td  padding="2.5px" width="30px" text-align="center">{{n}}</td>    
+        <td padding="2.5px" text-align="center">{{i.fecha | date("d/m/Y")}}</td>
+        <td padding="2.5px" text-align="center">{{i.monto | number_format(2,'.', '')}}</td>
+        <td padding="2.5px" text-align="center">{%if i.isIngresoEmpleado%}Haber
+            {%else%}Debe
+            {%endif%}</td>
+        <td padding="2.5px" width="175px" >
+            {%if i.isContadoEmpleado%} Retiro en efectivo
+            {%elseif i.isCancelarEmpleado%}  Cancelación de pago
+            {%elseif i.isAdicionalEmpleado%}  Pago Adicional
+            {%elseif i.isEspeciesEmpleado%}  Pago en especies
+            {%elseif i.isSueldoEmpleado%}  Acreditación de sueldo
+            <div>(De: {{i.inicio | date("d/m/Y")}} | A: {{i.fin | date("d/m/Y")}}.)</div>
+            {%endif%}
+            
+        </td>
+        <td padding="2.5px">{{i.descripcion}}</td>
+        <td padding="2.5px" text-align="center">{{i.fechaEmision | date("d/m/Y g:ia")}}</td>
+        </tr>
+        {%set n=n+1%}
+    {%endfor%}
+    </table>
+   {#Separador#} <div padding-top="15px" padding-bottom="15px" ></div>
+    {%else%}
+    <h3>No tiene movimientos registrados registrados</h3>
+    {%endif%}
+    {%endif%}
+    {%if chk3==1%}
+    
+    <div text-align="center" padding-bottom="10px" font-size="14" text-decoration="underline">Historial de cargos</div>
+    {%if empleado.cargos | length > 0 %}
+                <table font-size="9">
+                    <tr background-color="#F8F8F8">
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Nombre</b></td>
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Descripcion</b></td>
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Monto</b></td>
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Tipo</b></td>
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Retiro sin haber</b></td>
+                    <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Actual</b></td>
+                    </tr>
+                    {%set n =1%}
+                {%for i in empleado.cargos %}
+                    <tr>
+                    
+                    <td padding="2.5px">{{i.nombre}}</td>
+                    <td padding="2.5px">{{i.descripcion}}</td>
+                    <td padding="2.5px">{{i.monto | number_format(2,'.', '')}}</td>
+                    <td padding="2.5px">{%if i.tipo==0%} Cada {{i.porFecha}} de cada mes{%elseif i.tipo==1%}Cada {{i.porDia}} días{%elseif i.tipo==2%}
+                        {%if i.porDiaSemana==0%} Cada Domingo
+                        {%elseif i.porDiaSemana==1%} Cada Lunes
+                        {%elseif i.porDiaSemana==2%} Cada Martes
+                        {%elseif i.porDiaSemana==3%} Cada Miércoles
+                        {%elseif i.porDiaSemana==4%} Cada Jueves
+                        {%elseif i.porDiaSemana==5%} Cada Viernes
+                        {%elseif i.porDiaSemana==6%} Cada Sábado
+                        {%endif%}
+                    {%endif%}</td>
+                    <td padding="2.5px">{{i.negativo | number_format(2,'.', '')}}</td>
+                    <td padding="2.5px" style="text-align: center">{%if i.activo%}SI{%else%}NO{%endif%}</td>
+                    </tr>
+                    {%set n=n+1%}
+                {%endfor%}
+                </table>
+                {%else%}
+                <h3>No tiene ningun cargo registrado</h3>
+                {%endif%} 
+                
+    {%endif%}
+    
+</div>
+
+{#enLetras#}
+{#Titulo<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Libro iva compras: {{mes}} de {{año}}</div>#}
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+                        {#font-type="helvetica"#}
+
+        
+
+{%endblock%}

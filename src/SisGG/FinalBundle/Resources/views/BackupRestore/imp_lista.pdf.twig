@@ -1,0 +1,41 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Historial de back-ups{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Historial de back-ups</div>
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+        <table  font-type="helvetica" font-size="10">
+            <tr background-color="#FAFAFA" >
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Archivo</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Carpeta</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Usuario</b></td>
+            </tr>
+                    {%set total=0%}
+                    {%set totalPagos=0%}
+                    {%set totalDif=0%}
+
+              {% for i in items%}
+            <tr>
+                <td padding="2.5px">{{i.fecha | date('Y/m/d H:i')}}</td>
+                <td padding="2.5px">{{i.archivo}}</td>
+                 <td padding="2.5px">{{i.carpeta}}</td>
+                <td padding="2.5px">{{i.usuario.apellido}}, {{i.usuario.nombre}} ({{i.usuario}})</td>
+                    
+            </tr>   
+            {% endfor %}
+           
+        </table>
+
+{%endblock%}

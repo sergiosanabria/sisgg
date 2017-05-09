@@ -1,0 +1,54 @@
+jms_security_extra:
+    secure_all_services: false
+    expressions: true
+
+security:
+    encoders:
+        SisGG\FinalBundle\Entity\Usuario:
+          algorithm: sha1
+          iterations: 1
+          encode_as_base64: false
+        Symfony\Component\Security\Core\User\User: plaintext
+
+
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    providers:
+        main:
+           entity: { class: SisGGFinalBundle:Usuario,property: username}
+    
+        #in_memory:
+          #memory:
+            #users:
+              #cajero: { password: cajero, roles: 'ROLE_CAJERO' }
+              #encargadococina: { password: encargadococina, roles: 'ROLE_ENCARGADO_COCINA' }
+              #mozo: { password: mozo, roles: 'ROLE_MOZO' }
+              #admin: { password: admin, roles: 'ROLE_ADMIN' }
+       
+
+    firewalls:
+       secured_area:
+          pattern: ^/
+          anonymous: ~
+          form_login:
+            login_path: /login
+            check_path: /login_check
+          logout:
+                path:   /logout
+                target: /
+            
+    access_control:
+       - { path: /login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+       - { path: ^/_wdt, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+       - { path: /login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+       - { path: ^/, roles: ROLE_USER }
+       
+    #access_decision_manager:
+        # strategy can be: affirmative, unanimous or consensus
+        #strategy: unanimous   
+
+    # access_control:
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        #- { path: ^/_internal/secure, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }

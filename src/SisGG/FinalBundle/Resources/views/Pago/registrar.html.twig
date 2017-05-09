@@ -1,0 +1,27 @@
+{% if tipo==1 %}
+    <div class="alert alert-success">
+    <button type='button' class='close' data-dismiss='alert'>×</button>
+    <strong>Muy bien! </strong> El pago ha sido correctamente modificado como "Efectivo registrable"
+    </div>  
+{% endif %}
+{% if tipo==2 %}
+    <div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>¡CUIDADO!</h4> Debe selccionar un pago del tipo "Efectivo no registrable".
+        
+    </div>
+{% endif %}
+{% if tipo==3 %}
+    <div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>¡CUIDADO!</h4> No puede realizarse la operación ya que la caja se encuentra cerrada.
+        
+    </div>
+{% endif %}
+{% if tipo==4 %}
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>¡CUIDADO!</h4> Usted no tiene permiso de realizar esta operación.
+        
+    </div>
+{% endif %}

@@ -1,0 +1,229 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html_2.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Caja</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Cierre de Caja</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form class="form-horizontal" action="{{ path('cierre_caja') }}" method="post">
+                <fieldset id="formAperturaCaja">
+                    <legend>Cierre de Caja
+                        <div class="btn-group" style='float:right;'>
+                            <a class="btn" href='{{path('imprimir_arqueo')}}?_format=pdf'><i class="icon-print"></i></a>
+                        </div>
+                        <small>
+                            <ul class="nav nav-pills" id="myTab">
+                                <li><a id='tabHistorial' href="#general">General</a></li>
+                                <li><a id='tabHistorial' href="#entradas">Movimientos de entradas</a></li>
+                                <li><a id='tabHistorial' href="#salidas">Movimientos de salidas</a></li>
+                            </ul>
+                        </small>
+                    </legend>
+
+
+                    <div class='tab-content'>
+                        <div class='tab-pane' id='general'>
+                            <div class='span6'>
+                                <div class="control-group">
+                                    <label class="control-label">Usuario</label>
+                                    <div class="controls controls-row">
+                                        <input type="text" class='span9' disabled="disabled" value= "{{app.user.apellido}}, {{app.user.nombre}} ({{app.user.username}})" />
+                                    </div>    
+                                </div>
+                                {{form_row(form.fecha,{'attr':{'class':'span9','disabled':'disabled'} })}}
+                            </div>
+                            <div class='span6'>
+                                <div class="control-group">
+                                    <label class="control-label">Fecha y Hora de Apertura</label>
+                                    <div class="controls controls-row">
+                                        <input type="text" class='span9' disabled="disabled" value= "{{caja.lotes.first.movimientos.first.fecha|date('d/m/Y g:ia')}}" />
+                                    </div>    
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">Usuario que realizo la apertura</label>
+                                    <div class="controls controls-row">
+                                        <input type="text" class='span9' disabled="disabled" value= "{{caja.lotes.first.movimientos.first.usuario.apellido}},{{caja.lotes.first.movimientos.first.usuario.nombre}}({{caja.lotes.first.movimientos.first.usuario}})" />
+                                    </div>    
+                                </div> 
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Totales</label>
+                                <div class="controls controls-row">
+                                    <table class='table table-hover'>
+                                        <thead>
+                                            <tr><th></th><th>Saldo Estimado</th><th>Saldo Real</th><th>Diferencia</th><th>Diferencia %</th></tr>
+                                        </thead>
+                                            <tbody>    
+                                            {%for i in 1..((form.itemCierre|length)) %}
+                                                    <tr>
+                                                        <td>{%if form.itemCierre[i-1].tipoCobro.vars.data!=null%}{{form.itemCierre[i-1].tipoCobro.vars.data}}{%else%}{{form.itemCierre[i-1].tipoCobro.vars.value}}{%endif%}</td>
+                                                        <td id='{{form.itemCierre[i-1].vars.id}}_sistema'>{{form.itemCierre[i-1].importeSistema.vars.data|number_format(2,'.','')}}</td>
+                                                        {{form_widget(form.itemCierre[i-1].importeReal,{'required':true,'attr':{'onkeyup':'calcularDiferencia("'~form.itemCierre[i-1].vars.id~'");'} })}}
+                                                        <td id='{{form.itemCierre[i-1].vars.id}}_diferencia'>{{(form.itemCierre[i-1].importeSistema.vars.data|number_format(2,'.','') - form.itemCierre[i-1].importeReal.vars.data)|number_format(2,'.','')}}</td>
+                                                        <td id='{{form.itemCierre[i-1].vars.id}}_diferencia_porcentual'>{%if form.itemCierre[i-1].importeSistema.vars.data != 0%}{{((form.itemCierre[i-1].importeSistema.vars.data|number_format(2,'.','') - form.itemCierre[i-1].importeReal.vars.data)*100/form.itemCierre[i-1].importeSistema.vars.data|number_format(2,'.',''))|number_format(2,'.','')}}{%else%}0.00{%endif%}</td>
+                                                        </tr>        
+                                            {% endfor %}
+                                                    </tr>
+                                                </tbody>    
+                                            </table>
+                                        </div>    
+                                    </div>
+                                    {{form_row(form.aclaracion,{'attr':{'class':'span12'} })}}
+                                </div>
+                                <div class='tab-pane' id='entradas'>
+
+                                        {%set j = 1%}    
+                                        {%for tipoCobro in tiposCobro%}
+                                    <h2>{{tipoCobro}}</h2>
+                                    <table class="table table-striped table-bordered" id="example">
+                                        <thead class="header">
+                                            <tr>
+                                                <th>N°</th>
+                                                <th>Fecha y Hora</th>
+                                                <th>Tipo</th>
+                                                <th>Comprobante</th>
+                                                <th>Importe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {%set j = 1%}
+                                            {% for movimiento in caja.lotes.first.getEntradasTipo(tipoCobro)%}
+                                                <tr>
+                                                    <td>{{j}}</td>
+                                                    <td>{{movimiento.fecha|date("d/m/Y g:ia")}}</td>
+                                                    <td>{{movimiento.tipo}}</td>
+                                                    <td>{{movimiento.aclaracion}}</td>
+                                                    <td>{{movimiento.importe}}</td>
+                                                {%set j = j + 1%}
+                                                </tr>   
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% endfor %}
+                                    </div>
+                                    <div class='tab-pane' id='salidas'>
+                                         {%for tipoCobro in tiposCobro%}
+                                            <h2>{{tipoCobro}}</h2>
+                                            <table class="table table-striped table-bordered" id="example">
+                                                <thead class="header">
+                                                    <tr>
+                                                        <th>N°</th>
+                                                        <th>Fecha y Hora</th>
+                                                        <th>Tipo</th>
+                                                        <th>Comprobante</th>
+                                                        <th>Importe</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                            {%set j = 1%}
+                                            {% for movimiento in caja.lotes.first.getSalidasTipo(tipoCobro)%}
+                                                        <tr>
+                                                            <td>{{j}}</td>
+                                                            <td>{{movimiento.fecha|date("d/m/Y g:ia")}}</td>
+                                                            <td>{{movimiento.tipo}}</td>
+                                                            <td>{{movimiento.aclaracion}}</td>
+                                                            <td>{{movimiento.importe}}</td>
+                                                {%set j = j + 1%}
+                                                        </tr>   
+                                            {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                    {% endfor %}    
+                                            </div>    
+                                        </div> 
+                                    <div style='display:none;'>{{form_rest(form)}}</div>
+                                    </fieldset>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                        <button onclick='history.back();' type="button" class="btn">Cancelar</button>
+                                    </div>    
+                                </form>
+                            </div>
+                        </div><!--/span-->
+                    </div><!--/row-->
+                    <hr>
+{% endblock %}
+{%block modal%}
+                    <div class="modal hide fade" id="busqueda">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h3>Buscar...</h3>
+                        </div>
+                        <div id="dataBusqueda" class="modal-body">
+                            <p>Here settings can be configured...</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                        </div>
+                    </div>
+                    <div class="modal hide fade" id="mensaje">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h3>Atencion...</h3>
+                        </div>
+                        <div id="dataMensaje" class="modal-body">
+                            <p>Here settings can be configured...</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary" data-dismiss="modal">Aceptar</a>
+                        </div>
+                    </div>
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                    <script type="text/javascript">
+                                            $().ready(function() {
+                                                $('#myTab1 a').click(function(e) {
+                                                    e.preventDefault();
+                                                    $(this).tab('show');
+                                                });
+                                                $("[name='importeSistema']").each(function() {
+                                                    $(this).attr('style', 'display:none;');
+                                                });
+                                                {%if mensaje != null%}
+                                                $("#dataMensaje").html("{{mensaje}}");
+                                                $("#mensaje").modal("show");
+                                                {%endif%}
+                                            });
+                                            
+                                            function calcularDiferencia(id){
+                                                var diferencia = 0.00;
+                                                var sistema = parseFloat($("#"+id+"_sistema").html());
+                                                var real = parseFloat($("#"+id+"_importeReal").val());
+                                                diferencia = sistema - real;
+                                                if (isNaN(diferencia))
+                                                    diferencia = parseFloat(0.00);
+                                                var diferenciaPorcentual = 0.00;
+                                                diferenciaPorcentual = diferencia * 100 / sistema;
+                                                 if (isNaN(diferenciaPorcentual) || sistema == 0.00)
+                                                    diferenciaPorcentual = parseFloat(0.00);
+                                                $("#"+id+"_diferencia").html(diferencia.toFixed(2));
+                                                $("#"+id+"_diferencia_porcentual").html(diferenciaPorcentual.toFixed(2));
+                                            }
+                        </script>    
+{%endblock%}
+{% block ajax %}
+                        <form class="form-horizontal" actionArqueo y ="{{ path('apertura_caja') }}" method="post">
+                            <fieldset id="formAperturaCaja">
+                                <div class="control-group">
+                                    <label class="control-label">Cerra su Turno</label>
+                                    <div class="controls">
+                                        <input type="text" disabled="disabled" value= "{{app.user}}" />
+                                    </div>    
+                                </div>  
+                        {{form_widget(form)}}
+                            </fieldset>   
+                        </form>
+{% endblock %}
+
+

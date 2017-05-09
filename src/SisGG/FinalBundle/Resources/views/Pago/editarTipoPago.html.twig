@@ -1,0 +1,189 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar tipo de pago {{nombre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('tiposPagos')}}">Tipos de pago</a>
+</li></a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar tipo de pago</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Editar tipo de pago {{nombre}}</legend>
+        <form action="{{path('editarTipoPago', {'id':id})}}" method="post" class="form-horizontal">
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        {{ form_row(form.nombre) }}
+        {{ form_row(form.descripcion) }}
+        <div id="div1" >
+        {{ form_row(form.atr1) }}
+        {{ form_row(form.tipo1) }}
+            </div><div id="div2" style="display: none">
+        {{ form_row(form.atr2) }} 
+        {{ form_row(form.tipo2) }}
+        </div><div id="div3" style="display: none">
+        {{ form_row(form.atr3) }}
+        {{ form_row(form.tipo3) }}
+                    
+        </div><div id="div4" style="display: none">
+        {{ form_row(form.atr4) }}
+        {{ form_row(form.tipo4) }}
+        </div><div id="div5" style="display: none">
+        {{ form_row(form.atr5) }}
+        {{ form_row(form.tipo5) }}
+                </div>
+        {{ form_rest(form) }}
+       <div class="form-actions">
+            <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+            <a href="{{path('tiposPagos')}}" type="button" class="btn">Cancelar</a>
+        </div>   
+        </form>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+{% block javascripts %}        
+{{parent()}}
+
+<script>
+    
+    var flag1=true;
+    var flag2=true;
+    var flag3=true;
+    var flag4=true;
+    var flag5=true;
+    var clase='sisgg_finalbundle_tipopagotype_';
+    
+    
+    $(document).ready(function(){
+        agregarBotones();
+    });
+    
+ function eliminarModal(id,txt){
+        var url = "{{path('eliminarProveedor', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElim');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminar').attr('href',url);
+        $('#eliminarModal').modal('toggle');
+    }
+    function agregarBotones(){
+        for (var i=1;i<6; i++){
+            var div= document.getElementById(clase+'tipo'+i).parentNode;
+            $(div).append('<button id="btn'+i+'" class="btn" onclick="boton'+i+'(this)" type="button"><i id="icono'+i+'" class="fa-icon-plus-sign"></i></button>');
+        }
+    }
+    
+    
+    function boton1 (ele){
+        if (flag1==true){
+            flag1=false;
+            $('#div2').show();
+            $('#icono1').removeClass('fa-icon-plus-sign').addClass('fa-icon-minus-sign');
+            $('#'+clase+'atr2').attr('required','required');
+            $('#'+clase+'atr2').attr('disabled',false);
+        }else{
+            flag1=true;
+            $('#'+clase+'atr2').attr('required',false);
+            $('#'+clase+'atr2').attr('disabled','disabled');
+            $('#'+clase+'atr3').attr('required',false);
+            $('#'+clase+'atr3').attr('disabled','disabled');
+            $('#'+clase+'atr4').attr('required',false);
+            $('#'+clase+'atr4').attr('disabled','disabled');
+            $('#'+clase+'atr5').attr('required',false);
+            $('#'+clase+'atr5').attr('disabled','disabled');
+            $('#icono1').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono2').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono3').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono4').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono5').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#div2').hide();
+            $('#div3').hide();
+            $('#div4').hide();
+            $('#div5').hide();
+        }
+    }
+    
+    function boton2(ele){
+        if (flag2==true){
+            flag2=false;
+            $('#div3').show();
+            $('#icono2').removeClass('fa-icon-plus-sign').addClass('fa-icon-minus-sign');
+            $('#'+clase+'atr3').attr('required','required');
+            $('#'+clase+'atr3').attr('disabled',false);;
+        }else{
+            flag2=true;
+           
+            $('#'+clase+'atr3').attr('required',false);
+            $('#'+clase+'atr3').attr('disabled','disabled');
+            $('#'+clase+'atr4').attr('required',false);
+            $('#'+clase+'atr4').attr('disabled','disabled');
+            $('#'+clase+'atr5').attr('required',false);
+            $('#'+clase+'atr5').attr('disabled','disabled');
+            $('#icono2').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono3').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono4').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono5').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#div3').hide();
+            $('#div4').hide();
+            $('#div5').hide();
+        }
+    }
+     function boton3(ele){
+        if (flag3==true){
+            flag3=false;
+            $('#div4').show();
+            $('#icono3').removeClass('fa-icon-plus-sign').addClass('fa-icon-minus-sign');
+            $('#'+clase+'atr4').attr('required','required');
+            $('#'+clase+'atr4').attr('disabled',false);;
+        }else{
+            flag3=true;
+
+            $('#'+clase+'atr4').attr('required',false);
+            $('#'+clase+'atr4').attr('disabled','disabled');
+            $('#'+clase+'atr5').attr('required',false);
+            $('#'+clase+'atr5').attr('disabled','disabled');
+            $('#icono3').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono4').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#icono5').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#div4').hide();
+            $('#div5').hide();
+        }
+    }
+     function boton4(ele){
+        if (flag4==true){
+            flag4=false;
+            $('#div5').show();
+            $('#icono4').removeClass('fa-icon-plus-sign').addClass('fa-icon-minus-sign');
+            $('#icono5').removeClass('fa-icon-plus-sign').addClass('fa-icon-minus-sign');
+            $('#'+clase+'atr5').attr('required','required');
+            $('#'+clase+'atr5').attr('disabled',false);;
+        }else{
+            flag4=true;
+            $('#'+clase+'atr5').attr('required',false);
+            $('#'+clase+'atr5').attr('disabled','disabled');
+            $('#icono4').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+           
+            $('#div5').hide();
+        }
+    } 
+    function boton5(ele){
+            $('#icono4').removeClass('fa-icon-minus-sign').addClass('fa-icon-plus-sign');
+            $('#div5').hide();
+            flag4=true;
+    } 
+    </script>
+{% endblock%}

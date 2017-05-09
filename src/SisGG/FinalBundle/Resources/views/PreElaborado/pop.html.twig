@@ -1,0 +1,9 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+    <b>Precio de costo:</b> {{obj.precioCosto}}<br>
+                <b>Cantidad:</b> {{obj.cantidad}}<br>
+                <b>Tasa:</b> {{obj.tasa}}
+ <div>
+     
+     {%if flag%}<a class="btn" target="_blank"  href="{{path('editarPE',{'id':obj.id})}}"><i class="fa-icon-edit"></i> Editar</a> {%else%}<a class="btn"  target="_blank"  href="{{path('editarMP',{'id':obj.id})}}"><i class="fa-icon-edit"></i> Editar</a>{%endif%}
+     

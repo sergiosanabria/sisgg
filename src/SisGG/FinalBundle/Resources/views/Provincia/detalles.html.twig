@@ -1,0 +1,43 @@
+
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Ciudades</legend>
+            <table class="table table-hover table-bordered table-condensed" data-spy="scroll">        
+
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Provincia</th>
+                <th>Codigo Postal</th>
+                <th style="text-align: center">Acciones</th>
+            </tr>
+            </thead>
+            {% for ciudad in ciudades%}
+             <tr>
+                <td>{{ciudad.nombre}}</td>
+                <td>{{ciudad.provincia}}</td>
+                <td>{{ciudad.codigoPostal}}</td>                
+                <td style="text-align: center;width: fit-content" >
+                    <a href="{{ path('editarCiudad', { 'id': ciudad.id }) }}" target="_blank" title="Editar"><i class="fa-icon-edit"></i></a>
+                    <a href="#" title="Eliminar"  onclick="eliminarCiudad({{ciudad.id}},'{{ciudad.nombre}}')"><i class="fa-icon-trash"></i></a>
+                </td>                
+            </tr>   
+            {% endfor %}
+        </table>
+        </div>
+    </div>
+</div>
+<div id="eliminarCiudad" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ciudad</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Esta seguro que desea eliminar la ciudad <strong id="txtElimCiudad">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarCiudad" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>

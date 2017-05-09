@@ -1,0 +1,14 @@
+{%if np is defined%}
+<div style="text-align: left;">Si no figura el tipo de factura que usted desea registrar, debe ser porque su proveedor no tiene la condición de IVA para realizar dicha factura. Para ello debe <a href="{{path('editarProveedor', {'id':np.proveedor.id})}}">editar proveedor ({{np.proveedor}}).</a></div>
+{%endif%}
+
+{%for f in facturas%}
+    <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':f.tipoFactura.nomenclatura, 'np':id})}}">{{f.tipoFactura}}</a>
+{%endfor%}
+    {%if facturas==-1%}
+    <div class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                Usted no tiene permiso de realizar esta acción.
+            </div>
+    {%endif%}

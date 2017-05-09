@@ -1,0 +1,128 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Condiciones frente al IVA</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+            <div class="box-content">
+            {% set activos = 0%}
+            {% set inactivos = 0%}    
+            {% for condicionIva in condicionesIva%}
+                {%if condicionIva.estado=='activo'%}
+                    {% set activos = activos+1%}
+                {% elseif condicionIva.estado=='inactivo'%}
+                    {% set inactivos = inactivos+1%}
+                {% endif %}
+            {% endfor %}     
+            <legend>Condiciones frente al IVA
+                <div class="btn-group" style='float:right;'>
+                    <a title="Nuevo Condicion" href="{{path('nuevo_condicion_iva')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                    <a class="btn"><i class="icon-print"></i></a>
+                </div>
+                <small class='filtros'>
+                    <ul class="nav nav-pills" id="myTab1">
+                    <li class='filtro {%if (estado=='activo') or (estado==null)%}active{%endif%}'><a href='{{path('condiciones_iva')}}' >Activos({{activos}})</a></li>
+                    <li class='filtro {%if estado=='inactivo'%}active{%endif%}'><a href='{{path('condiciones_iva')}}?estado=inactivo' >Inactivos({{inactivos}})</a></li> 
+                    <li class='filtro {%if estado=='todos'%}active{%endif%}' ><a href='{{path('condiciones_iva')}}?estado=todos' >Todos({{activos+inactivos}})</a></li>
+                    </ul>
+                </small>                
+            </legend>
+            <table class="table table-striped table-bordered" id="clientes">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Abreviatura</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%if estado==null%}
+                        {%set estado='activo'%}        
+                {% endif %}        
+                {% for condicionIva in condicionesIva%}
+                     {%if estado=='todos' or condicionIva.estado==estado%}   
+                        <tr>
+                            <td>{{condicionIva.nombre}}</td>
+                            <td>{{condicionIva.abreviatura}}</td>
+                            <td class='estado'>{%if condicionIva.estado=='activo'%}<span class="label label-success">Activo</span>{%elseif condicionIva.estado=='inactivo'%}<span class="label label-important">Inactivo</span>{%endif%}</td>
+                            {%if condicionIva.estado=='activo'%}
+                            <td>
+                                {%if app.user.role.obtenerPermiso('condiciones IVA_editar')%}
+                                    <a rel="tooltip" title="Editar {{condicionIva.nombre}}" href="{{path('editar_condicion_iva')}}?id={{condicionIva.id}}"><i class="fa-icon-edit"></i></a>
+                                {%endif%}
+                                {%if app.user.role.obtenerPermiso('condiciones IVA_borrar')%}
+                                    <a class='borrar' href='#' rel="tooltip" title="Pasar a inactivo {{condicionIva.nombre}}" data-condicionIva='{{condicionIva}}' data-id='{{condicionIva.id}}'><i class="fa-icon-trash"></i></a>
+                                {%endif%}       
+                            </td>
+                            {%else%}
+                            <td>
+                                <a rel="tooltip" title="Pasar a Activo" href="{{path('activar_condicion_iva')}}?id={{condicionIva.id}}"><i class="fa-icon-plus-sign"></i></a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                     {% endif %}       
+                {% endfor %}       
+                    </tbody>
+                </table>  
+            
+                
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                <div class="modal hide fade" id="eliminarCondicionIva">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Atención!!!</h3>
+                    </div>
+                    <div id="dataEliminar" class="modal-body">
+                        ¿Esta seguro que desea pasar la condición <span id='condicion_iva' style='font: bold cursive;'></span> a estado Inactivo?
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                        <a class="btn btn-primary" id='borrar'>Confirmar</a>
+                    </div>
+                </div>
+{%endblock%} 
+{%block javascripts%}
+{{parent()}}    
+    <script type="text/javascript">
+        $().ready(function(){
+            $('.borrar').each(function(){
+               $(this).click(function(ev){
+                   ev.preventDefault();
+                   $('#dataEliminar #condicion_iva').html($(this).data('condicioniva'));
+                   $('#borrar').attr('href','{{path('borrar_condicion_iva')}}?id='+$(this).data('id'));
+                   $('#eliminarCondicionIva').modal('show');
+               }); 
+            });
+        })        
+    </script>    
+{%endblock%}    
+{%block ajax%}
+            <table class="table table-striped table-bordered table-hover" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripcion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for condicionIva in condicionesIva%}
+                        <tr onclick='seleccionarCondicionIva(event,{{condicionIva.id}});' style='cursor:pointer;'>
+                            <td>{{condicionIva.nombre}}</td>
+                            <td>{{condicionIva.descripcion}}</td>               
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>
+{%endblock%} 

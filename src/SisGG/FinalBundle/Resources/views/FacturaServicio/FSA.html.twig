@@ -1,0 +1,542 @@
+{% extends "::base.html.twig" %}
+{%block title%}Registro de compra{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('compras')}}">Compras</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Registro de compra</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Registro de compra</legend>
+            <form class="form-horizontal" id="formCompra" name="formCompra" onsubmit="return verBtn();" action="" method="post">
+         
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+                {{form_row(form.proveedor)}}
+                {{form_row(form.tipo)}}
+                 {{form_row(form.fechaFactura)}}  
+                    <div class="input-prepend">
+                    {{form_row(form.serie)}}  
+                    {{form_row(form.numero)}}  
+                    </div>
+<div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Productos</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+
+<table class="table table-condensed" id="itemsCompra">
+                <thead>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Precio de costo unitario</th>
+                    <th>IVA</th>
+                    <th title="Seleccionar todos"><input type="checkbox" value="0" onclick="seleccionarTodos(this);" /></th>
+                    <th>Total</th>
+                </thead>
+                    {{form_widget(form.item)}}    
+            </table>                     
+</p>
+<div class="pull-right"> {{form_row(form.total)}}</div>
+    <div><br><br></div>
+</div>
+        </div><!--/span-->
+    </div>  
+    <div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Pagos</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+
+<table class="table table-condensed" id="itemsPago">
+                <thead>
+                    <th>Monto</th>
+                    <th>Tipo de pago</th>
+                    <th>Observaciones</th>
+                    <th>Fecha</th>
+                </thead>
+                    {{form_widget(form.pagos)}}    
+            </table>                     
+</p>
+<div class="pull-right">Total <div class="input-prepend input-append">
+                <span class="add-on">$</span>
+                <input class="" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                       id="totalPago" readonly="readonly"></div> 
+          </div> 
+    <div><br><br></div>
+</div>
+        </div><!--/span-->
+    </div> 
+        
+                    {{ form_rest(form) }}
+                <div class="form-actions">
+                        <button class="btn btn-primary" type="submit" onclick="confirmar()" title="Regitra la factura de compra"  >Sólo guardar</button>
+                    <a type="button" href="{{path('compras')}}" class="btn">Cancelar</a>
+                </div>
+                <div style="display: none"><button id="submit_button_form"></button>  </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%endblock%}
+{%block modal%}
+<div id="verTabla" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 750px;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Seleccione un producto para el ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <div class="row-fluid sortable">
+    <div class="box-content">
+      <table cellpadding="0"  cellspacing="0" border="0" class="table table-striped table-bordered"  id="example" >
+            <thead>
+                <tr>
+                    <th>Nombre</th>                   
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Precio de costo</th>
+                    <th>Categoria</th>
+                    <th>Proveedor</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for pe in pps%}
+            <tr>
+                <td>{{pe.nombre}}</td>
+                <td>{%if pe.isMantenimiento == false%}{{pe.cantidad}}{%endif%}</td>
+                <td>{{pe.tasa}}</td>
+                <td>  {{pe.precioCosto}}</td>
+                <td>{%if pe.isMantenimiento == false%}{{pe.categoria}}{%endif%}</td>
+                <td>{%if pe.isMantenimiento == false%}{{pe.proveedor}}{%endif%}</td>
+
+                <td style="text-align: center;width: fit-content" >
+                    <button type="button" title="Seleeciona el producto"  onclick="seleccionarProducto('{{pe.id}}')"><i class="icon icon-ok"></i></button>                   
+                </td>
+            </tr>  
+            {% endfor %}
+        </table> </div>
+              </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Registro de factura de compra</h3>
+  </div>
+  <div class="modal-body">
+      Está seguro que desea registrar la factura?
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" type="button" onclick="validar(event)">Aceptar</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+</div>
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var submitBtn=false;
+
+$(document).ready(function  (){ 
+        actualizarProductos();
+        
+        var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 1; i <rows.length; ++i) {
+            var check =rows[i].cells[5].firstChild.firstChild.firstChild;
+            $(rows[i].cells[5].firstChild).remove();
+            $(rows[i].cells[5]).append(check);          
+        }
+        
+        
+            $(document).keypress(function(e){
+               
+                if(e.which == 13){
+                  return false;
+                }
+                //Shift N
+                if(e.which == 78){
+                  nuevaFila(e,'sisgg_finalbundle_notapedidotype_item');
+                }
+              });
+         });
+
+var clase='sisgg_finalbundle_compratype_item_';
+var elemento='sisgg_finalbundle_compratype_';
+var fila='';
+function obtenerFila(ele){
+    alert(clase);
+        fila = ele.parentNode.parentNode.id.replace(clase, '');
+        return fila;
+    }
+    
+    function cambioProducto(ele){
+        var id=ele.options[ele.options.selectedIndex].value;
+        fila = ele.parentNode.parentNode.parentNode.id.replace(clase, '');
+        $.getJSON("{{path ('obtenerProducto')}}",{id:id},function (json){
+        //alert(json.tasa);
+        seleccionarTasa(json.tasa, fila);
+        $('#'+clase+fila+'_iva').val(json.iva);
+        $('#'+clase+fila+'_precioCosto').val(json.precioCosto);
+        $('#'+clase+fila+'_cantidad').val('');
+         $('#'+clase+fila+'_total').val(0.00); 
+         sumarTotal();
+        });
+    }
+    function seleccionarProducto(id){
+        
+        $.getJSON("{{path ('obtenerProducto')}}",{id:id},function (json){
+        //alert(json.tasa);
+        seleccionarTasa(json.tasa, fila);
+        $('#'+clase+fila+'_precioCosto').val(json.precioCosto);
+        $('#'+clase+fila+'_cantidad').val('');
+         $('#'+clase+fila+'_total').val(0.00);
+         $('#'+clase+fila+'_iva').val(json.iva);
+         $('#'+clase+fila+'_producto').val(id);
+         sumarTotal();
+            $('#verTabla').modal('hide');
+        });
+    }
+
+    function buscarEnCombo(ele){
+        fila = ele.parentNode.parentNode.parentNode.id.replace(clase, '');
+            $('#verTabla').modal('toggle');
+    }
+    
+    
+    function cambiarCantidad(ele){
+        fila = ele.parentNode.parentNode.id.replace(clase, '');
+    var costo=$('#'+clase+fila+'_precioCosto').val();
+    //alert(costo);
+    var cant=$(ele).val();
+    //alert(costo+cant);
+    if (($.isNumeric(costo))&&($.isNumeric(cant))){
+        var check = document.getElementById(clase+fila+'_descuento');
+        if (check.checked){
+            var iva =document.getElementById(clase+fila+'_iva');
+             $.getJSON("{{path ('obtenerIVA')}}",{id:$(iva).val()},function (json){
+                $('#'+clase+fila+'_total').val((cant*(costo* (json.tasa/100+1))).toFixed(2));
+                    sumarTotal();
+
+             });
+        }else{ 
+            $('#'+clase+fila+'_total').val((cant*costo).toFixed(2));
+            sumarTotal();
+        }
+    }else{
+        $('#'+clase+fila+'_total').val(0.00);  
+        sumarTotal();
+    }
+}
+      
+      
+      function cambiarMonto(ele){
+          sumarPagos();
+          
+      }
+      
+
+    function cambiarCosto(ele){
+     fila = ele.parentNode.parentNode.id.replace(clase, '');
+    var cant=$('#'+clase+fila+'_cantidad').val();
+    //alert(costo);
+    var costo=$(ele).val();
+    //alert(costo+cant);
+    if (($.isNumeric(costo))&&($.isNumeric(cant))){
+        var check = document.getElementById(clase+fila+'_descuento');
+        if (check.checked){
+            var iva =document.getElementById(clase+fila+'_iva');
+             $.getJSON("{{path ('obtenerIVA')}}",{id:$(iva).val()},function (json){
+                $('#'+clase+fila+'_total').val((cant*(costo* (json.tasa/100+1))).toFixed(2));
+                    sumarTotal();
+
+             });
+        }else{ 
+            $('#'+clase+fila+'_total').val((cant*costo).toFixed(2));
+            sumarTotal();
+        }
+    }else{
+        $('#'+clase+fila+'_total').val(0.00);  
+        sumarTotal();
+    }
+      }
+      
+    function cambioCheck(ele){
+        if (ele.checked){
+            ele.title='Descontar el porcentage de IVA al precio de costo.';
+                    
+        }else{
+            ele.title='Sumar el porcentage de IVA al precio de costo.';
+
+        }
+        fila = ele.parentNode.parentNode.id.replace(clase, '');
+    var cant=$('#'+clase+fila+'_cantidad').val();
+    //alert(costo);
+    var costo=$('#'+clase+fila+'_precioCosto').val();
+    //alert(costo+cant);
+    if (($.isNumeric(costo))&&($.isNumeric(cant))){
+        var check = document.getElementById(clase+fila+'_descuento');
+        if (check.checked){
+            var iva =document.getElementById(clase+fila+'_iva');
+             $.getJSON("{{path ('obtenerIVA')}}",{id:$(iva).val()},function (json){
+                $('#'+clase+fila+'_total').val((cant*(costo* (json.tasa/100+1))).toFixed(2));
+                    sumarTotal();
+
+             });
+        }else{ 
+            $('#'+clase+fila+'_total').val((cant*costo).toFixed(2));
+            sumarTotal();
+        }
+    }else{
+        $('#'+clase+fila+'_total').val(0.00);  
+        sumarTotal();
+    }
+}  
+ function cambioIVA(ele){
+       
+    fila = ele.parentNode.parentNode.id.replace(clase, '');
+    var cant=$('#'+clase+fila+'_cantidad').val();
+    //alert(costo);
+    var costo=$('#'+clase+fila+'_precioCosto').val();
+    //alert(costo+cant);
+    if (($.isNumeric(costo))&&($.isNumeric(cant))){
+        var check = document.getElementById(clase+fila+'_descuento');
+        if (check.checked){
+            var iva =document.getElementById(clase+fila+'_iva');
+             $.getJSON("{{path ('obtenerIVA')}}",{id:$(iva).val()},function (json){
+                $('#'+clase+fila+'_total').val((cant*(costo* (json.tasa/100+1))).toFixed(2));
+                    sumarTotal();
+
+             });
+        }else{ 
+            $('#'+clase+fila+'_total').val((cant*costo).toFixed(2));
+            sumarTotal();
+        }
+    }else{
+        $('#'+clase+fila+'_total').val(0.00);  
+        sumarTotal();
+    }
+}  
+    function sumarTotal(){
+     var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        var total = parseFloat('0.00');
+        
+        for (var i = 1; i <rows.length; ++i) {          
+            var num =rows[i].cells[6].firstChild.value; 
+            if (!($.isNumeric(num))){
+                num = parseFloat('0.00');;
+            }else{
+                num = parseFloat(num);             
+            }
+            total=num+total;
+        }
+        if ($.isNumeric(total))
+        $('#'+elemento+'total').val(total.toFixed(2)); 
+    }
+    
+    function sumarPagos(){
+        var table = document.getElementById('itemsPago');
+        var rows = table.getElementsByTagName('tr');
+        var total = parseFloat('0.00');
+
+        for (var i = 1; i <rows.length; ++i) {
+            var num =rows[i].cells[0].firstChild.value; 
+            if (!($.isNumeric(num))){
+                if (num!=''){
+                    num = parseFloat('0.00');
+                    rows[i].cells[0].firstChild.value=num;}
+                    num = parseFloat('0.00');
+                
+            }else{
+                num = parseFloat(num);
+            }
+            total=num+total;
+        }
+        if ($.isNumeric(total))
+        $('#totalPago').val(total.toFixed(2)); 
+    }  
+    
+    function actualizarTasas(){
+        var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 1; i <rows.length; ++i) {          
+            var combo = rows[i].cells[2].firstChild;
+            var tasa = combo.options[combo.selectedIndex].text;
+            seleccionarTasa(tasa, i-1);
+        }
+    } 
+    function actualizarProductos(){
+        var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 1; i <rows.length; ++i) {          
+            var combo = rows[i].cells[0].firstChild.firstChild;
+            var id = $(combo).val();
+            actPro(id, i-1, combo.id);
+        }
+    }
+    
+    function actPro(id, fila, combo){
+        
+        $('#'+clase+fila+'_producto').load("{{ path('cargarMMP')}}", function() {
+            $.getJSON("{{path ('obtenerProducto')}}",{id:id},function (json){
+            seleccionarTasa(json.tasa, fila);
+                        $('#'+combo).val(id);
+                        $('#'+clase+fila+'_iva').val(json.iva);
+        });
+            }); 
+    }
+    function seleccionarTasa(tasa, fila){
+        
+        //var comboTasa=document.getElementById(clase+fila+'_tasa');
+        //alert(comboTasa);
+        $('#'+clase+fila+'_tasa').load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    
+    
+    function cargarProducto( ){
+        $('#'+clase+fila+'_producto').load("{{ path('cargarMMP')}}", function() {
+            var ele= document.getElementById(clase+fila+'_producto');
+            var id=ele.options[ele.options.selectedIndex].value;
+            seleccionarProducto(id);
+             $('#'+clase+fila+'_total').val(0.00);  
+            }); 
+    }
+    
+    
+ function nuevaFila(e,id, btn) {
+    e.preventDefault();
+    // Get the data-prototype explained earlier
+    btn.disabled=true;
+    
+    if (id=='sisgg_finalbundle_compratype_item'){
+    var collectionHolder = $("#"+id);
+    
+    var prototype = collectionHolder.data('prototype');
+    // get the new index
+    var index = collectionHolder.data('index');
+    // Replace '$$name$$' in the prototype's HTML to
+    // instead be a number based on how many items we have
+    var newForm = prototype.replace(/__name__/g, index);
+    // increase the index with one for the next item
+    collectionHolder.data('index', index + 1);
+    // Display the form in the page in an li, before the "Add a tag" link li
+    var $newFormLi = collectionHolder.append(newForm);
+    $('[data-rel="chosen"],[rel="chosen"]').chosen();
+    fila=index;
+    cargarProducto();
+    }else{
+        
+    var collectionHolder = $("#"+id);
+    
+    var prototype = collectionHolder.data('prototype');
+    // get the new index
+    var index = collectionHolder.data('index');
+    // Replace '$$name$$' in the prototype's HTML to
+    // instead be a number based on how many items we have
+    var newForm = prototype.replace(/__name__/g, index);
+    // increase the index with one for the next item
+    collectionHolder.data('index', index + 1);
+    // Display the form in the page in an li, before the "Add a tag" link li
+    var $newFormLi = collectionHolder.append(newForm);
+    $('[data-rel="chosen"],[rel="chosen"]').chosen();
+    fila=index;
+    if($('.datepicker')) {
+	$('.datepicker').datepicker();
+	$(".datepicker").datepicker($.datepicker.regional['es']);
+	}
+    sumarPagos();
+    }  
+    setTimeout( function (){btn.disabled=false;}, 500);
+        
+
+} 
+
+function eliminarFila(e,id){
+    e.preventDefault();
+    $('#'+id).remove();
+     sumarTotal();
+         sumarPagos();
+}
+
+function verModal (){
+    $('#verModal').modal('toggle');
+}
+
+function confirmar(){
+
+        submitBtn=false;
+        var url = "{{path('altaCompra', { 'np':np})}}";
+        $("#formCompra").attr("action", url);
+        
+}
+
+function validar(e){
+        submitBtn=true;
+         $('#submit_button_form').click();
+}
+function  verBtn(){
+    if (submitBtn==false){
+        $('#verModal').modal('toggle');
+        return false;
+    }
+    
+}
+
+function seleccionarTodos (ele){
+    if ($(ele).val()=='0'){
+        ele.title='Deshabilitar todos';
+        $(ele).val('1');
+        var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 1; i <rows.length; ++i) {
+            var check =rows[i].cells[5].firstChild;
+            check.checked=true;
+        }
+    }else{
+        ele.title='Seleccionar todos';
+        $(ele).val('0');
+        var table = document.getElementById('itemsCompra');
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 1; i <rows.length; ++i) {
+            var check =rows[i].cells[5].firstChild;
+            check.checked=false;
+        }
+    }
+    
+}
+</script>
+{%endblock%}
+

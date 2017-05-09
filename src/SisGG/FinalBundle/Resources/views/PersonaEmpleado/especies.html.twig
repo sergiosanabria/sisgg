@@ -1,0 +1,144 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="especiesFORM">
+    {%if error %}
+     <div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>¡Cuidado!</h4>
+        {{error}}
+    </div>
+        {%endif%}
+<fieldset id="datosESP">
+    
+<table class="table table-bordered table-hover" id="pagos">
+    <thead class="header">
+        <th>Haber</th>
+        <th>Debe</th>
+        <th>Saldo</th>
+        <th>Descubierto</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="haberESP" data-value="{{empleado.cuenta.haber | number_format(2,'.', '')}}" >{{empleado.cuenta.haber | number_format(2,'.', '')}}</td>    
+            <td id="debeESP" data-value="{{empleado.cuenta.debe | number_format(2,'.', '')}}">{{empleado.cuenta.debe| number_format(2,'.', '')}}</td>
+            {%set saldo= empleado.cuenta.haber - empleado.cuenta.debe %}
+            <td id="saldoESP" data-value="{{saldo | number_format(2,'.', '')}}">{{saldo | number_format(2,'.', '')}}</td>
+            <td id="negativo" style="color: red" data-value="{{empleado.cargo.negativo | number_format(2,'.', '')}}" ><b>{{empleado.cargo.negativo  | number_format(2,'.', '')}}</b></td>    
+        </tr>
+    </tbody>
+</table>
+        
+                 {{form_row(form.fecha)}}  
+                 {{form_row(form.descripcion)}}    
+                 <button class="btn btn-primary pull-right" type="button" onclick="nuevoDescuento();">Cambiar porcentaje de descuento</button>
+<div class="row-fluid sortable ui-sortable">
+    <div class="box span12">
+        <div class="box-header">
+            <h2><i class="icon-th"></i><span class="break"></span>Productos</h2>
+        <div class="box-icon">
+            <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+        </div>
+        <div class="box-content">
+            <p>
+                
+                <table class="table table-condensed" id="itemsNP">
+                    <thead class="header">
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Tasa</th>
+                        <th>Precio de costo unitario</th>
+                        <th>Total</th>
+                        <th>Eliminar</th>
+                    </thead>
+                    {{form_widget(form.item)}}
+                    <tfoot>
+                    <td colspan="4" style="text-align: right;"><b>TOTAL</b></td>
+                    <td colspan="2">
+                    <input  dir="rtl"  class="input-mini" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                           id="montoEspecies" readonly="readonly"  disabled="disabled" value="0.00"></td>
+                    </tfoot>
+                </table>
+            <div style="text-align: right;">
+                    <span class="add-on">Descuento %</span>
+                    <input dir="rtl"  class="input-medium" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                           id="descEspeciesPorc" readonly="readonly" value="{{empleado.cargo.descuento}}">
+                    <span class="add-on">Descuento en $</span>
+                    <input dir="rtl"  class="input-medium" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                           id="descEspeciesPesos" readonly="readonly" value="0.00">
+                    <span class="add-on">Total $</span>
+                    <input dir="rtl"  class="input-medium" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                           id="totalEspecies" readonly="readonly" value="0.00">
+                </div>
+            </div>
+            </p>
+        </div>
+    </div><!--/span-->
+</div>
+    
+<div id="divCuenta" style="display: none">{{ form_rest(form) }}    
+  {{ form_errors(form) }} <input type="hidden" id="cuentaESP" name="cuentaESP"> </div>
+<div class="form-actions">
+    <button class="btn btn-primary" {#onclick="altaEspecies();"#} type="submit">Aceptar</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+<div id="verTabla" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 750px;">
+  <div class="modal-header">
+    <button type="button" class="close" onclick="cerrarEspecies(this, 'verTabla');">×</button>
+    <h3 id="myModalLabel">Seleccione un producto</h3>
+  </div>
+  <div class="modal-body">
+      <div class="row-fluid sortable">
+    <div class="box-content">
+      <table cellpadding="0"  cellspacing="0" border="0" class="table table-striped table-bordered"  id="musharo" >
+          <thead class="header">
+            <tr>
+                <th>Nombre</th>                   
+                <th>Cantidad</th>
+                <th>Tasa</th>
+                <th>Precio</th>
+                <th>Categoria</th>
+                <th style="text-align: center">Acciones</th>
+            </tr>
+        </thead>
+        {% for pe in pps%}
+         <tr>
+
+            <td>{{pe.nombre}}</td>
+            <td>{%if pe.isMantenimiento == false%}{{pe.cantidad}}{%endif%}</td>
+            <td>{{pe.tasa}}</td>
+            <td>  {{pe.precioVenta}}</td>
+            <td>{%if pe.isMantenimiento == false%}{{pe.categoria}}{%endif%}</td>
+
+            <td style="text-align: center;width: fit-content" >
+                <button type="button" title="Seleeciona el producto"  onclick="seleccionarProducto('{{pe.id}}')"><i class="icon icon-ok"></i></button>                   
+            </td>
+        </tr>   
+            {% endfor %}
+        </table> 
+            
+        </div>
+              </div>
+  </div>
+  <div class="modal-footer">
+      <button class="btn" type="button" id="btnEspecies" onclick="cerrarEspecies(this, 'verTabla');">Aceptar</button>
+  </div>
+</div>
+         
+</fieldset>
+</form>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    El pago en especies ha sido correctamente registrado. <a target="_blank" class="btn" onclick="imprimirRetiro('{{mov}}', 'especies' ,this);" title="Imprimir el datos del retiro de mercaderia por parte del personal."><i class="fa-icon-print"></i></a>
+</div>
+{%endif%}
+
+

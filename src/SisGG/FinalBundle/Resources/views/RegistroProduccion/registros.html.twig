@@ -1,0 +1,364 @@
+{% extends "::base.html.twig" %}
+{%block title%}Registro de produciones{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="javascript:void(0);">Registros de producción</a> 
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Registro de produciones</legend>
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+          {% if idPE %}  <a href="{{ path('nuevoIngrediente', { 'id': idPE }) }}">Agregar ingredientes</a>{% endif %}
+            </div>  
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+                <button class="btn dropdown-toggle" title="Hacer un nuevo registro de producción" data-toggle="dropdown"><i class="fa-icon-plus-sign"></i> <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    {%if app.user.role.obtenerPermiso('registro_registro_producción_por_cantidad')%}
+                    <li><a href="{{path('registroProduccion1')}}"  >Registrar por cantidad</a></li>
+                    {% endif %}
+                    {%if app.user.role.obtenerPermiso('registro_registro_producción_por_ingredientes')%}
+                    <li><a  href="{{path('registroProduccion2')}}"  >Registrar por ingredientes</a></li>
+                    {% endif %}
+                    {%if app.user.role.obtenerPermiso('registro_registro_pérdida_de_producción')%}
+                    <li><a href="{{path('perdidaProduccion1')}}"  >Registrar pérdidas en producción</a></li>
+                    {% endif %}
+                </ul>
+            {%if app.user.role.obtenerPermiso('registro_imprimir')%}
+            <a class="btn" onclick="imprimirTabla(this);" target="_blank" title="Imprimir lista buscada"><i class="icon-print"></i></a>
+            {% endif %}
+        </div>
+        <div><br> <br></div>
+        
+        <div>
+        <div class="accordion" id="acordion">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#acordion" href="#collapseOne">
+               Buscar por fechas
+              </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+              <div class="accordion-inner">
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#1B" data-toggle="tab">Por los últimos </a>
+                        </li>
+                        <li>
+                            <a href="#2B" data-toggle="tab">Entre dos fechas</a>
+                        </li>
+                        <li>
+                            <a href="#3B" data-toggle="tab">Por periodo</a>
+                        </li>
+                    </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active"  id="1B">
+                                
+                                 <div class="input-append">
+                                <input class="" type="number" autocomplete="off" min="0" onkeypress="return isNumberKey(this,event);" id="1BTiempo"  placeholder="##">
+                                <select id="1BCombo">
+                                    <option value="1">Días</option>
+                                    <option value="2">Semanas</option>
+                                    <option value="3">Meses</option>
+                                    <option value="4">Años</option>
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="buscar1()">Buscar  <i class="fa-icon-search"></i></button>    
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="2B"> 
+                                Desde
+                                <input type="text" id="2BFecha1" value="{{'now'| date('d/m/Y')}}"  class="datepicker">
+                                Hasta
+                                <div class="input-append">
+                                <input type="text" id="2BFecha2" value="{{'now'| date('d/m/Y')}}"  class="datepicker" >
+                                
+                                    <button type="button" class="btn btn-primary" onclick="buscar2()">Buscar  <i class="fa-icon-search"></i></button>
+                                 </div>
+                            </div>
+                            <div class="tab-pane"  id="3B">
+                                <div class="input-append">
+                                <select id="3BCombo">
+                                    <option value="0" title="Busca por la fecha exacta">Fecha exacta</option>
+                                    <option value="1" title="Busca todos hasta la fecha establecida">Hasta</option>
+                                    <option value="2" title="Busca todos desde la fecha establecida, hasta el dia de hoy">Desde</option>
+                                </select>
+                               
+                                <input type="text" id="3BFecha1" class="datepicker" value="{{'now'| date('d/m/Y')}}" >
+                                <button type="button" class="btn btn-primary" onclick="buscar3()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>
+                               <div class="input-append">
+                                <select id="4BCombo">
+                                    <option value="0" title="Busca solo por años">Buscar sólo por años</option>
+                                    <option value="1">Enero</option><option value="2">Febrero</option>
+                                    <option value="3">Marzo</option><option value="4">Abril</option>
+                                    <option value="5">Mayo</option><option value="6">Junio</option>
+                                    <option value="7">Julio</option><option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                </select>
+                                <input class="" type="number" autocomplete="off" value="{{'now'| date('Y')}}"   min="0" onkeypress="return isNumberKey(this,event);" id="4BAño"  placeholder="Ej. 2013">
+                                <button type="button" class="btn btn-primary" onclick="buscar4()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>     
+                            </div>
+                        </div>
+                </div>  
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        </div>
+       <div class="pull-left">
+                <button class="btn" type="button" onclick="restablecer();">Restablecer tabla <i class="fa-icon-refresh"></i></button>
+            </div>
+            <div class="pull-right">Total <div class="input-prepend input-append">
+                <span class="add-on">$</span>
+                <input class=""  type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                       id="txtTotal" readonly="readonly"></div> 
+          </div> 
+        <div>
+            <br><br>
+        </div>
+        <div id="divTabla">
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th id="primeraCol">Fecha (aaaa/mm/dd)</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Costo total</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+            <tr id="{{r.id}}">
+                <td>{{r.fecha|date("Y/m/d H:i")}}</td>
+                <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{r.producto.id}}','{{r.producto}}', this);">{{r.producto}}</a></td>
+                 <td>{%if r.tipo==1%}Producción{%else%}Pérdida{%endif%}</td>
+                <td>{{r.descripcion}}</td>
+                 <td  style="text-align: right">{{r.cantidad}}</td>
+                <td>{{r.tasa}}</td>
+                <td  style="text-align: right">$ <span class="lineaCosto">{{r.costo}}</span></td>
+                <td style="text-align: center;width: fit-content" >
+                   {%if r.tipo%} <a href="#" onclick="detallesModal('{{r.id}}');" title="Ver detalles"><i class="fa-icon-list-alt"></i></a>   {%endif%}
+                   {%if app.user.role.obtenerPermiso('registro_imprimir')%}
+                    <a target="_blank" href="{{path('impDetallesRegProd', {'id': r.id , '_format':'pdf'})}}" title="Imprimir los datos" ><i class="fa-icon-print"></i></a>
+                    {%endif%}
+                </td>
+                
+            </tr>   
+            
+            {% endfor %}
+        </table>
+                    </div>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+ {%block modal%}      
+ <div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Ingredientes</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detalles">
+      </div>         
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+
+{% endblock %}
+        
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+    function detallesModal(id){
+        var url = "{{path('registrosProduccion1')}}";
+        $('#detalles').load(url,{'id':id});
+        $('#verModal').modal('toggle');
+    }
+    
+    
+    $(document).ready(function  (){
+        $('#primeraCol').trigger('click');
+        txt();
+        var total = sumar();
+        $('#txtTotal').val(total);
+         });
+    
+
+        
+
+//Imprimir    
+function imprimirTabla(ele){
+      var tabla = document.getElementById('example');
+      var rows = tabla.getElementsByTagName('tr');
+      var filas= new Array(rows.length);
+      for (var i = 1; i<rows.length ;i++){
+        filas[i-1]=rows[i].id;
+      }
+
+      var url = "{{path('impListaRegProd', { 'ids': '__ids__' , '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      $(ele).attr('href',url);
+
+  }  
+  
+  function impDetalles(id, ele){
+    var url = "{{path('impDetallesRegProd', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+    url= url.replace('amp;', '');
+    $(ele).attr('href',url);
+}
+
+function buscar1(){
+        var tiempo=$('#1BTiempo').val(); 
+        var clase= $("#1BCombo").val() ;
+        if ($.isNumeric(tiempo)&&tiempo>=0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarRP')}}',{'tipo':'0','tiempo':tiempo, 'clase':clase}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    function buscar2(){
+    var tabla = document.getElementById('example');
+        var fecha1=$('#2BFecha1').val();
+        var fecha2=$('#2BFecha2').val();      
+        if (isDate(fecha1)&&isDate(fecha2)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarRP')}}',{'tipo':'1','fecha1':fecha1, 'fecha2':fecha2}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar las fechas');
+        
+    }
+    
+    function buscar3(){
+        var fecha1=$('#3BFecha1').val();
+        var clase= $("#3BCombo").val() ;
+        if (isDate(fecha1)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarRP')}}',{'tipo':'2','fecha1':fecha1, 'clase':clase}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar la fecha');
+        
+    }
+    function buscar4(){
+        var año=$('#4BAño').val(); 
+        var mes= $("#4BCombo").val() ;
+        if ($.isNumeric(año)&&año>0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarRP')}}',{'tipo':'3','año':año, 'mes':mes}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    
+    function cargarTabla(){
+        $('.table.table-striped.table-bordered').dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ Registros por página",
+                        "sSearch": "Buscar:",
+                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sZeroRecords": "Ningun registro encontrado",
+                        "oPaginate": {
+				             "sPrevious": "Anterior",
+                                             "sNext": "Siguiente"
+				     }
+		}
+	} );
+        $('#primeraCol').trigger('click');
+        txt();
+        var total = sumar();
+        $('#txtTotal').val(total);
+    }
+    
+    function restablecer(){
+        var div = document.getElementById('divTabla');
+        $(div.firstElementChild).remove();
+        var img = document.createElement('img');
+        img.src='{{asset('images/loading.gif')}}';      
+        $(div).append(img);
+        $(div).load('{{path('buscarRP')}}',{'tipo':'-1'}, function (){
+                cargarTabla();
+               // $("#totalCompras").val($("#totalHidden").val()); 
+            });
+    }
+    
+    function sumar(){
+        var total = parseFloat('0.00'); 
+        $('.lineaCosto').each(function (e){
+             var num = parseFloat($(this).html());
+             total+=num;
+        });
+        return total;
+    }
+    
+    function  txt(){
+       $("#txtBuscarTabla").keyup (function() {
+            var total = sumar();
+            $('#txtTotal').val(total); 
+       });  
+        $(example_length).click (function() {
+            var total = sumar();
+            $('#txtTotal').val(total);
+
+               });
+               
+   }
+    </script>
+{% endblock%}

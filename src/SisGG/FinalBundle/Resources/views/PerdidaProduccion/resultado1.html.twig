@@ -1,0 +1,22 @@
+
+<div class="control-group">
+    <label class="control-label" id="la" >Cantidad en {{mp.tasa}}</label>
+    <div class="controls">
+        <div class="input-prepend input-append">
+            
+            <input class="input-medium" dir="rtl" readonly="true" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="cantidadMP" name="cantidadMP" disabled="disabled" placeholder="##.##" value="{{mp.cantidad |number_format(3,".","")}}">
+            <span class="add-on">(En stock)</span>   
+            <span class="add-on">-</span>       
+             <input class="input-medium" dir="rtl"  readonly="true" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="cantEnv" name="cantidadMP" disabled="disabled" placeholder="##.##" value="{{cantidad |number_format(3,".","")}} (Perdida)">
+             <span class="add-on">(Perdida)</span>
+             <span class="add-on">=</span> 
+             <input class="input-medium" dir="rtl"  readonly="true" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="resto" name="cantidadMP" disabled="disabled" placeholder="##.##" value="{%if resto < 0%}0.00{%else%}{{resto |number_format(3,".","")}}{%endif%}">
+             <span class="add-on">Restante</span>
+             <br>
+             <span class="add-on">$</span>
+             <input class="input-medium" dir="rtl" readonly="true" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="cantidadMP" name="cantidadMP" disabled="disabled" placeholder="##.##" value="{{importe |number_format(3,".","")}}">
+            <span class="add-on">(Valor de pérdida)</span>  
+        </div>
+        </div>
+</div>
+

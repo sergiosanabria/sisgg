@@ -1,0 +1,40 @@
+ <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    
+                    <th id="primeraCol">Fecha (aaaa/mm/dd)</th>
+                    <th>N°</th>
+                    <th style="text-align: center">Tipo</th>
+                    <th>Proveedor</th>                   
+                    <th style="text-align: center" >Estado</th>
+                    <th>Total</th>
+                    <th style="text-align: center">Acciones</th>
+                    
+                </tr>
+            </thead>
+            {% for r in registros%}
+            <tr id="{{r.id}}">
+                <td style="text-align: center;">{{r.fechaFactura|date("Y/m/d")}}<span style="display: none;">{{r.fechaEmision | date("H:i:s")}}</span></td>
+                <td style="text-align: right;">{{r.nro}}</td>
+                <td style="text-align: center;width: fit-content;">{{r.tipo}}</td>
+                <td>{{r.proveedor}}</td>
+                <td style="text-align: center;width: fit-content">
+                    {%if r.estado==0%}<span class="label label-warning">Parcialmente pago</span>{%endif%}
+                    {%if r.estado==1%}<span class="label label-success">Totalmente pago</span>{%endif%}</td>
+                <td  style="text-align: right">{{r.total}}</td>
+                <td style="text-align: center;width: fit-content" >
+                    <a href="#" onclick="detallesModal('{{r.id}}');" title="Ver detalles factura {{r.nro}}"><i class="fa-icon-list-alt"></i></a> 
+                    {%if r.estado==0%}
+                        {%if app.user.role.obtenerPermiso('compra_pago_por_factura')%}
+                        <a href="{{path('editarPagoCompra', {'id':r.id})}}"  title="Registrar pagos de factura {{r.nro}}"><i class="fa-icon-money"></i></a> 
+                        {% endif %}
+                        {%if app.user.role.obtenerPermiso('compra_pago_por_proveedor')%}
+                        <a href="{{path('editarPagoCompraProv', {'id':r.proveedor.id})}}"  title="Registrar pagos de facturas del proveedor"><i class="fa-icon-truck"></i></a>        
+                        {% endif %}
+                    {%endif%}                 
+                </td>
+                
+            </tr>   
+            {% endfor %}
+        </table>
+<input type="hidden" value="{{total}}" id="totalHidden">

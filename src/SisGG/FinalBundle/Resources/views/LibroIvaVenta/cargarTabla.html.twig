@@ -1,0 +1,42 @@
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead>
+                <tr>
+                <th>Fecha aaaa/mm/dd</th>
+                <th style="text-align: center">Tipo</th>
+                <th>Número</th>
+                 <th>Proveedor</th>
+                <th>CUIT</th>
+                <th>Neto</th>
+                {%for i in tasas%}
+                    {%if i.gravado%}
+                    <th>IVA gravado {{i.tasa}} %</th>
+                    {%else%}
+                    <th>IVA no gravado {{i.tasa}} %</th>
+                   {%endif%} 
+                {%endfor%}
+                <th>Acrecentamiento</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+           {%set j=0%}
+            {% for i in items%}
+            <tr id="{{i.id}}">
+                <td>{{i.fecha | date("Y/m/d")}}</td>
+                <td style="text-align: center;width: fit-content">{{i.tipo}}</td>
+                <td>{{i.venta.serie}} - {{i.venta.numero}}</td>
+                <td>{{i.razonSocial}}</td> 
+                <td>{{i.cuit}}</td> 
+                <td>{{i.Neto}}</td> 
+                 {%for item in i.item%}
+                    <td>{{item.total}}</td>
+                {%endfor%}
+                    {%if (i.item|length < tasas|length) %}
+                {% for x in range(1,( tasas|length -i.item|length  )) %}
+                        <td>0.00</td>
+                {% endfor %}  
+                    {%endif%}
+                <td>{{i.acrecent}}</td>
+                <td>{{i.total}}</td>    
+            </tr>   
+            {% endfor %}
+        </table>

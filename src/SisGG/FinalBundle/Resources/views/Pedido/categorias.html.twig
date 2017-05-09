@@ -1,0 +1,23 @@
+{%if tipo == ''%}
+    <a style='cursor:pointer;' class="btn quick-button-small span1 producto" onclick="{%if categoria.padre != null%}mostrarCategorias({{categoria.padre.id}}){%else%}mostrarCategoriasPadre(){%endif%};">
+        <i class="icon-arrow-left"></i>
+        <p>Atras</p>
+    </a>
+{%for categoriahijo in categoria.hijo%}
+    <a style='cursor:pointer;' class="btn quick-button-small span2 producto" onclick="{%if categoriahijo.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoriahijo.id}});">
+        <i class="fa-icon-list"></i>
+        <p>{{categoriahijo.nombre}}</p>
+    </a>
+{%endfor%}
+{%elseif tipo == 'modal'%}
+<li style='cursor:pointer;'>
+    <a style='cursor:pointer;' onclick="{%if categoria.padre != null%}mostrarCategorias({{categoria.padre.id}}){%else%}mostrarCategoriasPadre(){%endif%};">
+        <i class="icon-chevron-up"></i>
+    </a>
+</li>        
+{%for categoriahijo in categoria.hijo%}
+    <li style='cursor:pointer;'>
+        <a style='cursor:pointer;'onclick="{%if categoriahijo.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoriahijo.id}});"><b>{{categoria.nombre}}{%if categoria.hijo|length >0%}<i class='icon icon-white icon-chevron-down'></i>{%endif%}</b></a>
+    </li>
+{%endfor%}
+{%endif%}

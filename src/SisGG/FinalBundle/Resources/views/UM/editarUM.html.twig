@@ -1,0 +1,46 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar unidad de Medida {{nombre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('ums')}}">Unidades de medida</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar unidad de Medida {{nombre}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form action="{{ path('modificarUM', {'id':id}) }}" method="post" class="form-horizontal">
+    <legend>Editar Unidad de Medida {{nombre}}</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    {{ form_widget(form) }}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('ums')}}" type="button" class="btn">Cancelar</a>
+    </div>   
+</form>
+        </div>
+    </div>
+</div> 
+
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+      $(document).ready(function  (){
+            
+         });
+    </script>
+{% endblock%}

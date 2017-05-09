@@ -1,0 +1,593 @@
+{% extends "::base.html.twig" %}
+{%block title%}Registrar pago de factura de compra{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('compras')}}">Compras</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Registrar pago de factura de compra</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Registrar pago de factura de compra </legend>
+<form class="form-horizontal"  id="formCompra" action="{{path('registrarPagoCompra', {'id':id})}}" method="post">
+         
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error}}  
+            </div>
+        {% endif %}
+<div class="control-group">
+    <label class="control-label">Proveedor</label>
+    <div class="controls">
+        <input value="{{compra.proveedor}}" type="text" readonly="true" >
+    </div>
+</div>
+<div class="control-group">
+    <label class="control-label">Fecha de registro</label>
+    <div class="controls">
+        <input value="{{compra.fechaEmision | date("d/m/Y g:ia")}}" type="text" readonly="true" >
+    </div>
+</div>  
+<div class="control-group">
+    <label class="control-label">Fecha de factura</label>
+    <div class="controls">
+        <input value="{{compra.fechaFactura |date("d/m/Y")}}" type="text" readonly="true" >
+    </div>
+</div>  
+<div class="control-group">
+    <label class="control-label">Punto de vanta y número</label>
+    <div class="controls">
+        <div class="input-append">
+            <input type="text" value="{{compra.serie}} - {{compra.numero}}" readonly="true" >
+        </div>
+    </div>
+</div>                  
+<div class="control-group">
+    <label class="control-label">Tipo</label>
+    <div class="controls">
+        <div class="input-append">
+            <input type="text" value="{{compra.tipo}}" readonly="true" >
+        </div>
+    </div>
+</div>                  
+                
+<div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Productos</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+
+<table class="table table-bordered table-hover" id="itemsCompra">
+    <thead class="header">
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Unidad de medida</th>
+                    <th title="Precio de costo unitario">PCU</th>
+                    <th>Descuento en %</th>
+                    {%if compra.tipo == 'A'%}
+                    <th>IVA %</th>
+                    <th>Total en $ IVA</th>
+                    {%endif%}
+                     
+                    <th>Total en $ </th>
+                </thead>
+                {%set AB=0%}
+                {%for i in items%}
+                <tr>
+                <td>{{i.producto}}</td>
+                <td>{{i.cantidad}}</td>
+                <td>{{i.tasa}}</td>
+                <td>{{i.precioCosto}}</td>
+                <td>{{i.bonificacion}}</td>
+                {%if compra.tipo == 'A'%}
+                    <td>{{i.pIVA}} {%if i.gIVA%}- Gravado{%else%}- No Gravado{%endif%}</td>
+                    <td>{{i.tIVA}}</td>
+                    {%endif%}
+                <td>{{i.total}}</td>
+                </tr>
+                {%set AB=AB+i.total%}
+                {%endfor%}
+                <tfoot>
+        <tr><td></td><td></td>{%if compra.tipo=='A'%}<td></td><td></td>{%endif%}<td></td><td></td><td><b class="pull-right"> Sub-Total</b></td><td>
+    {%if compra.tipo=='A'%}$ {{libro.neto}}{%else%}$ {{AB | number_format (2,'.','')}}{%endif%}
+    </td></tr>{%if compra.tipo=='A'%}
+    {%for i in libro.item%}
+    <tr><td></td><td></td><td><td></td><td></td><td></td><td><b class="pull-right">{%if i.gravado%}
+                    IVA gravado {{i.tasa}} %
+                    {%else%}
+                    IVA no gravado {{i.tasa}} %
+                   {%endif%} </b></td><td>
+ 
+        $ {{i.total}}
+    </td></tr>
+    {%endfor%}
+       {%endif%}
+       <tr><td></td><td></td>{%if compra.tipo=='A'%}<td></td><td></td>{%endif%}<td></td><td></td><td><b class="pull-right"> Descuento %</b></td><td>      
+               $ {{compra.descuento}}
+           </td></tr>
+       <tr><td></td><td></td>{%if compra.tipo=='A'%}<td></td><td></td>{%endif%}<td></td><td></td><td><b class="pull-right"> TOTAL en $</b></td><td id="totalCompra">      
+                {{totalItem}}
+           </td></tr>
+        </tfoot>
+            </table>                     
+</p>
+            </div>
+        </div><!--/span-->
+    </div>      
+ 
+                
+<div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Pagos registrados</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+     {%set total=0%}
+{%if pagos | length > 0 %}
+<table class="table table-bordered table-hover" id="pagos">
+                <thead class="header">
+                    <th>Tipo de pago</th>
+                    <th>Aclaración</th>
+                    <th>Fecha</th>
+                    <th>Fecha de registro</th>
+                    <th>Importe en $</th>
+                </thead>
+                {%for i in pagos%}
+                {%set total=i.importe + total %}
+                <tr>
+                <td>{{i.tipoCobro}} <button title="Mostrar detalles de tipo de pago." type="button" id="btn{{i.id}}" class="btn" onclick="pop('{{i.id}}', this);"><i class="fa-icon-eye-open"></i></button></td>
+                <td>{{i.aclaracion}}</td>
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td>{{i.fechaEmision | date("d/m/Y g:ia")}}</td>
+                <td style="text-align: right;" >{{i.importe}}</td>
+                </tr>
+                {%endfor%}
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><b class="pull-right">TOTAL en $</b></td>
+                        <td style="text-align: center;" id="totalPagosViejos"> {{ total}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+{%else%}
+<h3>No se han registrado pagos</h3>
+{%endif%}
+</p>
+
+
+        
+
+<div class="row-fluid sortable ui-sortable">
+<div class="box span12">
+<div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Pagos</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+</div>
+<div class="box-content">
+<p>
+            <a rel="tooltip" href="#" class="btn" onclick="nuevoCobro(event)" data-original-title="" title="">Registrar Cobro</a>
+            <div><br></div>
+            <table id="tableCobrosVisible" class="table simple-table" data-index='{{form.pagos|length+1}}'>
+                <thead>
+                <th>Tipo de pago</th>    
+                <th>Importe</th>
+                <th>Descripción</th>
+                <th>Aclaración</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+                </thead>
+                <tbody>
+            {%set i = 0%}
+            {%for cobro in form.pagos%}
+                {%set c = cobro.vars.data%}
+                {%set i = i+1%}
+                        <tr id='sisgg_finalbundle_compratype_pagos_{{i}}_visible'><td>{{c.tipoCobro}}</td><td>$<span class='importe'>{{c.importe}}</span></td><td>{%for campo in c.valores%}{{campo.campo.nombre}}: {{campo.valor}}<br>{%endfor%}</td><td>{{c.aclaracion}}</td> <td>{{c.fecha |date('d/m/Y')}}</td><td><a href="#" rel="tooltip" title="" onclick="eliminarCobro(event,'sisgg_finalbundle_compratype_pagos_{{i}}_visible');" data-original-title="Eliminar"><i class="icon icon-remove-sign"></i></a></td></tr>
+                {%endfor%}    
+                            </tbody>    
+                        </table>
+                        <div id="pagos" style="display:none">
+                            <table id="tableCobros" class="table simple-table">
+                                <thead>
+                                <th>Tipo de Cobro</th>    
+                                <th>Importe</th>
+                                <th>Descripcion</th>
+                                <th>Aclaracion</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                                </thead>
+                    {{form_widget(form.pagos)}}
+                            </table>
+
+                        </div>
+                        <div class="control-group pull-right">
+                            <label class="control-label"for="totalPagos">Total pagos</label>
+                            <div class="controls"><div class="input-prepend input-append">
+                                    <span class="add-on">$</span>
+                                    <input class="" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="totalPagos"  readonly="readonly"  dir="rtl">
+                                </div>
+                                </div>
+                        </div>
+                     <div class="control-group pull-right">
+                            <label class="control-label"for="totalPagos">Faltan</label>
+                            <div class="controls"><div class="input-prepend input-append">
+                                    <span class="add-on">$</span>
+                                    <input class="" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" value="{{ totalItem- total }}" id="resto"  readonly="readonly"  dir="rtl">
+                                </div>
+                                </div>
+                        </div>
+<br>
+                         
+                    </div> 
+             </div>
+    </div>
+</div>
+        <div style="display: none">
+      {{ form_rest(form) }}</div>
+            
+                <div class="form-actions">
+                        <button class="btn btn-primary" type="submit"  title="Regitra la factura de compra"  >Sólo guardar</button>
+                    
+                    <a type="button" href="{{path('compras')}}" class="btn">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+            </div>
+    </div>
+</div>
+{%endblock%}
+{%block modal%}
+
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  <div class="modal-body">
+      ¿Qué desea realizar con la factura?       
+  </div>
+  <div class="modal-footer">  
+</div>
+</div>
+<div class="modal hide fade" id="cobroModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Registrar Cobro</h3>
+    </div>
+    <form id="formCobro">
+        <div  class="modal-body">
+
+            <div id="dataCobro">
+            </div>               
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='cancelar(event);'>Cancelar</a>
+            <input type="submit" class="btn btn-primary" value="Aceptar">
+        </div>
+    </form> 
+</div>
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+$(document).ready(function  (){
+     $("#formCobro").submit(function(ev) {
+                                                        ev.preventDefault();                                             
+
+                                                        var val = parseFloat($("#totalCompra").text());
+                                                        var importes = parseFloat(0.00);
+                                                        $(".importe").each(function() {
+                                                            importes = importes + parseFloat($(this).html());
+                                                        });
+                                                        //if (val > importes) {
+                                                            var index = $('#dataCobro').data('index');
+                                                            var campos = $("#sisgg_finalbundle_compratype_pagos_" + index + "_campos").data('campos');
+                                                            var tr = "<tr id='sisgg_finalbundle_compratype_pagos_" + index + "_visible'><td>" + $("#sisgg_finalbundle_compratype_pagos_" + index + "_tipoCobro option:selected").html() + "</td><td> $ <span class='importe'>" + $("#sisgg_finalbundle_compratype_pagos_" + index + "_importe").val() + "</span></td></td><td>";
+                                                            for (var i = 0; i < campos; i++) {
+                                                                tr = tr + $("#sisgg_finalbundle_compratype_pagos_" + index + "_valores_" + i + "_campo option:selected").html() + ":" + $("#sisgg_finalbundle_compratype_pagos_" + index + "_valores_" + i + "_valor").val() + "<br>";
+                                                            }
+                                                            tr = tr + "</td><td>" + $("#sisgg_finalbundle_compratype_pagos_" + index + "_aclaracion").val();//+ "<td><a href='#' rel='tooltip' title='' onclick='eliminarCobro(event,\"sisgg_finalbundle_compratype_pagos_" + index + "_visible\");' data-original-title='Eliminar''><i class='icon icon-remove-sign'></i></a></td></tr>";
+                                                            tr = tr + "</td><td>" + $("#sisgg_finalbundle_compratype_pagos_" + index + "_fecha").val() + "<td><a href='#' rel='tooltip' title='' onclick='eliminarCobro(event,\"sisgg_finalbundle_compratype_pagos_" + index + "_visible\");' data-original-title='Eliminar''><i class='icon icon-remove-sign'></i></a></td></tr>";
+                                                            $('#tableCobrosVisible tbody').append(tr);
+                                                            $("#items_empty").remove();
+                                                            $('#sisgg_finalbundle_compratype_pagos_' + index).appendTo($('#sisgg_finalbundle_compratype_pagos'));
+                                                            var importes = parseFloat(0.00);
+                                                            $(".importe").each(function() {
+                                                                importes = importes + parseFloat($(this).html());
+                                                            });
+                                                            var viejo;
+                                                            if ($("#totalPagosViejos").length)
+                                                                viejo = parseFloat($("#totalPagosViejos").text());
+                                                            else
+                                                                viejo = parseFloat('0.00');
+                                                            $('#totalPagos').val(importes.toFixed(3));
+                                                            $('#resto').val(Math.abs( (val - (importes + viejo)).toFixed(3)));
+                                                            $('#cobroModal').modal('hide');
+                                                       /* } else {
+                                                            $('#dataCobro').empty();
+                                                            $('#cobroModal').modal('hide');
+                                                        }*/
+                                                    });
+ 
+            $(document).keypress(function(e){
+              
+                if(e.which == 13){
+                  return false;
+                }
+                //Shift N
+                if(e.which == 78){
+                  nuevaFila(e,'sisgg_finalbundle_notapedidotype_item');
+                }
+              });
+         });
+
+var clase='sisgg_finalbundle_compratype_pagos_';
+var elemento='sisgg_finalbundle_compratype_';
+var fila='';
+ function cambiarMonto(ele){
+          sumarPagos();
+      }
+      
+ function sumarPagos(){
+     var table = document.getElementById('itemsPago');
+        var rows = table.getElementsByTagName('tr');
+        var total = parseFloat('0.00');
+        for (var i = 1; i <rows.length; ++i) {
+            var num =rows[i].cells[0].firstChild.value; 
+            if (!($.isNumeric(num))){
+                if (num!=''){
+                    num = parseFloat('0.00');
+                    rows[i].cells[0].firstChild.value=num;}
+                num = parseFloat('0.00');
+                
+            }else{
+                num = parseFloat(num);
+            }
+            total=num+total;
+        }
+        if ($.isNumeric(total))
+            
+        var resto= ( parseFloat($('#totalItem').val()) - parseFloat($('#totalPago').val()))-total;
+        $('#resto').val(resto.toFixed(2));
+        if (resto < 0)
+        $('#resto').val('0.00');
+        $('#total').val(total.toFixed(2)); 
+    }   
+    
+ function nuevaFila(e,id) {
+    e.preventDefault();
+    // Get the data-prototype explained earlier
+    var collectionHolder = $("#"+id);
+    
+    var prototype = collectionHolder.data('prototype');
+    // get the new index
+    var index = collectionHolder.data('index');
+    // Replace '$$name$$' in the prototype's HTML to
+    // instead be a number based on how many items we have
+    var newForm = prototype.replace(/__name__/g, index);
+    // increase the index with one for the next item
+    collectionHolder.data('index', index + 1);
+    // Display the form in the page in an li, before the "Add a tag" link li
+    var $newFormLi = collectionHolder.append(newForm);
+    $('[data-rel="chosen"],[rel="chosen"]').chosen();
+    //inicializarFila(index);
+    //alert(index);
+    fila=index;
+    if($('.datepicker')) {
+	$('.datepicker').datepicker();
+	$(".datepicker").datepicker($.datepicker.regional['es']);
+	}
+    sumarPagos();
+    
+} 
+
+function eliminarFila(e,id){
+    e.preventDefault();
+    $('#'+id).remove();
+     sumarPagos();
+}
+
+function verModal (){
+    $('#verModal').modal('toggle');
+}
+
+/*Javascript de Tipo de cobro*/
+                                                function nuevoCobro(ev) {
+                                                    ev.preventDefault();
+                                                    var val = $("#totalCompra").text();
+                                                    var viejo;
+                                                    if ($("#totalPagosViejos").length)
+                                                        viejo = parseFloat($("#totalPagosViejos").text());
+                                                    else
+                                                        viejo = parseFloat('0.00');
+                                                    var importes = parseFloat(0.00);
+                                                    $(".importe").each(function() {
+                                                        importes = importes + parseFloat($(this).html());
+                                                    });
+                                                    if (val <= (importes+ viejo)) {
+                                                        $('#dataCobro').html("<p>No queda Saldo por pagar</p>");
+                                                        $('#cobroModal').modal('show');
+                                                    } else {
+                                                        $.getJSON("{{ path('tipo_cobro') }}").done(
+                                                                function(data) {
+                                                                    var index = $('#tableCobrosVisible').data('index');
+                                                                    $('#tableCobrosVisible').data('index', index + 1);
+                                                                    $('#dataCobro').data('index', index);
+                                                                    var select = "<select required='required' onchange='a(this, event);' id='sisgg_finalbundle_compratype_pagos_" + index + "_tipoCobro' name='sisgg_finalbundle_compratype[pagos][" + index + "][tipoCobro]' ><option value=''></option>";
+                                                                    $(data).each(function(k, v) {
+                                                                        //if ($(this).attr('id')!=id)
+                                                                            select = select + "<option value='" + $(this).attr('id') + "'>" + $(this).attr('nombre') + "</option>";
+                                                                        //else
+                                                                           // select = select + "<option selected='selected' value='" + $(this).attr('id') + "'>" + $(this).attr('nombre') + "</option>";
+                                                                    });
+                                                                    select = select + "</select>";
+                                                                    $("<div id='sisgg_finalbundle_compratype_pagos_" + index + "'></div>").appendTo('#dataCobro');
+                                                                    $("<label class='' for='sisgg_finalbundle_compratype_pagos_" + index + "_tipoCobro'>Tipo de Cobro</label>").appendTo("#sisgg_finalbundle_compratype_pagos_" + index);
+                                                                    $(select).appendTo("#sisgg_finalbundle_compratype_pagos_" + index);
+                                                                    document.getElementById("sisgg_finalbundle_compratype_pagos_" + index + "_tipoCobro").options[0].innerHTML="Seleecione un tipo de pago";
+                                                                    $('#cobroModal').modal('show');
+                                                                    $('#cobroModal').on('hidden', function() {
+                                                                        $('#dataCobro').empty();
+                                                                    });
+                                                                });
+                                                    }
+                                                }
+
+                                                function a(element, ev) {
+                                                    var val = $(element).val();
+                                                    var id = $(element).attr('id');
+                                                    var index = id.split('_')[4];
+                                                    $('.claseCobro'+index).remove();
+                                                    if (val==''){return true;}
+                                                    $.getJSON("{{ path('tipo_cobro') }}", {id: val}).done(
+                                                            function(data) {
+                                                                var val = $("#totalCompra").text();
+                                                                var viejo;
+                                                                if ($("#totalPagosViejos").length)
+                                                                    viejo = parseFloat($("#totalPagosViejos").text());
+                                                                else
+                                                                    viejo = parseFloat('0.00');
+                                                                var importes = parseFloat(0.00);
+                                                                $(".importe").each(function() {
+                                                                    importes = importes + parseFloat($(this).html());
+                                                                });
+                                                                var saldo = val - (importes + viejo);
+                                                                var importe = "<input class='claseCobro"+index+"' value='" + saldo.toFixed(3) + "' type='text' autocomplete='off' onkeypress='return isNumberKey(this,event);' id='sisgg_finalbundle_compratype_pagos_" + index + "_importe' name='sisgg_finalbundle_compratype[pagos][" + index + "][importe]' required='required'>";
+                                                                var aclaracion = "<input  class='claseCobro"+index+"' type='text' id='sisgg_finalbundle_compratype_pagos_" + index + "_aclaracion' name='sisgg_finalbundle_compratype[pagos][" + index + "][aclaracion]'>";
+                                                                var fecha = '<input  class="datepicker claseCobro'+index+'" type="text"  id="sisgg_finalbundle_compratype_pagos_'+ index + '_fecha" name="sisgg_finalbundle_compratype[pagos]['+index+'][fecha]" required="required" value="{{'now'|date('d/m/Y')}}" autocomplete="off">';
+                                                                $("<label class='claseCobro"+index+"' for='sisgg_finalbundle_compratype_pagos_" + index + "_importe'>Importe (*)</label>").appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $(importe).appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $("<label class='claseCobro"+index+"' for='sisgg_finalbundle_compratype_pagos_" + index + "_aclaracion'>Aclaracion</label>").appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $(aclaracion).appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $("<label class='claseCobro"+index+"' for='sisgg_finalbundle_compratype_pagos_" + index + "_fecha'>Fecha (*)</label>").appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $(fecha).appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $("<div class='claseCobro"+index+"' id='sisgg_finalbundle_compratype_pagos_" + index + "_campos'></campos>").appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                $(campos).appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                if($('.datepicker')) {
+                                                                        $('.datepicker').datepicker();
+                                                                        $(".datepicker").datepicker($.datepicker.regional['es']);
+                                                                    }
+                                                                var campos = 0;
+                                                                $(data).each(function(k, v) {
+                                                                    if ($(this).attr('darCambio') == false) {
+                                                                        $("#sisgg_finalbundle_compratype_pagos_" + index + "_importe").change(function() {
+                                                                            verificarImporte(this, saldo.toFixed(2));
+                                                                        });
+                                                                    }
+                                                                    $($(this).attr('campos')).each(function(k, v) {
+                                                                        var select = "<select class='claseCobro"+index+"' style='display:none;' id='sisgg_finalbundle_compratype_pagos_" + index + "_valores_" + campos + "_campo' name='sisgg_finalbundle_compratype[pagos][" + index + "][valores][" + campos + "][campo]'>";
+                                                                        select = select + "<option value='" + $(this).attr('id') + "'>" + $(this).attr('nombre') + "</option>";
+                                                                        select = select + "</select>";
+                                                                        $(select).appendTo('#sisgg_finalbundle_compratype_pagos_' + index);
+                                                                        var label = "<label for='sisgg_finalbundle_compratype_pagos_" + index + "_valores_" + campos + "_valor'>" + $(this).attr('nombre') + "</label>";
+                                                                        var patron = $(this).attr('patron');
+                                                                        var tipo = $(this).attr('tipoDato');
+                                                                        var requerido = $(this).attr('requerido');
+                                                                        var ejemplo = $(this).attr('ejemplo');
+                                                                        if (patron != null) {
+                                                                            patron = "pattern= '" + patron + "'";
+                                                                        }
+                                                                        var tooltip = '';
+                                                                        if (tipo == 'text' && ejemplo != null) {
+                                                                            var tooltip = 'Ejemplo: ' + ejemplo;
+                                                                        }
+                                                                        var input = "<input type='" + tipo + "' " + patron + " required='" + requerido + "' tooltip='" + tooltip + "' id='sisgg_finalbundle_compratype_pagos_" + index + "_valores_" + campos + "_valor' name='sisgg_finalbundle_compratype[pagos][" + index + "][valores][" + campos + "][valor]'>";
+                                                                        $(label).appendTo("#sisgg_finalbundle_compratype_pagos_" + index + "_campos");
+                                                                        $(input).appendTo("#sisgg_finalbundle_compratype_pagos_" + index + "_campos");
+                                                                        campos = campos + 1;
+                                                                    });
+                                                                    
+                                                                    $("#sisgg_finalbundle_compratype_pagos_" + index + "_campos").data('campos', campos);
+                                                                });
+                                                            });
+                                                }
+
+                                                function verificarImporte(ele, saldo) {
+                                                    if (parseFloat($(ele).val()) > parseFloat(saldo)) {
+                                                        $(ele).val(parseFloat(saldo).toFixed(2));
+                                                    }
+                                                }
+
+
+                                                function eliminarCobro(e, id) {
+                                                    e.preventDefault();
+                                                    $('#' + id).remove();
+                                                    $('#' + id.replace('_visible', '')).remove();
+                                                    //var val = $("#totalmayor").val();
+                                                    var importes = parseFloat(0.00);
+                                                    $(".importe").each(function() {
+                                                        importes = importes + parseFloat($(this).html());
+                                                    });
+                                                    var viejo;
+                                                    if ($("#totalPagosViejos").length)
+                                                        viejo = parseFloat($("#totalPagosViejos").text());
+                                                    else
+                                                        viejo = parseFloat('0.00');
+                                                    /*var cambio = importes - val;
+                                                    if (cambio < 0) {
+                                                        cambio = 0.00;
+                                                    }*/
+                                                    var val = parseFloat($("#totalCompra").text());
+                                                    $('#resto').val(Math.abs((val- (viejo+importes)).toFixed(3) ));
+                                                    $('#totalPagos').val(importes.toFixed(3));
+                                                    if ($("#tableCobrosVisible tbody tr").length < 1) {
+                                                        $("#tableCobrosVisible tbody").html("<td id='items_empty' colspan='5' style='height:64px'>No hay Cobros registrados</td>");
+                                                    }
+
+                                                }
+
+                                                function cancelar(ev) {
+                                                    ev.preventDefault();
+                                                    $('#dataCobro').empty();
+                                                    $('#cobroModal').modal('hide');
+                                                }
+                                                
+function pop(id, btn){
+       var icono=btn.firstChild;
+       if ($(icono).attr('class')=='fa-icon-eye-open'){
+        $.getJSON("{{path ('obtenerValores')}}",{'id':id} ,function (json){
+            var div='';
+            for (var i =0;i<json.length;i++ )
+                div=div+'<b>'+json[i].nombre+':</b> '+json[i].valor+'<br>';
+            
+            btn.title='Ocultar detalles de tipo de pago.';
+            $(icono).removeClass('fa-icon-eye-open').addClass('fa-icon-remove');
+            $(btn).popover({
+                html:true,
+                trigger:'manual',
+                title:'Datos de tipo de pago: ',
+                content:div
+            });
+           $(btn).popover('show');           
+        });
+        }else{
+            btn.title='Mostrar detalles de tipo de pago.';
+            $(icono).removeClass('fa-icon-remove').addClass('fa-icon-eye-open');
+            $(btn).popover('hide'); 
+        }
+    }
+</script>
+{%endblock%}
+

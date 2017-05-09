@@ -1,0 +1,648 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .add-on{
+            display: none;
+        }
+        .lineaVenta{
+            height: 50px;
+        }
+        .cabecera{
+            background-color: #08c;
+            color: white;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Registrar Venta</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <form id='formVenta' class="form-horizontal" action="{{ path('facturar') }}?id={{id}}" method="post">
+                    <legend>Registro de Venta <small>Complete el formulario con los datos solicitados.</small></legend>
+                    <fieldset id="formNuevaVenta">
+                        <div class="span6 pull-left">
+                                    {{form_row(form.fecha,{'attr':{'class':'span12'} })}}
+                                <div style='display: none;'>
+                                        {{form_row(form.tipoFactura,{'attr':{'class':'span12'} })}}
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'>Tipo de Factura (*)</label>   
+                                        <div class='controls'>
+                                            <input type='text' disabled="disabled" class='span12' value='{{form.tipoFactura.vars.data}}'/>
+                                        </div>
+                                    </div>
+                                    <div class='control-group {%if form.serie.vars.errors|length > 0%}error{%endif%}'>
+                                        <label class='control-label'>Número de Factura (*)</label>   
+                                        <div class='controls'>
+                                                {{form_widget(form.serie,{'attr':{'class':'span3'},'value':"%04d"|format(form.serie.vars.data) })}} 
+                                                {{form_widget(form.numero,{'attr':{'class':'span9'} ,'value':"%08d"|format(form.numero.vars.data) })}}
+                                            </div>
+                                            <div class='controls'>
+                                                {{form_errors(form.serie)}}
+                                                </div>    
+                                            </div>
+                                        </div>
+                                        <div class="span6 pull-left">
+                                            {{form_row(form.nombre,{'attr':{'class':'span10'} })}}
+                                            {{form_row(form.condicionIva,{'attr':{'class':'span12'} })}}
+                                            {{form_row(form.cuit,{'attr':{'class':'span12'} })}}
+                                                <div id='cliente' style='display:none;'>    
+                                                    {{form_row(form.cliente,{'attr':{'class':'span12'} })}}
+                                                    </div>    
+
+                                                </div> 
+                                                <div class="span12 pull-right">
+                                                    <div style='display:none'>{{form_widget(form.lineasVenta,{'attr':{'style':'display:none'} })}}</div>
+                                            {{form_widget(form.total,{'attr':{'style':'display:none;'} })}}
+                                                    <div style="margin-left: 0px;" class="span12 pull-left">
+                                                {%set totalFactura = 0.00%}
+                                                {%if form.tipoFactura.vars.data.discriminarIva%}
+                                                            <table id="tableLineas" class="table table-bordered table-hover">
+                                                                <thead class="cabecera">
+                                                                <th>Cantidad</th>    
+                                                                <th>Descripcion del Producto</th>
+                                                                <th>Precio Unitario</th>
+                                                                <th>Bonificación</th>
+                                                                <th>Precio Neto</th>
+                                                                </thead>
+                                                                <tbody>                                                          
+                                                        {%for linea in form.lineasVenta.vars.data%}
+                                                                        <tr class='lineaVenta'>
+                                                                            <td>{{linea.cantidad|number_format(2,'.','')}}</td>
+                                                                            <td>{{linea.descripcion}}</td>
+                                                                            <td style="text-align: right">$ {{(linea.precioUnitarioSinIva)|number_format(2,'.','')}}</td>
+                                                                            <td style="text-align: right">{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                                                                            <td style="text-align: right">$ {{(linea.precioNetoSinIva|number_format(2,'.',''))}}</td>
+                                                                        </tr>
+                                                        {%endfor%}
+                                                        {%for itemRecargo in form.itemsRecargoVenta.vars.data%}
+                                                                        <tr class='lineasVenta'>
+                                                                            <td>1.00</td>
+                                                                            <td>{{itemRecargo.recargo.descripcion}}</td>
+                                                                            <td style="text-align: right">${{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                            <td style="text-align: right">0.00%</td>
+                                                                            <td style="text-align: right">$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                        </tr>
+                                                        {%endfor%}        
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr><td></td><td></td><td></td><td>Subtotal</td><td style="text-align: right">$ {{form.vars.data.subtotalSinIva|number_format(2,'.','')}}</td></tr>
+                                                            {%for itemDescuento in form.itemsDescuentoVenta.vars.data%}
+                                                                        {%if itemDescuento.totalDescuento > 0.00%}
+                                                                        <tr><td></td><td></td><td></td><td>Descuento {{itemDescuento.detalle}}</td><td style="text-align: right"> - $ {{itemDescuento.totalDescuentoSinIva|number_format(2,'.','')}}</td></tr>
+                                                                        {%endif%}    
+                                                            {%endfor%}
+                                                            {%for item in form.itemsIvaVenta.vars.data%}
+                                                                        <tr><td></td><td></td><td></td><td>IVA {{item.tasa|number_format(2,'.')}}</td><td style="text-align: right">$ {{item.total|number_format(2,'.','')}}</td></tr>
+                                                            {%endfor%}      
+                                                                        <tr><td></td><td></td><td></td><td id='totalmayor' data-total='{{form.vars.data.total}}'>Total</td><td style="text-align: right">$ {{form.vars.data.total|number_format(2,'.','')}}</td></tr>        
+                                                                    <tfoot>
+                                                                </table>
+                                                            {%set totalFactura = form.vars.data.total%}
+                                                {%else%}
+                                                                <table id="tableLineas" class="table table-bordered table-hover">
+                                                                    <thead class="cabecera">
+                                                                    <th>Cantidad</th>    
+                                                                    <th>Descripcion del Producto</th>
+                                                                    <th>Precio Unitario</th>
+                                                                    <th>Bonificación</th>
+                                                                    <th>Precio Neto</th>
+                                                                    </thead>
+                                                                    <tbody>                                                          
+                                                        {%for linea in form.lineasVenta.vars.data%}
+                                                                            <tr class='lineaVenta'>
+                                                                                <td>{{linea.cantidad|number_format(2,'.','')}}</td>
+                                                                                <td>{{linea.descripcion}}</td>
+                                                                                <td style="text-align: right">$ {{(linea.precioUnitario)|number_format(2,'.','')}}</td>
+                                                                                <td style="text-align: right">{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                                                                                <td style="text-align: right">$ {{(linea.precioNeto|number_format(2,'.',''))}}</td>
+                                                                            </tr>
+                                                        {%endfor%}
+                                                        {%for itemRecargo in form.itemsRecargoVenta.vars.data%}
+                                                                            <tr class='lineasVenta'>
+                                                                                <td>1.00</td>
+                                                                                <td>{{itemRecargo.recargo.descripcion}}</td>
+                                                                                <td style="text-align: right">${{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                                                                                <td style="text-align: right">0.00%</td>
+                                                                                <td style="text-align: right">$ {{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                                                                            </tr>
+                                                        {%endfor%}        
+                                                                        </tbody>
+                                                                        <tfoot>
+                                                                            <tr><td></td><td></td><td></td><td>Subtotal</td><td style="text-align: right">$ {{form.vars.data.subtotal|number_format(2,'.','')}}</td></tr>
+                                                            {%for itemDescuento in form.itemsDescuentoVenta.vars.data%}
+                                                                        {%if itemDescuento.totalDescuento > 0.00%}
+                                                                            <tr><td></td><td></td><td></td><td>Descuento {{itemDescuento.detalle}}</td><td style="text-align: right"> - $ {{itemDescuento.totalDescuento|number_format(2,'.','')}}</td></tr>
+                                                                        {%endif%}    
+                                                            {%endfor%}      
+                                                                            <tr><td></td><td></td><td></td><td id='totalmayor' data-total='{{form.vars.data.total}}'>Total</td><td style="text-align: right">$ {{form.vars.data.total|number_format(2,'.','')}}</td></tr>        
+                                                                        <tfoot>
+                                                                    </table>
+                                                            {%set totalFactura = form.vars.data.total%}
+                                                {%endif%}  
+                                                                    <table id="tableCobrosVisible" class="table table-bordered table-hover" data-index='{{form.cobros|length+1}}'>
+                                                                        <thead class='cabecera'>
+                                                                        <th>Tipo de Cobro</th>
+                                                                        <th>Descripcion</th>
+                                                                        <th>Aclaracion</th>
+                                                                        <th>Importe</th>
+                                                                        <th style='width: 10px;'>Acciones</th>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                {%set i = 0%}
+                                                                {%set importes = 0.00%}        
+                                                                {%for cobro in form.cobros%}
+                                                                    {%set c = cobro.vars.data%}
+                                                                    {%set importes = importes + cobro.vars.data.importe%}
+                                                                    {%set i = i+1%}
+                                                                                <tr id='ventatype_cobros_{{i}}_visible'><td>{{c.tipoCobro}}</td><td></td><td>{%for campo in c.valores%}{{campo.campo.nombre}}: {{campo.valor}}<br>{%endfor%}</td><td style='text-align: right;'>$<span class='importe'>{{c.importe|number_format(2,'.','')}}</span></td><td><a href="#" rel="tooltip" title="" onclick="eliminarCobro(event, 'ventatype_cobros_{{i}}_visible');" data-original-title="Eliminar" ><i class="icon icon-remove-sign"></i></a></tr>
+                                                                    {%endfor%}    
+                                                                                    </tbody>  
+                                                                                    <tfoot>
+                                                                                        <tr><td></td><td></td><td>Total</td><td style="text-align:right;"><span id='totalimportes'>$ {{importes|number_format(2,'.','')}}</span></td><td></td></tr>
+                                                                                        <tr><td></td><td></td><td>Cambio</td><td style="text-align:right;"><span id="cambio"  disabled="disabled"  type="text" autocomplete="off" >{%if importes > totalFactura%}$ {{(totalFactura - importes)|number_format(2,'.','')}}{%else%}$ 0.00{%endif%}</span></td><td></td></tr>
+                                                                                    </tfoot>    
+                                                                                </table>
+                                                                                <a rel="tooltip" href="#" class="btn" onclick="nuevoCobro(event)" data-original-title="" title="">Registrar Cobro</a>
+                                                                                <div id="cobros" style="display:none">
+                                                                                    <table id="tableCobros" class="table table-bordered table-hover">
+                                                                                        <thead>
+                                                                                        <th>Tipo de Cobro</th>    
+                                                                                        <th>Importe</th>
+                                                                                        <th>Descripcion</th>
+                                                                                        <th>Aclaracion</th>
+                                                                                        <th>Acciones</th>
+                                                                                        </thead>
+                                                                                    {{form_widget(form.cobros)}}
+                                                                                    </table>
+                                                                                </div>
+                                                                                <div style='display:none'>{{form_rest(form)}}</div>
+                                                                                </fieldset>
+                                                                                <div class="form-actions">
+                                                                                    <button type="submit" class="btn btn-primary" action='guardar'>Guardar Cambios</button>
+                                                                                    <button onclick='history.back();' type="button"class="btn">Cancelar</button>
+                                                                                </div>    
+                                                                                </form>
+                                                                            </div>
+                                                                        </div><!--/span-->
+                                                                        </div><!--/row-->
+                                                                        <hr>
+{% endblock %}
+{%block modal%}
+                                                                        <div class="modal hide fade" id="busqueda">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Buscar...</h3>
+                                                                            </div>
+                                                                            <div id="dataBusqueda" class="modal-body">
+                                                                                <p>Here settings can be configured...</p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="modal hide fade" id="aperturaCaja">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Apertura de Caja</h3>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <div id="dataAperturaCaja">
+                                                                                </div>
+                                                                                Importante: Para poder registrar ventas es necesario que realize una Apertura de Caja.    
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                                <a href="#" onclick='enviarFormulario(event);' class="btn btn-primary">Aceptar</a>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="modal hide fade" id="cuentaCorriente">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                <h3>Atención</h3>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                El total de la venta supera los importes que ha registrado. ¿Desea utilizar la cuenta corriente del cliente para continuar el proceso de registración?
+                                                                                <div id="dataCuentaCorriente">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                                                                <a href="#" class="btn btn-primary" onclick='verificarCuentaCorriente(event);'>Aceptar</a>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <form id="formCobro" class='form-horizontal'>    
+                                                                            <div class="modal hide fade" id="cobroModal">
+                                                                                <div class="modal-header">
+                                                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                                                                    <h3>Registrar Cobro</h3>
+                                                                                </div>
+
+                                                                                <div  class="modal-body">
+                                                                                    <div id="dataCobro" class='form-horizontal'>
+                                                                                    </div>               
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <a href="#" class="btn" onclick='cancelar(event);'>Cancelar</a>
+                                                                                    <input type="submit" class="btn btn-primary" value="Aceptar">
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </form>        
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                                                                        <script type="text/javascript">
+                                                                                    var condicionEmpresa = '{{form.vars.data.condicionIvaEmpresa.id}}';
+                                                                                    var accion = 'guardar';
+                                                                                    var cuentaCorriente = false;
+
+                                                                                    $().ready(function() {
+                                                                                                        {%if not habilitado%}
+                                                                                        $.get("{{path('apertura_caja')}}").done(
+                                                                                                function(data) {
+                                                                                                    $("#dataAperturaCaja").html(data);
+                                                                                                    $("#aperturaCaja").modal("show");
+                                                                                                    $('#aperturaCaja').on('hidden', function() {
+                                                                                                        history.back();
+                                                                                                    });
+                                                                                                }
+                                                                                        );
+                                                                                                        {%endif%}
+                                                                                        $("#ventatype_nombre").after("<a title='Buscar' class='btn span2' onclick='buscarCliente();' ><i class='icon-search'></i></a>");
+                                                                                        if ($("#tableCobrosVisible tbody tr").length < 1) {
+                                                                                            $("#tableCobrosVisible tbody").html("<td id='items_empty' colspan='5' style='height:64px'>No hay Cobros registrados</td>");
+                                                                                        }
+                                                                                        $('.datepicker').addClass('span12');
+                                                                                        $("#formCobro").submit(function(ev) {
+                                                                                            ev.preventDefault();
+                                                                                            var val = $("#totalmayor").data('total');
+                                                                                            var importes = parseFloat(0.00);
+                                                                                            $(".importe").each(function() {
+                                                                                                importes = importes + parseFloat($(this).html());
+                                                                                            });
+                                                                                            if (val > importes) {
+                                                                                                var index = $('#dataCobro').data('index');
+                                                                                                var campos = $("#ventatype_cobros_" + index + "_campos").data('campos');
+                                                                                                var tr = "<tr id='ventatype_cobros_" + index + "_visible'><td>" + $("#ventatype_cobros_" + index + "_tipoCobro option:selected").html() + "</td></td></td><td>";
+                                                                                                for (var i = 0; i < campos; i++) {
+                                                                                                    tr = tr + $("#ventatype_cobros_" + index + "_valores_" + i + "_campo option:selected").html() + ":" + $("#ventatype_cobros_" + index + "_valores_" + i + "_valor").val() + "<br>";
+                                                                                                }
+                                                                                                tr = tr + "</td><td>" + $("#ventatype_cobros_" + index + "_aclaracion").val() + "<td style='text-align:right;'> $ <span class='importe'>" + $("#ventatype_cobros_" + index + "_importe").val() + "</span><td><a href='#' rel='tooltip' title='' onclick='eliminarCobro(event,\"ventatype_cobros_" + index + "_visible\");' data-original-title='Eliminar''><i class='icon icon-remove-sign'></i></a></td></tr>";
+                                                                                                $('#tableCobrosVisible tbody').append(tr);
+                                                                                                $("#items_empty").remove();
+                                                                                                $('#ventatype_cobros_' + index).appendTo($('#ventatype_cobros'));
+                                                                                                var val = $("#totalmayor").data("total");
+                                                                                                var importes = parseFloat(0.00);
+                                                                                                $(".importe").each(function() {
+                                                                                                    importes = importes + parseFloat($(this).html());
+                                                                                                });
+                                                                                                var cambio = importes - val;
+                                                                                                if (cambio < 0) {
+                                                                                                    cambio = 0.00;
+                                                                                                }
+                                                                                                $('#cambio').html("$ " + cambio.toFixed(2));
+                                                                                                $('#totalimportes').html("$ " + importes.toFixed(2));
+                                                                                                $('#cobroModal').modal('hide');
+                                                                                            } else {
+                                                                                                $('#dataCobro').empty();
+                                                                                                $('#cobroModal').modal('hide');
+                                                                                            }
+                                                                                        });
+                                                                                        $("#formVenta").submit(function(ev) {
+                                                                                            var val = $("#totalmayor").data('total');
+                                                                                            var importes = parseFloat(0.00);
+                                                                                            $(".importe").each(function() {
+                                                                                                importes = importes + parseFloat($(this).html());
+                                                                                            });
+                                                                                            if (val > importes && cuentaCorriente == false) {
+                                                                                                ev.preventDefault();
+                                                                                                $("#cuentaCorriente").modal("show");
+                                                                                            }
+                                                                                        });
+                                                                                    });
+
+                                                                                    function verificarCuentaCorriente(ev) {
+                                                                                        ev.preventDefault();
+                                                                                        var idCliente = $("#ventatype_cliente").val();
+                                                                                        $.getJSON("{{path('cuenta_corriente')}}", {id: idCliente}).done(function(data) {
+                                                                                            if (data.existe==true){
+                                                                                                cuentaCorriente = true;
+                                                                                                $("#formVenta").submit();
+                                                                                            }else{
+                                                                                                cuentaCorriente = false;
+                                                                                                $("#dataCuentaCorriente").html("El cliente no tiene asociada una cuenta corriente. <a href='{{path('nuevo_cuenta_corriente')}}?id="+idCliente+"' target='_blank'>Abrir Cuenta Corriente</a>");                                                                                                
+                                                                                            }
+                                                                                        }).fail(function(jqxhr, textStatus, error) {
+                                                                                            var err = textStatus + ", " + error;
+                                                                                            alert("Request Failed: " + err);
+                                                                                        });
+                                                                                    }
+
+
+                                                                                    function nuevoCobro(ev) {
+                                                                                        ev.preventDefault();
+                                                                                        var val = $("#totalmayor").data("total");
+                                                                                        var importes = parseFloat(0.00);
+                                                                                        $(".importe").each(function() {
+                                                                                            importes = importes + parseFloat($(this).html());
+                                                                                        });
+                                                                                        if (val <= importes) {
+                                                                                            $('#dataCobro').html("<p>No queda Saldo por cobrar</p>");
+                                                                                            $('#cobroModal').modal('show');
+                                                                                        } else {
+                                                                                            $.getJSON("{{ path('tipo_cobro') }}").done(
+                                                                                                    function(data) {
+                                                                                                        var index = $('#tableCobrosVisible').data('index');
+                                                                                                        $('#tableCobrosVisible').data('index', index + 1);
+                                                                                                        $('#dataCobro').data('index', index);
+                                                                                                        var select = "<div class='controls controls-row'><select onchange='a(this);' id='ventatype_cobros_" + index + "_tipoCobro' name='ventatype[cobros][" + index + "][tipoCobro]' required=true><option value=''></option>";
+                                                                                                        $(data).each(function(k, v) {
+                                                                                                            select = select + "<option value='" + $(this).attr('id') + "'>" + $(this).attr('nombre') + "</option>";
+                                                                                                        });
+                                                                                                        select = select + "</select></div>";
+                                                                                                        $("<div id='ventatype_cobros_" + index + "'></div>").appendTo('#dataCobro');
+                                                                                                        $("<div class='control-group'><label class='control-label' for='ventatype_cobros_" + index + "_tipoCobro'>Tipo de Cobro</label>" + select + "</div>").appendTo("#ventatype_cobros_" + index);
+                                                                                                        //$(select).appendTo("#ventatype_cobros_" + index);
+                                                                                                        $('#cobroModal').modal('show');
+                                                                                                        $('#cobroModal').on('hidden', function() {
+                                                                                                            $('#dataCobro').empty();
+                                                                                                        });
+                                                                                                    });
+                                                                                        }
+                                                                                    }
+
+                                                                                    function a(element) {
+                                                                                        var val = $(element).val();
+                                                                                        var id = $(element).attr('id');
+                                                                                        var index = id.split('_')[2];
+                                                                                        $.getJSON("{{ path('tipo_cobro') }}", {id: val}).done(
+                                                                                                function(data) {
+                                                                                                    $('#ventatype_cobros_' + index + ' .controles').html('');
+                                                                                                    $('#ventatype_cobros_' + index + '_campos').html('');
+                                                                                                    var val = parseFloat($("#totalmayor").data('total'));
+                                                                                                    var importes = parseFloat(0.00);
+                                                                                                    $(".importe").each(function() {
+                                                                                                        importes = importes + parseFloat($(this).html());
+                                                                                                    });
+                                                                                                    var saldo = val - importes;
+                                                                                                    //var importe = "<input class='control' value='" + saldo.toFixed(2) + "' type='text' autocomplete='off' onkeypress='return isNumberKey(this,event);' id='ventatype_cobros_" + index + "_importe' name='ventatype[cobros][" + index + "][importe]' required='required'>";
+                                                                                                    //var aclaracion = "<input class='control' type='text' id='ventatype_cobros_" + index + "_aclaracion' name='ventatype[cobros][" + index + "][aclaracion]'>";
+                                                                                                    var controlesImporte = "<div class='control-group'><label class='control-label'for='ventatype_cobros_" + index + "_importe'>Importe (*)</label><div class='controls'><input class='control' value='" + saldo.toFixed(2) + "' type='text' autocomplete='off' onkeypress='return isNumberKey(this,event);' id='ventatype_cobros_" + index + "_importe' name='ventatype[cobros][" + index + "][importe]' required='required'></div>";
+                                                                                                    var controlesAclaracion = "<div class='control-group'><label class='control-label' for='ventatype_cobros_" + index + "_aclaracion'>Aclaracion</label><div class='controls controls-row'><textarea class='control' type='textarea' id='ventatype_cobros_" + index + "_aclaracion' name='ventatype[cobros][" + index + "][aclaracion]'/></div>";
+                                                                                                    //$("<label class='label-control'for='ventatype_cobros_" + index + "_importe'>Importe (*)</label>").appendTo('#ventatype_cobros_' + index);
+                                                                                                    var div = $("<div class='controles'></div>").appendTo('#ventatype_cobros_' + index);
+                                                                                                    $(controlesImporte).appendTo(div);
+                                                                                                    $(controlesAclaracion).appendTo(div);
+                                                                                                    //$("<label class='label-control' for='ventatype_cobros_" + index + "_aclaracion'>Aclaracion</label>").appendTo('#ventatype_cobros_' + index);
+                                                                                                    //$(aclaracion).appendTo('#ventatype_cobros_' + index);
+                                                                                                    $("<div id='ventatype_cobros_" + index + "_campos'></div>").appendTo('#ventatype_cobros_' + index);
+                                                                                                    $(campos).appendTo('#ventatype_cobros_' + index);
+                                                                                                    var campos = 0;
+                                                                                                    $(data).each(function(k, v) {
+                                                                                                        if ($(this).attr('darCambio') == false) {
+                                                                                                            $("#ventatype_cobros_" + index + "_importe").change(function() {
+                                                                                                                verificarImporte(this, saldo.toFixed(2));
+                                                                                                            });
+                                                                                                        }
+                                                                                                        $($(this).attr('campos')).each(function(k, v) {
+                                                                                                            var select = "<select style='display:none;' id='ventatype_cobros_" + index + "_valores_" + campos + "_campo' name='ventatype[cobros][" + index + "][valores][" + campos + "][campo]'>";
+                                                                                                            select = select + "<option value='" + $(this).attr('id') + "'>" + $(this).attr('nombre') + "</option>";
+                                                                                                            select = select + "</select>";
+                                                                                                            $(select).appendTo('#ventatype_cobros_' + index);
+                                                                                                            var label = "<label class='control-label'   for='ventatype_cobros_" + index + "_valores_" + campos + "_valor'>" + $(this).attr('nombre') + "</label>";
+                                                                                                            var patron = $(this).attr('patron');
+                                                                                                            var tipo = $(this).attr('tipoDato');
+                                                                                                            var requerido = $(this).attr('requerido');
+                                                                                                            var ejemplo = $(this).attr('ejemplo');
+                                                                                                            if (patron != null) {
+                                                                                                                patron = "pattern= '" + patron + "'";
+                                                                                                            }
+                                                                                                            var tooltip = '';
+                                                                                                            if (tipo == 'text' && ejemplo != null) {
+                                                                                                                var tooltip = 'Ejemplo: ' + ejemplo;
+                                                                                                            }
+                                                                                                            var input = "<div class='controls controls-row'><input type='" + tipo + "' " + patron + " required='" + requerido + "' tooltip='" + tooltip + "' id='ventatype_cobros_" + index + "_valores_" + campos + "_valor' name='ventatype[cobros][" + index + "][valores][" + campos + "][valor]'></div>";
+                                                                                                            $(label + input).appendTo("#ventatype_cobros_" + index + "_campos");
+                                                                                                            //$(input).appendTo("#ventatype_cobros_" + index + "_campos");
+                                                                                                            campos = campos + 1;
+                                                                                                        });
+                                                                                                        $("#ventatype_cobros_" + index + "_campos").data('campos', campos);
+                                                                                                    });
+                                                                                                });
+                                                                                    }
+
+                                                                                    function verificarImporte(ele, saldo) {
+                                                                                        if (parseFloat($(ele).val()) > parseFloat(saldo)) {
+                                                                                            $(ele).val(parseFloat(saldo).toFixed(2));
+                                                                                        }
+                                                                                    }
+
+
+                                                                                    function eliminarCobro(e, id) {
+                                                                                        e.preventDefault();
+                                                                                        $('#' + id).remove();
+                                                                                        $('#' + id.replace('_visible', '')).remove();
+                                                                                        var val = $("#totalmayor").data("total");
+                                                                                        var importes = parseFloat(0.00);
+                                                                                        $(".importe").each(function() {
+                                                                                            importes = importes + parseFloat($(this).html());
+                                                                                        });
+                                                                                        var cambio = importes - val;
+                                                                                        if (cambio < 0) {
+                                                                                            cambio = 0.00;
+                                                                                        }
+                                                                                        $('#cambio').html("$ " + cambio.toFixed(2));
+                                                                                        $('#totalimportes').html("$ " + importes.toFixed(2));
+                                                                                        if ($("#tableCobrosVisible tbody tr").length < 1) {
+                                                                                            $("#tableCobrosVisible tbody").html("<td id='items_empty' colspan='5' style='height:64px'>No hay Cobros registrados</td>");
+                                                                                        }
+
+                                                                                    }
+
+                                                                                    function cancelar(ev) {
+                                                                                        ev.preventDefault();
+                                                                                        $('#dataCobro').empty();
+                                                                                        $('#cobroModal').modal('hide');
+                                                                                    }
+
+                                                                                    function cambiarCondicion() {
+
+                                                                                    }
+
+                                                                                    function buscarCliente() {
+                                                                                        $.get("{{path('clientes')}}").done(
+                                                                                                function(data) {
+                                                                                                    $("#dataBusqueda").html(data);
+                                                                                                    $('#clientes').dataTable({
+                                                                                                        "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                                                                                                        "sPaginationType": "bootstrap",
+                                                                                                        "oLanguage": {
+                                                                                                            "sLengthMenu": "_MENU_ Registros por página",
+                                                                                                            "sSearch": "Buscar:",
+                                                                                                            "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                                                                                                            "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                                                                                                            "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                                                                                            "sZeroRecords": "Ningun registro encontrado",
+                                                                                                            "oPaginate": {
+                                                                                                                "sPrevious": "Anterior",
+                                                                                                                "sNext": "Siguiente"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    $("#busqueda").modal("show");
+                                                                                                }
+                                                                                        );
+                                                                                    }
+
+                                                                                    function seleccionarCliente(id, provincia, ciudad, calle, numero, manzana, edificio, escalera, piso, departamento) {
+                                                                                        $.getJSON("{{ path('cliente_venta') }}", {"id": id}).done(
+                                                                                                function(data) {
+                                                                                                    $("#ventatype_nombre").val(data['nombre']);
+                                                                                                    $("#ventatype_cuit").val(data['cuit']);
+                                                                                                    $("#ventatype_condicionIva").val(data['condicionIva']);
+                                                                                                    cambiarCondicion();
+                                                                                                });
+                                                                                        $("#busqueda").modal("hide");
+                                                                                    }
+
+                                                                                    function cargarProductoVenta(productoVenta) {
+                                                                                        $.getJSON("{{ path('productoVenta_venta') }}", {"id": productoVenta.value}).done(
+                                                                                                function(data) {
+                                                                                                    var index = productoVenta.id.replace(/_productoVenta/g, "").replace(/ventatype_lineaVenta_/g, "");
+                                                                                                    $("#" + index + "_precioUnitario").val(data['precioVenta']);
+                                                                                                    //$("#" + productoVenta.id.replace(/_productoVenta/g, "_ingredientes_chzn")).remove();
+                                                                                                    //$("#" + productoVenta.id.replace(/_productoVenta/g, "_ingredientes")).html(data).removeAttr("class");
+                                                                                                    //$('[data-rel="chosen"],[rel="chosen"]').chosen();
+                                                                                                    $.get("{{ path('tasas_producto') }}", {"id": productoVenta.value}).done(
+                                                                                                            function(data) {
+                                                                                                                //$("#" + productoVenta.id.replace(/_productoVenta/g, "_unidadMedida_chzn")).remove();
+                                                                                                                $("#" + productoVenta.id.replace(/_productoVenta/g, "_unidadMedida")).html(data);
+                                                                                                                //$('[data-rel="chosen"],[rel="chosen"]').chosen();
+                                                                                                            });
+                                                                                                    totalLinea(productoVenta);
+                                                                                                    //verificarDisponibilidad(index);
+                                                                                                });
+                                                                                    }
+
+                                                                                    function totalLinea(linea) {
+                                                                                        var index = $(linea).attr("id").split("_");
+                                                                                        var pu = $("#ventatype_lineasVenta_" + index[2] + "_precioUnitario").val();
+                                                                                        var ca = $("#ventatype_lineasVenta_" + index[2] + "_cantidad").val();
+                                                                                        var bonus = $("#ventatype_lineasVenta_" + index[2] + "_bonificacion").val();
+                                                                                        if (bonus < 0 || bonus > 100) {
+                                                                                            $("#ventatype_lineasVenta_" + index[2] + "_bonificacion").val('0.00');
+                                                                                        }
+                                                                                        var bonus = $("#ventatype_lineasVenta_" + index[2] + "_bonificacion").val();
+                                                                                        var id = $("#ventatype_lineasVenta_" + index[2] + "_ivaProductoVenta").val();
+                                                                                        var tasa = $('#' + id).attr('data-tasa');
+                                                                                        var precioCosto = parseFloat(pu / (tasa / 100 + 1));
+                                                                                        var precio = parseFloat(ca * precioCosto);
+                                                                                        if ($.isNumeric(bonus) && (bonus >= 0 && bonus <= 100)) {
+                                                                                            precio = (((bonus * precio) / 100));
+                                                                                        } else {
+                                                                                            if (bonus != '') {
+                                                                                                msjWC('El descuento debe ser un porcentaje entre 0 y 100');
+                                                                                                $("#ventatype_lineasVenta_" + index[2] + "_bonificacion").val('0.00');
+                                                                                            }
+                                                                                        }
+                                                                                        $("#ventatype_lineasVenta_" + index[2] + '_total').val((((precioCosto * ca) * (tasa / 100 + 1)) - precio).toFixed(3));
+                                                                                        $("#ventatype_lineasVenta_" + index[2] + '_bonificacion').attr('title', 'Total: $ ' + (precio).toFixed(3) + ' - Por unidad: $' + (precio / ca).toFixed(3));
+                                                                                        $("#ventatype_lineasVenta_" + index[2] + '_precioUnitario').attr('title', 'Total: $ ' + (precioCosto * ca).toFixed(3) + ' - Por unidad: $' + (precioCosto).toFixed(3));
+                                                                                        //$("#ventatype_lineasVenta_" + index[2] + "_total").val((((pu * ca)) - ((((pu * ca) - ((pu * tasa) / 100) * ca) * bo) / 100)).toFixed(2));
+                                                                                        total();
+                                                                                        calcularIvas();
+                                                                                    }
+
+                                                                                    function eliminarFila(e, id) {
+                                                                                        e.preventDefault();
+                                                                                        $('#' + id).remove();
+                                                                                        total();
+                                                                                        calcularIvas();
+                                                                                    }
+
+                                                                                    function calcularIvas() {
+                                                                                        var totalIva = 0.00;
+                                                                                        var total = 0.00;
+                                                                                        $('.ivas').each(function() {
+                                                                                            var idIva = $(this).attr('id');
+                                                                                            var suma = 0.00;
+                                                                                            $('#ventatype_lineasVenta tr .iva ').each(function() {
+                                                                                                if ($(this).val() == idIva) {
+                                                                                                    var tasa = parseFloat($('#' + idIva).attr('data-tasa'));
+                                                                                                    var pu = parseFloat($('#' + $(this).attr('id').replace('ivaProductoVenta', 'precioUnitario')).val());
+                                                                                                    var ca = parseFloat($('#' + $(this).attr('id').replace('ivaProductoVenta', 'cantidad')).val());
+                                                                                                    var iva = parseFloat(pu - (pu / (tasa / 100 + 1)));
+                                                                                                    var precioCosto = parseFloat(pu / (tasa / 100 + 1));
+                                                                                                    var precio = parseFloat(ca * precioCosto);
+                                                                                                    suma = parseFloat(suma) + parseFloat(iva * ca);
+                                                                                                    total = total + pu;
+                                                                                                }
+                                                                                            });
+                                                                                            $('#' + idIva).val(suma.toFixed(2));
+                                                                                            totalIva = (parseFloat(totalIva).toFixed(2) * 1) + (suma.toFixed(2) * 1);
+                                                                                        });
+                                                                                        var t = 0.00;
+                                                                                        $("#ventatype_lineasVenta [name = total] input").each(function() {
+                                                                                            t = t + ($(this).val() * 1);
+                                                                                        });
+                                                                                        $('#subtotal').val((t - totalIva).toFixed(2));
+                                                                                    }
+
+                                                                                    function total() {
+                                                                                        calcularIvas();
+                                                                                        var subTotal = $('#subtotal').val();
+                                                                                        var bonus = $('#descuento').val();
+                                                                                        if (bonus < 0 || bonus > 100) {
+                                                                                            $('#descuento').val('0.00');
+                                                                                        }
+                                                                                        bonus = $('#descuento').val();
+                                                                                        bonus = parseFloat(bonus);
+                                                                                        var subTotalD = (subTotal * bonus) / 100;
+                                                                                        var t = parseFloat(0.00);
+                                                                                        $("#ventatype_lineasVenta [name = total] input").each(function() {
+                                                                                            t = t + ($(this).val() * 1);
+                                                                                        });
+                                                                                        $("#ventatype_total").val((t - subTotalD).toFixed(2));
+                                                                                        $("#ventatype_descuento").val($('#descuento').val());
+                                                                                        $("#totalmayor").val((t - subTotalD).toFixed(2));
+                                                                                        var val = $("#totalmayor").data('total');
+                                                                                        var importes = parseFloat(0.00);
+                                                                                        $(".importe").each(function() {
+                                                                                            importes = importes + parseFloat($(this).html());
+                                                                                        });
+                                                                                        var cambio = importes - val;
+                                                                                        if (cambio < 0) {
+                                                                                            cambio = 0.00;
+                                                                                        }
+                                                                                        $('#cambio').val(cambio.toFixed(2));
+                                                                                    }
+
+
+                                                                                    function enviarFormulario(ev) {
+                                                                                        ev.preventDefault();
+                                                                                        var action = $('#formularioApertura').attr('action');
+                                                                                        $.post(action, $("#camposFormularioApertura").serialize(), function(data) {
+                                                                                            window.location = "{{ path('facturar') }}?id={{id}}";
+                                                                                        });
+                                                                                    }
+
+                                                                            </script>
+
+{%endblock%}
+{% block ajax %}
+{% endblock %}
+

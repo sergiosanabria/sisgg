@@ -1,0 +1,99 @@
+/web/bundles/
+/app/bootstrap.php.cache
+/app/cache/*
+/app/config/parameters.yml
+/app/logs/*
+!app/cache/.gitkeep
+!app/logs/.gitkeep
+/app/phpunit.xml
+/build/
+/vendor/
+/bin/
+/composer.phar
+/web/uploads/images/empresas/*
+!web/uploads/images/empresas/.gitkeep
+/web/uploads/images/publicaciones/*
+!web/uploads/images/publicaciones/.gitkeep
+/web/uploads/images/noticias/*
+!web/uploads/images/noticias/.gitkeep
+/web/uploads/images/noticias_internas/*
+!web/uploads/images/noticias_internas/.gitkeep
+/web/uploads/images/planes/*
+!web/uploads/images/planes/.gitkeep
+/web/uploads/images/imagen_usuario_empresa/*
+!web/uploads/images/imagen_usuario_empresa/.gitkeep
+/web/uploads/images/rubros/*
+!web/uploads/images/rubros/.gitkeep
+/web/uploads/images/web/*
+!web/uploads/images/web/.gitkeep
+/web/media/
+
+# -- Editores -----------------------------------------
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# eclipse
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+.buildpath
+
+# phpstorm
+.idea/
+
+# textmate
+*.tmproj
+*.tmproject
+tmtags
+
+# sublimetext
+/*.sublime-project
+*.sublime-workspace
+
+# netbeans
+nbproject
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# -- Sistemas Operativos ------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.*
+!.gitignore
+!.htaccess
+*~
+
+# Mac OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes

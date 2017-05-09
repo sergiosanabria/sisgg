@@ -1,0 +1,382 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar plato {{nombre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pvs')}}">Productos para la venta</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('platos')}}">Platos</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar plato {{nombre}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable" >
+    <div class="box span12">
+        <div class="box-content">
+                     <form action="{{ path('modificarPlato', {'id':id}) }}" id="formPro" class="form-horizontal" method="post" {{ form_enctype(form) }}>
+            <legend>Editar plato: {{nombre}}</legend>
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Datos</a></li>
+    <li><a href="#tab2" data-toggle="tab">Ingredientes</a></li>
+  </ul>
+  <div class="tab-content">
+     <div class="tab-pane active" id="tab1">
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+<fieldset>
+<div class="span6">            
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.descripcion) }}
+    <div class="control-group">
+            <label class="control-label">Foto de plato</label>
+            <div class="controls">
+             <div class="accordion" id="accordion1">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" title="Click para desplegar/replegar foto" data-toggle="collapse" data-parent="#accordion1" href="#collapse1One">
+                     Agregar imagen<i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapse1One" class="accordion-body collapse">
+                    <div onmouseover="mostrarLinkFoto(this);" onmouseout="ocultarLinkFoto(this);" >
+                        {{ form_widget(imagen.file) }}
+                        {{ form_widget(imagen.name) }} 
+                            <button type="button" id="btnFoto" style="display: none" class="btn" onclick="verFoto();" title="Mostrar foto en patalla completa"><i class="fa-icon-external-link"></i></button> 
+                       <a href="#" class="thumbnail span6" title="Cambiar Foto" onclick="$('input[id={{imagen.file.get('id')}}]').click();"><img id="imagen" data-src="holder.js/180x160" {%if pathFoto!=null%} src="{{asset('uploads/imagenes/')}}{{pathFoto}}" {%else%} src="{{asset('images/plato.jpg')}}" {%endif%}/></a>        
+                    </div>
+                </div>
+    </div>  
+            </div>
+    </div>
+    {{ form_row(form.precioCosto) }}
+    {{ form_row(form.conIng) }}
+    {{ form_row(form.margen) }}
+    {{ form_row(form.margenMin) }}
+    {{ form_row(form.precioVenta) }}
+</div>        
+<div class="span6">                
+             {{ form_row(form.iva) }}
+    {{ form_row(form.cantidad) }}
+    {{ form_row(form.cantidadMinima) }}
+    <div class="control-group">
+            <label class="control-label">Unidad de medida</label>
+            <div class="controls">
+                <select id="um" onchange="cargarTasa(this);" name="um" required="required"></select><div class="btn-group"><button type="button" class="btn"  onclick="cargarUM();" title="Actualizar lista de UM"><i class="icon-refresh"></i></button> <a class="btn" href="{{path('ums')}}" title="Nueva Unidad de medida" target="_blank">...</a></div>
+            </div>
+    </div>
+    {{ form_row(form.tasa) }}
+    {{ form_row(form.categoria) }}
+   {#<input type="text" id="cat" disabled="true"> <i onclick="actualizarArbol(); cargarCPV()" title="Actualizar arbol de categorias" class="icon-refresh"></i> <a href="{{path('nuevaCategoriaPV')}}" title="Nueva categoria" target="_blank">...</a>#}
+    <div class="control-group">
+        <div class="controls">
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                     Ver/Ocultar  lista de categorias <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="input-append">
+                        <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()"><i class="icon-search" title="Buscar"></i></button>
+                    </div>                  
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a> | 
+                        <a href="{{path('nuevaCategoriaPV')}}" title="Nueva categoria" target="_blank">Nueva categoria <i class="icon-plus"></i></a>
+                    </p>
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>
+    </div>
+    </div> 
+</div>        
+    <div style="display: none"> {{ form_rest(form) }}</div>
+    </fieldset>
+      </div>
+<div class="tab-pane" id="tab2">
+    <p>
+<legend>Ingredientes de {{nombre}}</legend>
+          {#<div class="pull-right btn-group">
+              <a title="Nuevo ingrediente" href="{{path('nuevoIngredientePlato', {'id':id})}}" target="_blank"class="btn"><i class="fa-icon-plus-sign"></i></a>
+              <a title="Actualizar tabla de ingredientes" href="#" onclick="actualizarTabla('{{id}}')" class="btn"><i class="icon-refresh"></i></a>
+            <a class="btn" onclick="window.print()"><i class="icon-print"></i></a>
+        </div>#}
+        <div  id="tabla">
+        <table class="table table-hover table-bordered table-condensed">        
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Tasa ing.</th>
+                        <th>Costo</th>
+                       {# <th style="text-align: center">Acciones</th>#}
+                    </tr> 
+                </thead>
+           {%for i in ingredientes%}
+                <tr id="{{i.id}}">
+                    <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this);">{{i.productoProduccion}}</a></td>
+                    <td>{{i.cantidad}}</td>
+                    <td>{{i.tasa}}</td>
+                    <td>{{i.precioCosto}}</td>
+                    {#<td style="text-align: center;width: fit-content" >
+                        <a href="{{ path('editarIngredientePlato', { 'id': i.id }) }}" target="_blank" title="Editar"><i class="fa-icon-edit"></i></a>                                
+                        <a href="#" title="Eliminar"  onclick="eliminarModalIng({{i.id}}, '{{i.productoProduccion}}')"><i class="fa-icon-trash"></i></a>
+                    </td>#}
+                </tr>
+                {%endfor%}
+            </table>
+            </div>
+</p>
+</div>
+        </div>
+        </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+                <a href="{{path('platos')}}" type="button" class="btn">Cancelar</a>
+            </div>
+    </form>
+    </div> 
+</div> 
+        </div>
+{%endblock%}
+ {%block modal%}
+<div id="eliminarModalIng" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar el ingrediente <strong id="txtElimIng">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <button type="button" onclick="eliminar()" id="btnEliminarIng"  value="" class="btn btn-primary">Aceptar</button>
+  </div>
+</div> 
+{%endblock%}
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+            
+        var prov='';  
+        var AID={{id}};
+$(document).ready(function  (){  
+         cargarUM();
+         var comboTasa = document.getElementById('sisgg_finalbundle_platotype_tasa');
+         var nombreTasa=comboTasa.options[comboTasa.selectedIndex].text;
+         seleccionarUM(nombreTasa);
+        var divCat = document.getElementById('sisgg_finalbundle_platotype_categoria').parentNode;
+        $(divCat).append('<div class="btn-group"><button type="button"  onclick="cargarCPV();" title="Actualizar arbol de categorias" class="btn"><i class="icon-refresh"></i></button> <a href="{{path('nuevaCategoriaPV')}}" class="btn" title="Nueva categoria" target="_blank">...</a></div>');       
+        actualizarArbol(); 
+        mostrarBotonPrecio();
+         });
+         
+    function mostrarBotonPrecio(){
+        var div = document.getElementById('sisgg_finalbundle_platotype_precioCosto').parentNode;
+        $(div).append('<button type="button"  onclick="actualizarPrecioCosto();" title="Actualizar precio de costo del plato, sumando el costo de cada ingrediente." class="btn"><i class="icon-refresh"></i></button> ');       
+      
+    } 
+    
+    function actualizarPrecioCosto(){
+        $.getJSON("{{path ('actualizarPCPlato')}}",{'id': AID}, function (json){
+            $("#sisgg_finalbundle_platotype_precioCosto").val(json.precio.toFixed(2));
+            aumentarMargen(0);
+        });
+    }
+    
+    
+    function actualizarArbol(){
+        $('.dtree').remove();
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPV')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+            if (json[i].add==1){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder_add.gif');
+            }
+            else{
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'0','/SisGG/web/tree/img/folder_noadd.gif');
+             }
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPV1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        var combo=document.getElementById('sisgg_finalbundle_platotype_categoria'); 
+        var cat=document.getElementById('cat'); 
+        var nombre=json.n;
+        for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    cat.value=nombre;
+                }
+            }    
+        });
+        
+                
+    }
+              
+    function verCategoria (nodo,target){
+        
+        var nombre = document.getElementById(nodo).text;
+        var target = document.getElementById(nodo).target;
+        if (target=='1'){
+            var combo=document.getElementById('sisgg_finalbundle_platotype_categoria');       
+            for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    document.getElementById('cat').value=nombre;
+                     
+                }
+            }
+        }else{
+            msjWC('La categoria no puede contener productos, puesto que contiene otras categorias.')
+        }
+    }
+    
+    function aumentarMargen(){       
+        var margen=document.getElementById('sisgg_finalbundle_platotype_margen');     
+        var venta=document.getElementById('sisgg_finalbundle_platotype_precioVenta');     
+        var costo=document.getElementById('sisgg_finalbundle_platotype_precioCosto');
+        if ((!isNaN(costo.value))&&(!isNaN(margen.value))){
+            venta.value=((margen.value/100)+1)*costo.value;
+         }
+    }
+    
+function aumentarMargen(n){       
+        var margen=document.getElementById('sisgg_finalbundle_platotype_margen');     
+        var venta=document.getElementById('sisgg_finalbundle_platotype_precioVenta');     
+        var costo=document.getElementById('sisgg_finalbundle_platotype_precioCosto');
+        if ((!(isNaN(costo.value)))&&(!(isNaN(margen.value)))&&(!(isNaN(margen.value)))){
+            if (n==1){             
+                venta.value=pasarDecimal(((margen.value/100)+1)*costo.value,2);
+                margen.value=pasarDecimal(margen.value,2);
+            }else if ((n==2)&&((costo.value!=0))){             
+                var v=((venta.value/costo.value)-1)*100;
+                margen.value=pasarDecimal(v,2);
+                if (v<0) margen.value=0                         ;
+            }
+            else if (n==0){ 
+             venta.value=pasarDecimal(((margen.value/100)+1)*costo.value, 2);
+            if (costo.value<=0) margen.value=0 ;
+            }
+        }
+    }
+    function cargarUM(){
+        $('#um').load("{{ path('cargarUM')}}", function() {             
+            }); 
+    }
+    function cargarTasa(combo){
+        var name=combo.options[combo.selectedIndex].value;
+        $('#sisgg_finalbundle_platotype_tasa').load("{{ path('cargarTasa')}}",{'name':name}, function() {             
+            }); 
+    }
+     function cargarCPV(){
+        $('#sisgg_finalbundle_platotype_categoria').load("{{ path('cargarCategoriaPV')}}", function() {  
+            actualizarArbol();
+            }); 
+             
+    }
+    function cargarProveedor(){
+        $('#sisgg_finalbundle_platotype_proveedor').load("{{ path('cargarProveedor')}}", {'name':prov}, function() {             
+            }); 
+    }
+     function seleccionarUM(tasa){
+        
+       $.getJSON("{{path ('buscarUMdeTasa')}}",{name:tasa},function (json){
+            var combo=document.getElementById('um');
+            seleccionarTasa(tasa);
+            for (var i=0;i<combo.length;i++){
+                if (combo.options[i].text==json.name){
+                    combo.options[i].selected="selected";                   
+                }
+            }
+        });       
+    }
+    
+    function seleccionarTasa(tasa){
+        var comboTasa=document.getElementById('sisgg_finalbundle_platotype_tasa');
+        $(comboTasa).load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    function eliminarModalIng(id,txt){          
+        var par= document.getElementById('txtElimIng');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarIng').val(id);
+        $('#eliminarModalIng').modal('toggle');
+    }
+        function eliminar(){
+             $('#'+($('#btnEliminarIng').val()).toString()).remove(); 
+              $('#eliminarModalIng').modal('hide'); 
+                jQuery.post("{{path('eliminarIngrediente')}}", {'id':$('#btnEliminarIng').val(), 'tipo':'2'}, function(r) {
+            });
+    }
+    function actualizarTabla(id){
+        $('#tabla').load("{{ path('actTabIng')}}",{'id':id}, function() {             
+            }); 
+    }
+    
+    
+     function handleFileSelect(evt) {
+    var files = evt.target.files; 
+    for (var i = 0, f; f = files[i]; i++) {
+      if (!f.type.match('image.*')) {
+        continue;
+      }
+
+      var reader = new FileReader();
+
+      reader.onload = (function(theFile) {
+        return function(e) {
+          document.getElementById('imagen').src = e.target.result;
+          var url = "{{path('modificarPlato', { 'id':id ,'tipo': '__tipo__' })}}".replace(/__tipo__/g, 1);
+            url= url.replace('amp;', ''); 
+            $("#formPro").attr("action", url);
+        };
+      })(f);
+      reader.readAsDataURL(f);
+    }
+  }
+  
+    document.getElementById('{{imagen.file.get('id')}}').addEventListener('change', handleFileSelect, false);
+    
+    
+    function verFoto(ele){
+        var img = document.getElementById('imagen');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    
+    
+    function mostrarLinkFoto(ele){
+        $('#btnFoto').removeAttr('style');
+    }
+     
+    function ocultarLinkFoto(ele){
+        $('#btnFoto').hide();
+    }
+    </script>
+{% endblock%}

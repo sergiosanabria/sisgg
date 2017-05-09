@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- start: Meta -->
+        <meta charset="utf-8">
+        <title>Sistema Gestión Gastronómico</title>
+        <meta name="author" content="Herrera Fernando Martin - Snabria Sergio Javier">
+        <!-- end: Meta -->
+
+        <!-- start: Mobile Specific -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- end: Mobile Specific -->
+
+        <!-- start: CSS -->
+        <link id="bootstrap-style" href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ucss')}}" rel="stylesheet">
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" />
+        {#<link id="bootstrap-style" href="../../../../../public/p{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ucss')}}" rel="stylesheet">
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" #}
+
+        <!--[if lt IE 7 ]>
+        <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+        <![endif]-->
+        <!--[if IE 8 ]>
+        <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+        <![endif]-->
+        <!--[if IE 9 ]>
+        <![endif]-->
+
+        <!-- end: CSS -->
+
+
+        <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <!-- start: Favicon -->
+        <link rel="shortcut icon" href="{{ asset('favicon.ico')}}">
+        <!-- end: Favicon -->
+    </head>
+   
+
+    <body>
+        
+ <style type="text/css">
+         body {  background: url({{ asset('img/dbg.jpg')}}); background-repeat: repeat; background-size: cover }
+         .login-box {
+                width: 100%;
+                height: 100%;
+                margin: 5px;
+         }
+         .accordion{
+             margin-bottom: 0px;
+         }
+         
+          .header{
+                    background-color: #08c;
+                    color: white;
+                }
+			
+    </style>
+
+    <body>
+        
+        <div class="container-fluid">
+		<div class="row-fluid">
+					
+			<div class="row-fluid">
+				<div class="login-box">
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                    <div>
+                                    <div class="span4" font-size="12" style="margin: 2%;" >
+                                        <div >
+                                            <h1>{{empresa.nombre}}</h1>{{empresa.slogan}}
+                                        </div>
+                                        <div  font-size="8">{{empresa.direccion}}</div>
+                                        <div  font-size="8">Tel: {%set ite=0%}{%for i in empresa.telefonos%}{%set ite=ite+1%} ({{i.nacional}}){{i.caracteristica}}-{{i.numero}} {%if ite>1%} | {%endif%} {%endfor%}</div>
+              
+                                    </div>
+                                        <div class="span4" font-size="12" style="margin: 2%; width: 125px;height: 125px;" >
+                                            {%if empresa.foto is defined and empresa.foto is not null%}   {%if empresa.foto.path!=null%}<img   width="100%" height="100%" src="{{asset('uploads/imagenes/')}}{{empresa.foto.name}}" />{%else%}No tiene foto disponible{%endif%}{%else%}No tiene foto disponible{%endif%}
+                                       </div>
+					<div class="span4 pull-right" style="margin: 2%;">
+						SisGG - Sistema de Gestión Gastronómico
+                                                <img width="35px" height="35px" src="{{ asset('favicon.ico')}}"  />
+                                                
+					</div>
+                                        </div>
+                                        <legend style="padding-left: 8%;">Menu</legend>
+					<form class="form-horizontal" action="{{ path('login_check') }}" method="post">
+                                                    {%set i =0%}
+                                                    {%for cat in productos%}
+                                                        {%set i =i+1%}
+                                                    <div class="accordion" id="accordion2">
+                                                        <div class="accordion-group">
+                                                            <div class="accordion-heading">
+                                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{i}}">
+                                                                    {%set ite=0%}{%for n in cat.productos[0]['producto'].catPadres(0)%}{%set ite=ite+1%}{%if ite>1%}. {%endif%}{{n}}{%endfor%}
+                                                                </a>
+                                                            </div>
+                                                            <div id="{{i}}" class="accordion-body collapse">
+                                                                <div class="accordion-inner">
+                                                                    <table class="table table-striped">
+                                                                        <thead class="header">
+                                                                            <tr>
+                                                                                <th>Producto</th>
+                                                                                <th>Ingredientes</th>
+                                                                                <th>Precio</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for p in cat.productos%}
+                                                                                <tr onclick="verFoto('{{p.producto.id}}', this, '{{p.producto.nombre}}');" foto={%if p.producto.foto is defined and p.producto.foto is not null%}   {%if p.producto.foto.path!=null%}"{{asset('uploads/imagenes/')}}{{p.producto.foto.name}}"{%else%}"No tiene foto disponible"{%endif%}{%else%}"No tiene foto disponible"{%endif%}>
+                                                                                <td>{{p.producto.nombre}}</td>
+                                                                                <td>{%if (p.producto.ingredientes is defined and ((p.producto.ingredientes|length) >0 ))%}{%set sepa=0%}{%for ing in p.producto.ingredientes %}{%set sepa=sepa+1%}{%if sepa>1%}, {%endif%}{{ing.productoProduccion.nombre}}{%endfor%}{%endif%}</td>
+                                                                                <td>${{p.producto.precioVenta}}</td>
+                                                                            </tr>
+                                                                            {%endfor%}
+                                                                        </tbody>
+                                                                    
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {%endfor%}
+							<div class="clearfix"></div>
+					</form>
+					<hr>
+					{#<h3>Forgot Password?</h3>
+					<p>
+						No problem, <a href="#">click here</a> to get a new password.
+					</p>	#}
+				</div><!--/span-->
+			</div><!--/row-->
+		
+				</div><!--/fluid-row-->
+		 <div class="clearfix"></div>
+
+		
+	</div>
+        <!-- start: JavaScript-->
+        <script src="{{ asset('js/jquery-1.9.1.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery-migrate-1.0.0.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery-ui-1.10.0.custom.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.utouch-punch.js')}}"></script>
+
+        <script src="{{ asset('js/bootstrap.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.cookie.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.dataTables.min.js')}}"></script>
+
+        <script src="{{ asset('js/excanvas.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.flot.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.flot.resize.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.chosen.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.uniform.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.cleditor.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.noty.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.elfinder.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.iphone.toggle.js')}}"></script>
+
+
+        <script type="text/javascript" src={{asset('css/bootstrap/table/jquery.dataTables.js')}}></script>
+
+        <script type="text/javascript" src={{asset('css/bootstrap/table/DT_bootstrap.js')}}></script>
+        <script type="text/javascript" >
+            function verFoto(id, ele, txt){
+                $("#verFoto").modal('toggle');
+                if ( $(ele).attr('foto')=="No tiene foto disponible"){
+                    $("#txtNombre").html(txt);
+                    $("#nofoto").attr('style', false);
+                     $("#imgProducto").attr('src','');
+                }else{
+                    $("#txtNombre").html(txt);
+                    $("#nofoto").hide();
+                    $("#imgProducto").attr('src', $(ele).attr('foto'));
+                }
+                
+            }
+        </script>
+            <!-- end: JavaScript-->
+            <div id="verFoto" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h3 id="txtNombre"></h3>
+            </div>
+                    <div class="modal-body" style="overflow: hidden;">
+                  
+                    <h3 id="nofoto">No tiene foto disponible</h3>
+                    <img id="imgProducto"   style="width: 100%;height: 100%;"  src="">
+                        
+            </div>
+                    <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                  </div>
+          </div>
+    </body>
+    
+
+
+</html>

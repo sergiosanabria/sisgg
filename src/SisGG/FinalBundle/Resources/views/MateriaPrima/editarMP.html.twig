@@ -1,0 +1,221 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar materia prima {{nombre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pps')}}">Productos para la producción</a><span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('mps')}}">Materias primas</a><span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar materia prima {{nombre}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Editar materia prima {{nombre}}</legend>
+{% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+{% endif %}
+<form action="{{ path('modificarMP',{'id':id}) }}" class="form-horizontal" method="post">
+    <fieldset>
+<div class="span6">        
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.descripcion) }}
+    {{ form_row(form.precioCosto) }}
+     {{ form_row(form.iva) }}   
+    {{ form_row(form.cantidad) }}
+    {{ form_row(form.cantidadMinima) }}
+    </div>        
+<div class="span6">                
+    {{ form_row(form.proveedor) }}
+    <div class={%if tasa%}"control-group warning"{%else%}"control-group"{%endif%}>
+        <label class="control-label">Unidad de medida</label>
+        <div class="controls">
+        <select id="um" onchange="cargarTasa(this)" name="um"></select>
+        {%if not tasa%}
+        <div class="btn-group">
+            <button type="button" class="btn" onclick="cargarUM()" title="Actualizar lista de UM" ><i class="icon-refresh"></i></button>
+            <a class="btn" href="{{path('ums')}}" title="Nueva Unidad de medida" target="_blank">...</a>
+        </div>
+        {%endif%}
+        {%if tasa%} 
+        <span class="help-inline">Las tasas deben pertenecer sólo a esta UM, ya que el producto se encuentra asignado como ingrediente con esta UM.</span>
+        {%endif%}
+        </div>
+    </div>
+    {{ form_row(form.tasa) }}
+    {{ form_row(form.categoria) }}
+   {# <input type="text" id="cat" disabled="true"> <i onclick="actualizarArbol(); cargarCPP()" title="Actualizar arbol de categorias" class="icon-refresh"></i> <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" target="_blank">...</a>#}
+  <div class="control-group">
+        <div class="controls">
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                     Ver/Ocultar  lista de categorias <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse">
+                    <div class="input-append">
+                        <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()"><i class="icon-search" title="Buscar"></i></button>
+                    </div>                  
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a> | 
+                        <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" target="_blank">Nueva categoria <i class="icon-plus"></i></a>
+                    </p>
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>
+    </div>
+    </div> 
+        </div>
+    {{ form_rest(form) }} 
+            </fieldset>    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('mps')}}" type="button" class="btn">Cancelar</a>
+    </div>        
+</form>
+        </div>
+    </div>
+</div> 
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov=''; 
+            
+$(document).ready(function  (){  
+         cargarUM();
+         var comboTasa = document.getElementById('sisgg_finalbundle_materiaprimatype_tasa');
+         var nombreTasa=comboTasa.options[comboTasa.selectedIndex].text;
+         seleccionarUM(nombreTasa);
+         {%if tasa%}  
+             document.getElementById('um').disabled="disabled";             
+           {%endif%}
+         var divCat = document.getElementById('sisgg_finalbundle_materiaprimatype_categoria').parentNode;
+            $(divCat).append('<div class="btn-group"><button type="button" class="btn" onclick="cargarCPP()" title="Actualizar arbol de categorias"><i  class="icon-refresh"></i></button> <a href="{{path('nuevaCategoriaPP')}}" class="btn" title="Nueva categoria" target="_blank">...</a></div>');    
+        // $('#sisgg_finalbundle_materiaprimatype_categoria').hide();
+         //var combo = document.getElementById('sisgg_finalbundle_materiaprimatype_categoria');
+          //document.getElementById('cat').value=combo.options[combo.selectedIndex].text;
+         var div = document.getElementById('sisgg_finalbundle_materiaprimatype_proveedor').parentNode;
+        $(div).append('<div class="btn-group"><button type="button" class="btn" onclick="cargarProveedor()" title="Actualizar lista de proveedores"><i  class="icon-refresh"></i> </button><a href="{{path('nuevoProveedor')}}" title="Nueva proveedor" class="btn" target="_blank">...</a>');
+         var combo=document.getElementById('sisgg_finalbundle_materiaprimatype_proveedor');
+         
+         prov=combo.options[combo.selectedIndex].value;
+         cargarProveedor();
+        actualizarArbol();
+        
+         });
+    
+    function actualizarArbol(){
+        $('.dtree').remove();
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPP')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+            if (json[i].add==1){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder_add.gif');
+            }
+            else{
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'0','/SisGG/web/tree/img/folder_noadd.gif');
+             }
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPP1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        var combo=document.getElementById('sisgg_finalbundle_materiaprimatype_categoria'); 
+        var cat=document.getElementById('cat'); 
+        var nombre=json.n;
+        for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    cat.value=nombre;
+                }
+            }    
+        });
+        
+                
+    }
+              
+    function verCategoria (nodo,target){
+        
+        var nombre = document.getElementById(nodo).text;
+        var target = document.getElementById(nodo).target;
+        if (target=='1'){
+            var combo=document.getElementById('sisgg_finalbundle_materiaprimatype_categoria');       
+            for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    document.getElementById('cat').value=nombre;
+                     
+                }
+            }
+        }else{
+            msjWC('La categoria no puede contener productos, puesto que contiene otras categorias.')
+        }
+    }
+    
+    
+    function cargarUM(){
+        $('#um').load("{{ path('cargarUM')}}", function() {             
+            }); 
+    }
+    function cargarTasa(combo){
+        var name=combo.options[combo.selectedIndex].value;
+
+        $('#sisgg_finalbundle_materiaprimatype_tasa').load("{{ path('cargarTasa')}}",{'name':name}, function() { 
+            actualizarArbol();
+            }); 
+    }
+    function cargarCPP(){
+        $('#sisgg_finalbundle_materiaprimatype_categoria').load("{{ path('cargarCategoriaPP')}}", function() {
+                actualizarArbol();
+            }); 
+           
+    }
+    function cargarProveedor(){
+        $('#sisgg_finalbundle_materiaprimatype_proveedor').load("{{ path('cargarProveedor')}}", {'name':prov},function() {             
+            }); 
+    }
+    function seleccionarUM(tasa){
+        
+       $.getJSON("{{path ('buscarUMdeTasa')}}",{name:tasa},function (json){
+            var combo=document.getElementById('um');
+            seleccionarTasa(tasa);
+            for (var i=0;i<combo.length;i++){
+                if (combo.options[i].text==json.name){
+                    combo.options[i].selected="selected";                   
+                }
+            }
+        });       
+    }
+    
+    function seleccionarTasa(tasa){
+        var comboTasa=document.getElementById('sisgg_finalbundle_materiaprimatype_tasa');
+        $(comboTasa).load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    
+
+    </script>
+{% endblock%}

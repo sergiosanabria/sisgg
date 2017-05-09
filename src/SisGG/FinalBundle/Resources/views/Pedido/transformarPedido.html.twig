@@ -1,0 +1,47 @@
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<fieldset class='form-horizontal' id='formularioTransformar'>
+    {{form_row(form.tipoPedido,{'attr':{'class':'span3 tipo'} })}}
+    {%if form.tipoPedido.vars.data.nombre == "mostrador" %}
+        {{form_row(form.solicitante,{'attr':{'class':'span3'} })}}
+        {{form_row(form.cliente,{'attr':{'class':'span3'} })}}
+    {%elseif form.tipoPedido.vars.data.nombre == "mesa" %}
+        {{form_row(form.mesa,{'attr':{'class':'span3'} })}}
+        <div class="control-group">
+            <label class="control-label">Mesa (*)</label>
+            <div id="sectores" class="controls controls-row">
+                <ul class="nav nav-tabs" id="myTab">
+                        {%for sector in sectores%}
+                                <li><a href="#{{sector.id}}">{{sector.nombre|capitalize}}</a></li>
+                        {%endfor%}
+                </ul>
+
+                <div class="tab-content" id='mesas'>
+                {%for sector in sectores%}
+                        <div class="tab-pane transformarMesas" id="{{sector.id}}">
+                        {%set n = 0%}    
+                        {%for mesa in sector.mesas%}
+                                <a class="quick-button-small span2 mesa" onclick="seleccionarMesaTransformar({{mesa.id}},event);" {%if n==0%}style='margin-left:30px;'{%endif%}>
+                                    <p id="numero" class="numero">{{mesa.numero}}</p>
+                                    <span id="estado{{mesa.id}}" class="notification {%if mesa.estado == "Ocupado" %}red{%endif%}" {%if mesa.estado == "Ocupado" %}data-idpedido='{{mesa.pedidoActivo.id}}'{%endif%}>{{mesa.estado}}</span>
+                                </a>
+                                {%set n=1%}
+                        {%endfor%}
+                            </div>
+                {%endfor%}
+                </div>
+        </div>
+    </div> 
+    {%elseif form.tipoPedido.vars.data.nombre == "delivery" %}    
+        {{form_row(form.solicitante,{'attr':{'class':'span3'} })}}
+        {{form_row(form.cliente,{'attr':{'class':'span3'} })}}
+        {{form_row(form.direccion.ciudad,{'attr':{'class':'ciudad span3'} })}}
+        {{form_row(form.direccion.calle,{'attr':{'class':'span3'} })}}    
+        {{form_row(form.direccion.numero,{'attr':{'class':'span3'} })}}    
+        {{form_row(form.direccion.manzana,{'attr':{'class':'span3'} })}}    
+        {{form_row(form.direccion.edificio,{'attr':{'class':'span3'} })}}    
+        {{form_row(form.direccion.escalera,{'attr':{'class':'span3'} })}}    
+        {{form_row(form.direccion.piso,{'attr':{'class':'span3'} })}}                                
+        {{form_row(form.direccion.departamento,{'attr':{'class':'span3'} })}} 
+    {%endif%} 
+    {{form_rest(form)}}
+</fieldset>        

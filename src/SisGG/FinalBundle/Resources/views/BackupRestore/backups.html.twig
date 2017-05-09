@@ -1,0 +1,107 @@
+{% extends "::base.html.twig" %}
+{%block title%}Historial de back-ups{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Historial de back-up</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Historial de back-up</legend>
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+            {%if app.user.role.obtenerPermiso('backup_registrar')%}
+            <a  href="{{path('backup')}}" title="Realizar un back-up"class="btn"><i class="icon-plus-sign"></i></a>
+            {% endif %}
+            {%if app.user.role.obtenerPermiso('backup_imprimir')%}
+            <a class="btn" target="_blank" title="Imprime el historal de back-ups" onclick="imprimirTabla(this);"><i class="icon-print"></i></a>
+            {% endif %}
+        </div>
+        <div><br> <br></div>
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th id="primeraCol">Fecha</th> 
+                    <th>Archivo</th>
+                    {#<th>Carpeta</th>#}
+                    <th>Usuario</th> 
+                    <th style="text-align: center">Acciones</th>
+            </thead>
+            {% for r in registros%}
+            <tr id="{{r.id}}">
+                <td>{{r.fecha | date('Y/m/d H:i:s')}}</td>
+                <td>{{r.archivo}}</td>
+                {#<td>{{r.carpeta}}</td>#}
+                <td>{{r.usuario.apellido}}, {{r.usuario.nombre}} ({{r.usuario.username}})</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if app.user.role.obtenerPermiso('backup_descargar')%}
+                    <a title="Descargar versión de archivo de back-up" href="{{path('descargarBackup', {'arc':r.archivo})}}"><i class="icon-download-alt"></i></a>
+                    {%endif%}
+                    </td>
+                
+            </tr>   
+            {% endfor %}
+        </table>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+ {%block modal%}      
+ <div id="eliminarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar servicio</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Está seguro que desea eliminar el servicio <strong id="txtElim">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminar" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+
+{% endblock %}
+        
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+    $(document).ready(function  (){ 
+        $('#primeraCol').trigger('click');
+    });
+    function imprimirTabla(ele){
+          var tabla = document.getElementById('example');
+          var rows = tabla.getElementsByTagName('tr');
+          var filas= new Array(rows.length);
+          for (var i = 1; i<rows.length ;i++){
+            filas[i-1]=rows[i].id;
+          }
+          
+        var url = "{{path('impListaBackup', { 'ids': '__ids__' , '_format':'pdf'})}}".replace(/__ids__/g,filas);
+        url= url.replace('amp;', '');
+        url= url+'&info='+$('#example_info').text();
+        $(ele).attr('href',url);
+      
+    }
+    </script>
+{% endblock%}

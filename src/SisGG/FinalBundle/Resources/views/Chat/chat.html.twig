@@ -1,0 +1,296 @@
+{# <div id="main_calendar" class="hidden-phone fc">< #}
+{% extends "::base.html.twig" %}
+{%block title%}Chat{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Chat</a>
+</li>
+{%endblock%}
+{% block content %}
+<audio id="msjChat" src="{{asset('sounds/msj.mp3')}}"><p>Tu navegador no implementa el elemento audio</p> </audio>
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <div class="row-fluid sortable ui-sortable" id="contenedor">
+                
+		<div class="box span4">
+                        <div class="box-header">
+                                <h2><i class="icon-user"></i><span class="break"></span>Usuarios</h2>
+                                <div class="box-icon">
+                                        <a href="#" class="btn-minimize" ><i class="icon-chevron-up"></i></a>
+                                </div>
+                        </div>
+                        <div class="box-content">
+                <p>
+                <ul class="tickets" id="divUsuarios" s{#tyle="overflow-y: auto; max-height: 100%;"#}>
+                        {% for i in usuarios%}
+                            {%if (app.user.username is defined) and (i.username != app.user.username) %}
+                       <li class="ticket">
+                           <a href="#" onclick="abrirChat('{{i.id}}', '{{i.apellido}}, {{i.nombre}}');">
+                              
+                               
+                            <span class="header">
+                                <span class="title">{{i.apellido}}, {{i.nombre}}</span>
+                                <span class="number" id="cantidadMsj{{i.id}}">[ #{{app.user.cantidadMensajes(i.id)}} ]</span>
+                            </span>	
+                            <span class="content"> 
+                                 {%if i.foto is defined and i.foto is not null%}   {%if i.foto.path!=null%} <span class="avatar"><img src="{{asset('uploads/imagenes/')}}{{i.foto.path}}" ></span> {%else%}  <span class="avatar"><img src="{{asset('images/usuariom.jpg')}}"  ></span> {%endif%}{%else%}  <span class="avatar"><img src="{{asset('images/usuariom.jpg')}}"  ></span> {%endif%} 
+                                <span class="name"><strong> Nombre de usuario: </strong>{{i.username}} </span>
+                                <span class="status" ><strong> Estado: </strong><span id="status{{i.id}}" class="{%if app.user.hayNoLeido (i.id)%}red{%else%}green{%endif%}">[ Pendientes #{{app.user.cantidadNoLeidos(i.id)}}] </span></span>
+                            </span>	                                                        
+                            </a>
+                        </li>
+                        {%endif%}
+                       {%endfor%}
+                        
+                    </ul>
+                </p>                  
+                        </div>
+                </div>		
+				
+			</div>
+               
+                </div>
+            </div>
+        </div>
+{%endblock%}
+{%block modal%}
+<div id="eliminarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar conversación</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Está seguro que desea eliminar la conversación?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminar" idchat="0" class="btn btn-primary" onclick="eliminarModal(this)">Aceptar</a>
+  </div>
+</div>
+
+{%endblock%}
+{% block javascripts %}
+
+    {{parent()}}
+    <script src="{{ asset('js/jquery.jrumble.1.3.min.js')}}"></script>
+
+<script>
+var AID='{{app.user.id}}';
+var listaChat = new Array();
+var listaUsuarios = [0{% for i in usuarios%}{%if (app.user.username is defined) and (i.username != app.user.username) %},'{{i.id}}' {%endif%} {%endfor%}];
+var w;
+    $(document).ready(function() {
+         
+           setInterval(function(){    
+                actualizarChat();
+              },1500);
+             setInterval(function(){    
+                    actualizarUsuarios();
+              },5000);
+       
+    });
+    
+    function eliminarModal(ele){
+        var id = $(ele).attr('idchat');
+        $('#chat'+id).load("{{ path('cargarChat')}}",{'yo':AID, 'destino':id, 'tipo':4},  function() {});
+        $('#eliminarModal').modal('toggle');
+    }
+    function abrirModalEliminar(id){
+        $('#btnEliminar').attr('idchat', id);
+        $('#eliminarModal').modal('toggle');
+    }  
+ function abrirChat(id, nombre){
+     if (($('#chat'+id).length)){
+      return true;   
+     }
+ 
+    $('#contenedor').append('<div id="divChat'+id+'" class="box span4"><div class="box-header"><h2 ><i class="fa-icon-comments-alt"></i><span class="break"></span><span id="cabecera'+id+'"></span></h2><div class="box-icon"> <a href="#" class="btn-setting" title="Eliminar conversación" id="eliminarChat'+id+'"><i class="icon-trash"></i></a><a title="Minimizar chat"  href="#" id="min'+id+'" class="btn-minimize"><i class="icon-chevron-up"></i></a><a href="#" id="btnCerrarChat'+id+'" title="Cerrar conversación" onclick="cerrarBtnChat('+id+');" class="btn-close"><i class="icon-remove"></i></a></div></div><div class="box-content"><ul  style="overflow-y: scroll; max-height: 350px;height: 350px;" class="chat" id="chat'+id+'"></ul><div class="chat-form"><textarea rows="1" id="msj'+id+'"></textarea><button class="btn btn-info" onclick="enviarChat('+id+');">Enviar</button></div> </div></div>');
+    $('#chat'+id).load("{{ path('cargarChat')}}",{'yo':AID, 'destino':id, 'tipo':1},  function() {});
+    $('.btn-close').click(function(e){
+                e.preventDefault();
+                $(this).parent().parent().parent().remove();
+        });
+    $('#min'+id).click(function(e){
+                e.preventDefault();
+                var $target = $(this).parent().parent().next('.box-content');
+                if($target.is(':visible')) $('i',$(this)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
+                else 					   $('i',$(this)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
+                $target.slideToggle();
+        });
+     $('#eliminarChat'+id).click(function(e){
+        e.preventDefault();
+        abrirModalEliminar(id);
+     });   
+        
+        
+    $('#status'+id).removeClass('red').addClass('green');
+    document.getElementById('status'+id).innerHTML='[ Pending #0]';
+    document.getElementById('cabecera'+id).innerHTML=nombre;
+    $('#chat'+id).animate({"scrollTop": $('#chat'+id)[0].scrollHeight}/*, "slow"*/);
+    $('#msj'+id).keypress(function(e){
+        e = e || event;
+        //var key = window.event.keyCode;
+        if (e.shiftKey && e.keyCode === 13){
+            $('#msj'+id).val( $('#msj'+id).val()+'\n');
+            return false;
+        } else if (e.keyCode === 13){
+            enviarChat(id);
+        }
+    });
+    if (listaChat.length==0)
+        listaChat[0]=id;
+    else
+         listaChat[listaChat.length-1]=id;
+}   
+
+function sonEnter(txt){
+    for (var i = 0; i< txt.length; i++) {
+         var caracter = txt.charAt(i);
+         if( caracter != "\n") {
+             return true;
+          }
+    }
+    return false;
+}
+    
+function enviarChat(id){
+    
+        if ($('#msj'+id).val().length > 0 && sonEnter($('#msj'+id).val())){
+            $.get("{{ path('enviarChat')}}",{'yo':AID,'destino':id, 'msj':$('#msj'+id).val() })
+                .done(function(data) {
+                $('#chat'+id).append(data);
+                $('#msj'+id).val(null);
+                $('#chat'+id).animate({"scrollTop": $('#chat'+id)[0].scrollHeight}/*, "slow"*/);
+          //alert("Data Loaded: " + data);
+            });
+            }else{
+                    msjWC('De ingresar un texto para enviar un mensaje.');
+            }
+       
+    }
+ function actualizarChat(){
+    var datos;
+    var abiertos = new Array();
+    var j=0;
+    for(var i=1;i < listaUsuarios.length; i++){ 
+        if ($('#chat'+listaUsuarios[i]).length){ 
+            abiertos[j]=listaUsuarios[i];
+            $('#divChat'+listaUsuarios[i]).trigger('stopRumble');
+            j++;
+        }
+    }
+    if (abiertos.length<=0)
+        return false;
+     $.getJSON("{{ path('cargarChat')}}",{'yo':AID, 'abiertos':abiertos, 'tipo':2},function (json){  
+                datos=json;
+            });
+            if (datos=='@error'){
+                return false;
+            }
+    for(var i=0;i < datos.length; i++){ 
+        if (datos[i] != '@error'){
+            if ($('#chat'+datos[i].id).length){ 
+                $('#chat'+datos[i].id).append(datos[i].data);
+                $('#chat'+datos[i].id).animate({"scrollTop": $('#chat'+datos[i].id)[0].scrollHeight}/*, "slow"*/);
+                if (document.activeElement!=document.getElementById('msj'+datos[i].id) ){
+                    document.getElementById('msjChat').play();
+                    $('#divChat'+datos[i].id).jrumble({
+                        x: 10,
+                        y: 10,
+                        rotation: 4
+                        });
+                        $('#divChat'+datos[i].id).trigger('startRumble');
+                }
+            }
+            
+        } 
+    } 
+} 
+function actualizarUsuarios(){
+    var datos;
+    var nombre;
+    var lista;
+
+            $.getJSON("{{ path('cargarChat')}}",{'yo':AID, 'tipo':3},function (json){      
+
+            lista=json;
+            
+            });
+            if (lista[0].id==="error"){
+                 for(var i=1;i < listaUsuarios.length; i++){ 
+                     $('#status'+listaUsuarios[i]).removeAttr('class').addClass('green');
+                     document.getElementById('status'+listaUsuarios[i]).innerHTML='[Pendientes #0]';
+                    }
+                return false;
+            }
+        for(var i=0;i < lista.length; i++){
+            if (lista[i].val==0){
+                     $('#status'+lista[i].id).removeAttr('class').addClass('green');
+                     
+                }else{
+                    if (!($('#chat'+lista[i].id).length)){ 
+                         document.getElementById('msjChat').play();
+                         abrirChat(lista[i].id, lista[i].nombre);
+                    }else{
+                        
+                    }
+                    $('#status'+lista[i].id).removeAttr('class').addClass('red');
+                    
+                }
+               
+            document.getElementById('status'+lista[i].id).innerHTML='[ Pendientes #'+lista[i].val+']';
+    } 
+} 
+
+function cerrarBtnChat(id){
+    var pos = listaChat.indexOf( id);
+    if (pos > -1){
+             listaChat.splice( pos, 1 );
+    }
+}
+    
+
+
+
+
+    </script>
+{% endblock%}
+ {% block css %}
+    {{parent()}}
+
+<style type="text/css">
+ul.chat li.right .message {
+        text-align: right;
+        margin-right: 10px;
+        background: #f6f6f6;
+        word-wrap: break-word;
+}
+ul.chat li.left .message {
+        text-align: left;
+        margin-left: 10px;
+        background: #fff;
+        word-wrap: break-word;
+}
+.time {
+width: 5em;
+font-size: 10px;
+}
+.text {
+font-size: 13px;
+}
+ul.tickets li.ticket .avatar img{
+height: 65px;
+width: 70px;
+}
+#divUsuarios {
+  max-height: 480px;
+  overflow: auto;
+}
+
+ </style>
+{% endblock%}   
+    

@@ -1,0 +1,7 @@
+{%if respuesta == true%}
+    Respuesta: El pedido ha sido autorizado.
+    <input id="respuesta" type="hidden" value="1"/>
+{%else%}
+    Respuesta: No es posible enviar el pedido.
+    <input id="respuesta" type="hidden" value="0"/>
+{%endif%}

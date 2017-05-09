@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- start: Meta -->
+        <meta charset="utf-8">
+        <title>Sistema Gestión Gastronómico</title>
+        <meta name="author" content="Herrera Fernando Martin - Snabria Sergio Javier">
+        <!-- end: Meta -->
+
+        <!-- start: Mobile Specific -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- end: Mobile Specific -->
+
+        <!-- start: CSS -->
+        <link id="bootstrap-style" href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ucss')}}" rel="stylesheet">
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" />
+        {#<link id="bootstrap-style" href="../../../../../public/p{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ucss')}}" rel="stylesheet">
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" #}
+
+        <!--[if lt IE 7 ]>
+        <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+        <![endif]-->
+        <!--[if IE 8 ]>
+        <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+        <![endif]-->
+        <!--[if IE 9 ]>
+        <![endif]-->
+
+        <!-- end: CSS -->
+
+
+        <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <!-- start: Favicon -->
+        <link rel="shortcut icon" href="{{ asset('favicon.ico')}}">
+        <!-- end: Favicon -->
+    </head>
+    
+    <style type="text/css">
+            body {  background: url({%if producto.foto.path is defined and producto.foto.path!=null%} {{asset('uploads/imagenes/')}}{{producto.foto.path}} {%else%} {%if producto.isMercaderia%}{{asset('images/mercaderia.jpg')}}{%else%}{{asset('images/plato.jpg')}}{%endif%}{%endif%}); background-repeat: no-repeat; background-size: cover }
+
+    </style>
+
+    <body>
+        
+        <div class="container-fluid">
+		<div class="row-fluid">
+					
+                    <div class="row-fluid" style="color: white;">
+				
+                                <div class="pull-right">
+						SisGG - Sistema de Gestión Gastronómico
+                                                <img width="35px" height="35px" src="{{ asset('favicon.ico')}}"  />
+					</div>
+					<h1>{{producto.nombre}}</h1>
+                                         {%if (producto.ingredientes is defined and ((producto.ingredientes|length) >0 ))%}
+                                            Ingredientes: {%set sepa=0%}{%for ing in producto.ingredientes %}{%set sepa=sepa+1%}{%if sepa>1%}, {%endif%}{{ing.productoProduccion.nombre}}{%endfor%}
+                                        {%endif%}
+			</div><!--/row-->
+		
+				</div><!--/fluid-row-->
+		 <div class="clearfix"></div>
+
+		
+	</div><!--/.fluid-container-->        
+        <!-- start: JavaScript-->
+        <script src="{{ asset('js/jquery-1.9.1.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery-migrate-1.0.0.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery-ui-1.10.0.custom.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.utouch-punch.js')}}"></script>
+
+        <script src="{{ asset('js/bootstrap.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.cookie.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.dataTables.min.js')}}"></script>
+
+        <script src="{{ asset('js/excanvas.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.flot.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.flot.resize.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.chosen.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.uniform.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.cleditor.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.noty.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.elfinder.min.js')}}"></script>
+
+        <script src="{{ asset('js/jquery.iphone.toggle.js')}}"></script>
+
+
+        <script type="text/javascript" src={{asset('css/bootstrap/table/jquery.dataTables.js')}}></script>
+
+        <script type="text/javascript" src={{asset('css/bootstrap/table/DT_bootstrap.js')}}></script>
+            <!-- end: JavaScript-->
+    </body>
+    
+
+
+</html>

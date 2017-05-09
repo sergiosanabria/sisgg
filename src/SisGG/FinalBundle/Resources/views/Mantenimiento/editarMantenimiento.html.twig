@@ -1,0 +1,103 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar producto mantenimiento {{nombre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('mantenimientos')}}">Productos mantenimiento</a><span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar producto mantenimiento {{nombre}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Editar producto mantenimiento {{nombre}}</legend>
+{% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+{% endif %}
+<form action="{{ path('modificarMantenimiento',{'id':id}) }}" class="form-horizontal" method="post">
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.descripcion) }}
+    {{ form_row(form.precioCosto) }}
+    <div class="control-group">
+            <label class="control-label">Unidad de medida</label>
+            <div class="controls">
+                <select id="um" onchange="cargarTasa(this)" name="um" required="required"></select><div class="btn-group"><button type="button" class="btn"><i onclick="cargarUM()" title="Actualizar lista de UM" class="icon-refresh"></i></button> <a class="btn" href="{{path('ums')}}" title="Nueva Unidad de medida" target="_blank">...</a></div>
+            </div>
+    </div>
+        
+    {{ form_rest(form) }} 
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('mantenimientos')}}" type="button" class="btn">Cancelar</a>
+    </div>        
+</form>
+        </div>
+    </div>
+</div> 
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov=''; 
+            
+$(document).ready(function  (){  
+        var div = document.getElementById('sisgg_finalbundle_mantenimientotype_proveedor').parentNode;
+        $(div).append('<div class="btn-group"><button type="button" class="btn"><i onclick="cargarProveedor()" title="Actualizar lista de proveedores" class="icon-refresh"></i> </button><a href="{{path('nuevoProveedor')}}" title="Nueva proveedor" class="btn" target="_blank">...</a>');
+        var combo = document.getElementById('sisgg_finalbundle_mantenimientotype_proveedor');
+        prov = combo.options[combo.selectedIndex].value;
+        cargarProveedor(); 
+        cargarUM();
+         var comboTasa = document.getElementById('sisgg_finalbundle_mantenimientotype_tasa');
+         var nombreTasa=comboTasa.options[comboTasa.selectedIndex].text;
+         seleccionarUM(nombreTasa);
+        
+         });
+    
+     function cargarProveedor(){
+        $('#sisgg_finalbundle_mantenimientotype_proveedor').load("{{ path('cargarProveedor')}}", {'name':prov}, function() {             
+            }); 
+    }
+    
+    function cargarUM(){
+        $('#um').load("{{ path('cargarUM')}}", function() {             
+            }); 
+    }
+    function cargarTasa(combo){
+        var name=combo.options[combo.selectedIndex].value;
+
+        $('#sisgg_finalbundle_mantenimientotype_tasa').load("{{ path('cargarTasa')}}",{'name':name}, function() {             
+            }); 
+    }
+    
+    function seleccionarUM(tasa){
+        
+       $.getJSON("{{path ('buscarUMdeTasa')}}",{name:tasa},function (json){
+            var combo=document.getElementById('um');
+            seleccionarTasa(tasa);
+            for (var i=0;i<combo.length;i++){
+                if (combo.options[i].text==json.name){
+                    combo.options[i].selected="selected";                   
+                }
+            }
+        });       
+    }
+    
+    function seleccionarTasa(tasa){
+        var comboTasa=document.getElementById('sisgg_finalbundle_mantenimientotype_tasa');
+        $(comboTasa).load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    
+
+    </script>
+{% endblock%}

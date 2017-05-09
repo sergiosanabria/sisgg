@@ -1,0 +1,10 @@
+
+      {%if tipo==1%}
+              <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':'A', 'np':id})}}">Factura A</a>
+              <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':'B', 'np':id})}}">Factura B</a>
+              <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':'C', 'np':id})}}">Factura C</a>
+        {%else%}
+              <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':'B', 'np':id})}}">Factura B</a>
+              <a class="btn btn-primary" href="{{path('nuevaCompra', {'tipo':'C', 'np':id})}}">Factura C</a>
+    {%endif%}
+

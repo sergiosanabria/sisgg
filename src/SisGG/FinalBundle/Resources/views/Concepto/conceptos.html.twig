@@ -1,0 +1,128 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Conceptos</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+            <div class="box-content">
+            {% set activos = 0%}
+            {% set inactivos = 0%}    
+            {% for concepto in conceptos%}
+                {%if concepto.estado=='activo'%}
+                    {% set activos = activos+1%}
+                {% elseif concepto.estado=='inactivo'%}
+                    {% set inactivos = inactivos+1%}
+                {% endif %}
+            {% endfor %}     
+            <legend>Conceptos 
+                <div class="btn-group" style='float:right;'>
+                    <a title="Nuevo Concepto" href="{{path('nuevo_concepto')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                    <a class="btn"><i class="icon-print"></i></a>
+                </div>
+                <small class='filtros'>
+                    <ul class="nav nav-pills" id="myTab1">
+                    <li class='filtro {%if (estado=='activo') or (estado==null)%}active{%endif%}'><a href='{{path('conceptos')}}' >Activos({{activos}})</a></li>
+                    <li class='filtro {%if estado=='inactivo'%}active{%endif%}'><a href='{{path('conceptos')}}?estado=inactivo' >Inactivos({{inactivos}})</a></li> 
+                    <li class='filtro {%if estado=='todos'%}active{%endif%}' ><a href='{{path('conceptos')}}?estado=todos' >Todos({{activos+inactivos}})</a></li>
+                    </ul>
+                </small>                
+            </legend>
+            <table class="table table-striped table-bordered" id="clientes">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%if estado==null%}
+                        {%set estado='activo'%}        
+                {% endif %}        
+                {% for concepto in conceptos%}
+                     {%if estado=='todos' or concepto.estado==estado%}   
+                        <tr>
+                            <td>{{concepto.nombre}}</td>
+                            <td>{{concepto.descripcion}}</td>
+                            <td class='estado' style='text-align: center;'>{%if concepto.estado=='activo'%}<span class="label label-success">Activo</span>{%elseif concepto.estado=='inactivo'%}<span class="label label-important">Inactivo</span>{%endif%}</td>
+                            {%if concepto.estado=='activo'%}
+                            <td style='text-align: center;'>
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_editar') %}
+                                    <a rel="tooltip" title="Editar" href="{{path('editar_concepto')}}?id={{concepto.id}}"><i class="fa-icon-edit"></i></a>
+                                {%endif%}
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_borrar') %}
+                                    <a class='borrar' href='#' rel="tooltip" title="Pasar a Inactivo" data-concepto='{{concepto}}' data-id='{{concepto.id}}'><i class="fa-icon-remove"></i></a>
+                                {%endif%}    
+                            </td>
+                            {%else%}
+                            <td style='text-align: center;'>
+                                <a rel="tooltip" title="Pasar a Activo" href="{{path('activar_concepto')}}?id={{concepto.id}}"><i class="fa-icon-plus-sign"></i></a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                     {% endif %}       
+                {% endfor %}       
+                    </tbody>
+                </table>  
+            
+                
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                <div class="modal hide fade" id="eliminarConcepto">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Atención!!!</h3>
+                    </div>
+                    <div id="dataEliminar" class="modal-body">
+                        ¿Esta seguro que desea pasar el concepto <span id='concepto' style='font: bold cursive;'></span> a estado Inactivo?
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                        <a class="btn btn-primary" id='borrar'>Confirmar</a>
+                    </div>
+                </div>
+{%endblock%} 
+{%block javascripts%}
+{{parent()}}    
+    <script type="text/javascript">
+        $().ready(function(){
+            $('.borrar').each(function(){
+               $(this).click(function(ev){
+                   ev.preventDefault();
+                   $('#dataEliminar #concepto').html($(this).data('concepto'));
+                   $('#borrar').attr('href','{{path('borrar_concepto')}}?id='+$(this).data('id'));
+                   $('#eliminarConcepto').modal('show');
+               }); 
+            });
+        })        
+    </script>    
+{%endblock%}    
+{%block ajax%}
+            <table class="table table-striped table-bordered table-hover" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripcion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for concepto in conceptos%}
+                        <tr onclick='seleccionarConcepto(event,{{concepto.id}});' style='cursor:pointer;'>
+                            <td>{{concepto.nombre}}</td>
+                            <td>{{concepto.descripcion}}</td>               
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>
+{%endblock%} 

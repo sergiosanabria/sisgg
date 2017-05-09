@@ -1,0 +1,37 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="agendaForm" onsubmit="altaAgenda(event);">
+    {%if error %}
+     <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                {{error}}
+            </div>
+        {%endif%}
+<fieldset id="datosAgenda">
+
+    {{form_widget(form)}}
+   
+    <div> {{form_rest(form)}}</div>
+
+        <div id="divCuenta" style="display: none"> <input type="hidden" id="cuentaADIC" name="cuentaADIC"> </div>
+        <div class="form-actions">
+            <button class="btn btn-primary"  type="submit" >Aceptar</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+        </div>
+         
+</fieldset>
+</form>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    El evento se ha registrado correctamente.
+</div>
+{%endif%}

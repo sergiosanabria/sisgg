@@ -1,0 +1,62 @@
+
+<pdf>
+    <dynamic-page margin='50px' page-size="{%block tipo_hoja%}{%endblock tipo_hoja%}{%block orientacion_hoja%}{%endblock orientacion_hoja%}">
+        <placeholders>  
+            {#<watermark>
+                    <!-- rotate can have absolute values (45deg - in degrees, 0.123 - in radians) or relative values ("diagonally" and "-diagonally" - angle between diagonal and base side of the page) -->
+                    <div font-size="20" alpha="0.15">
+                        Documento no válido como Factura
+                    </div>
+            </watermark>#}
+            <header>
+                <div height='150px' width="100%">
+                                {%block cabecera%}
+                        <table border.type="none"  font-type="helvetica">
+                            <tr border.type="none" text-align="left">
+                                <td border.type="none" width="100px">
+                                    <div width="100%" height="115px" border-color="gray" border-size="0.5" >
+                                        {%if empresa.foto is defined and empresa.foto is not null%}   {%if empresa.foto.path!=null%}<img  float="left"  width="100%" height="100%" src="{{empresa.foto.AbsolutePath}}" />{%else%} {{empresa.nombre}} {%endif%}{%else%} {{empresa.nombre}} {%endif%}
+                                    </div>
+                                    </td>
+                                    <td text-align="left" width="200px" border.type="none" padding-left="10px">
+                                        <div >
+                                            <div  font-size="18"   font-style="bold">{{empresa.nombre}}</div>
+                                            <div  font-size="10"   font-style="italic">{{empresa.slogan}}</div>
+                                            <div  font-size="8">Domicilio: {{empresa.direccion}}</div>
+                                            <div  font-size="8"   font-style="italic">{{venta.condicionIvaEmpresa|upper}}</div>
+                                            <div  font-size="8">Tel: {%set ite=0%}{%for i in empresa.telefonos%}{%set ite=ite+1%} ({{i.nacional}}){{i.caracteristica}}-{{i.numero}} {%if ite>1%} | {%endif%} {%endfor%}</div>
+                                        </div>
+                                    </td>
+                                    <td border.type="none" font-size="25" text-align="center">{{venta.tipoFactura.nomenclatura}} <span font-size="10">Código {{venta.tipoFactura.codigo}}</span></td>
+                                    <td text-align="left" width="300px" border.type="none" padding-left="20px" >
+                                        <div>Factura:  {{venta.serie}}-{{venta.numero}}</div>
+                                        <div>Fecha:  {{venta.fecha|date('d/m/Y')}}</div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                                {%endblock cabecera%}
+                        </div>
+                    </header>
+
+                    <footer>
+
+                        <div padding-top="15px" width='100%' height="20px" >
+                            <table>
+                                <tr>
+                                    <td border.type="none" width='33.33' text-align="left">Fecha de Emisión: {{'now' |date("d/m/Y g:ia")}}</td>
+                                    <td border.type="none" width='33.33' text-align="center">Emitido por: {{app.user.apellido}}, {{app.user.nombre}} ({{app.user.username}})</td>
+                                    <td border.type="none" width='33.33' text-align="right" padding-right="50px"><page-info  offset="0" format="Página %s de %s" /></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </footer>         
+                </placeholders>
+                    {%block contenido%}
+
+                    {%endblock contenido%}
+            </dynamic-page>
+        </pdf>
+
+

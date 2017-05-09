@@ -1,0 +1,61 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Lista de empleados{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Lista de empleados</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table>
+            <tr background-color="#FAFAFA" >
+                <td class="titulo" style=" text-align: left;vertical-align: middle;"><b>Apellido y nombre</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>DNI</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Sexo</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Edad</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Dirección</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Telefonos</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Cargo</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Forma de pago</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Monto</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Saldo</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Estado</b></td>
+            </tr>
+               {% for i in items%}
+            <tr>
+                <td style="text-align: left;" width="125px">{{i.apellido}}, {{i.nombre}}</td>
+                <td style=" text-align: center;">{{i.dni}}</td>
+                <td style=" text-align: center;" width="40px">{{i.tipoSexo}}</td> 
+                <td style=" text-align: center;" width="70px">{{i.edad}} años</td> 
+                <td style=" text-align: center;" width="160px">{{i.direccion}}</td>
+                <td style=" text-align: left;">{%set ite=0%}{%for j in i.telefonos%}{%set ite=ite+1%} ({{j.nacional}}){{j.caracteristica}}-{{j.numero}} {%if ite>1%} | {%endif%} {%endfor%}</td>
+                <td style=" text-align: center;">{{i.cargo.nombre}}</td> 
+                <td style=" text-align: center;">{%if i.cargo.tipo==0%} Cada {{i.cargo.porFecha}} de cada mes{%elseif i.cargo.tipo==1%}Cada {{i.cargo.porDia}} días{%elseif i.cargo.tipo==2%}
+                        {%if i.cargo.porDiaSemana==0%} Cada Domingo
+                        {%elseif i.cargo.porDiaSemana==1%} Cada Lunes
+                        {%elseif i.cargo.porDiaSemana==2%} Cada Martes
+                        {%elseif i.cargo.porDiaSemana==3%} Cada Miércoles
+                        {%elseif i.cargo.porDiaSemana==4%} Cada Jueves
+                        {%elseif i.cargo.porDiaSemana==5%} Cada Viernes
+                        {%elseif i.cargo.porDiaSemana==6%} Cada Sábado
+                        {%endif%}
+                    {%endif%}</td>
+            <td style=" text-align: center;">{{i.cargo.monto}}</td>
+            <td style=" text-align: center;">{{i.cuenta.saldo}}</td>
+            <td style=" text-align: center;">{{i.estadoSueldo}}</td>
+                    
+            </tr>   
+            {% endfor %}
+        </table>
+</div>
+{%endblock%}

@@ -1,0 +1,29 @@
+<table class="table table-bordered table-hover">
+                    <thead class="header">
+                        <th>Asunto</th>
+                        <th>Lugar</th>
+                        <th>Descripción</th>
+                        <th>Etiqueta</th>
+                        <th>Fecha y hora de inicio</th>
+                        <th>Fecha y hora de fin</th>
+                        <th>Todo el dia</th>
+                        <th>Acciones</th>
+                    </thead>
+                    <tbody>
+                        {%for p in pendientes%}
+                        <tr>
+                            <td>{{p.asunto}}</td>
+                            <td>{{p.lugar}}</td>
+                            <td>{{p.descripcion}}</td>
+                            <td style=" background-color: {{p.etiqueta.color}};">{{p.etiqueta}}</td>
+                            <td>{{p.inicioFec | date('d/m/Y')}} {{p.inicioHora | date('H:i:s')}}</td>
+                            <td>{{p.finFec | date('d/m/Y')}} {{p.finHora | date('H:i:s')}}</td>
+                            <td>{{p.todoeldia}}</td>
+                            <td style="text-align: center;width: fit-content" >
+                                <a href="javascript:void(0);" onclick="editarAgenda('{{p.id}}');" title="Ver detalles agenda"><i class="fa-icon-list-alt"></i></a> 
+                                <a href="javascript:void(0);" onclick="visto('{{p.id}}');" title="Marcar como visto"><i class="fa-icon-eye-open"></i></a> 
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>

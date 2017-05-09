@@ -1,0 +1,35 @@
+<div class="box" id="tanda{{tanda.id}}">
+    <div class="box-header" data-original-title="">
+        <h2>Tanda</h2>
+        <div class="box-icon">
+            <a href="#" class="btn-setting"><i class="icon-wrench"></i></a>
+            <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+            <a href="#" class="btn-close"><i class="icon-remove"></i></a>
+        </div>
+    </div>
+    <div class="tanda">
+        <div class="comandas span9" data-idtanda="{{tanda.id}}" ondrop="vincularComanda(event,{{tanda.id}})" ondragover="allowDrop(event)">
+            <div class="box-header" data-original-title="">
+                <h2>Comandas de Tanda</h2>
+                <div class="box-icon">
+                </div>
+                {%for pedido in tanda.comandas%}
+                    <div class="box comanda column" id="{{pedido.id}}" draggable="true" ondragstart="drag(event)">
+                        <div class="box-header">
+                            <h2><i class="icon-th"></i><span class="break"></span>Comanda</h2>
+                        </div>
+                        <div class="box-contents items">
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+        </div>
+        <div class="resumen span3" id="resumen{{tanda.id}}">
+            <div class="box-header" data-original-title="">
+                <h2>Resúmen</h2>
+                <div class="box-icon">
+                </div>
+            </div>
+        </div>    
+    </div>    
+</div>

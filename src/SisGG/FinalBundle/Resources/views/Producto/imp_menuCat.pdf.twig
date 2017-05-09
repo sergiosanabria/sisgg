@@ -1,0 +1,52 @@
+{% extends "::imprimirMenu.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%} {%endblock titulo_reporte%}
+{%block contenido%}
+<div font-type="helvetica" font-size="10">
+{{parent()}}
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+{#<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>#}
+
+        <table font-size="9">
+            {%for cat in items%}
+                <tr>
+                   {%if config[0].incluye==1%} <td border.type="none" padding-bottom="7px" padding-top="7px"  color="{{config[0].color}}"  {%if config[0].negrita==1 and config[0].cursiva==1%}font-style="bold-italic"{%elseif config[0].negrita==1%}font-style="bold"{%elseif config[0].cursiva==1%}font-style="italic"{%endif%} colspan='2' font-size='12'>{%set ite=0%}{%for n in cat.productos[0]['producto'].catPadres(0)%}{%set ite=ite+1%}{%if ite>1%}. {%endif%}{{n}}{%endfor%}</td>{%endif%} 
+                </tr>
+              {#  <tr background-color="#F1F1F1"  >
+                {%if config[0]==true%}  <td padding="2px" style=" text-align: left;vertical-align: middle;"><b>Nombre</b></td>{%endif%}
+                {%if config[0]==true%}  <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio venta</b></td>{%endif%}
+                {%if config[0]==true%}  <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio costo</b></td>{%endif%}               
+                </tr>#}
+               {% for i in cat.productos%}
+            <tr border.type="none">
+                {%if config[3].incluye==1%}<td border.type="bottom" border.style="dotted" padding="3px"  font-size='10' style="text-align: left;" color="{{config[3].color}}" {%if config[3].negrita==1 and config[3].cursiva==1%}font-style="bold-italic"{%elseif config[3].negrita==1%}font-style="bold"{%elseif config[3].cursiva==1%}font-style="italic"{%endif%} width="700px">{{i.producto.nombre}}
+                   {%if (config[2].incluye==1) and (i.producto.ingredientes is defined and ((i.producto.ingredientes|length) >0 ))%} <div {%if config[2].negrita==1 and config[2].cursiva==1%}font-style="bold-italic"{%elseif config[2].negrita==1%}font-style="bold"{%elseif config[2].cursiva==1%}font-style="italic"{%endif%} font-size='9' style="text-align: left;" color="{{config[2].color}}">{%set sepa=0%}{%for ing in i.producto.ingredientes %}{%set sepa=sepa+1%}{%if sepa>1%}, {%endif%}{{ing.productoProduccion.nombre}}{%endfor%}</div>
+                {%endif%}
+                </td>{%endif%}
+                {#{%if config[5]==1%}<td border.type="none" padding="3px" font-size='9' color="{config[].color[3]}}" {%if config[].negrita[4]==1 and config[].cursiva[4]==1%}font-style="bold-italic"{%elseif config[].negrita[4]==1%}font-style="bold"{%elseif config[].cursiva[4]==1%}font-style="italic"{%endif%} width="220px" style=" text-align: center;">{{i.producto.tasa}}</td>{%else%}<td></td>{%endif%}#}
+                <td padding="3px" font-size='10' width="70px" color="{{config[4].color}}" {%if config[4].negrita==1 and config[4].cursiva==1%}font-style="bold-italic"{%elseif config[4].negrita==1%}font-style="bold"{%elseif config[4].cursiva==1%}font-style="italic"{%endif%} style=" text-align: center;vertical-align: middle;">{%if config[4].incluye=='1'%}${{i.producto.precioVenta }} {%endif%}</td>
+                {#{%if config[1].incluye==1%}<td   height="40px" width="40px" ><img float="none" border.type="none"  width="100%" height="100%" src="{{i.producto.QR }}"/> </td>{%else%}{%endif%}#}
+                
+            </tr>
+            {#{%if (config[2]=='true') and (i.producto.ingredientes is defined and ((i.producto.ingredientes|length) >0 ))%}
+                <tr border.type="none">
+                    <td border.type="none" padding="3px"  font-size='9' style="text-align: left;" color="red" colspan='2'>{%set sepa=0%}{%for ing in i.producto.ingredientes %}{%set sepa=sepa+1%}{%if sepa>1%}, {%endif%}{{ing.productoProduccion.nombre}}{%endfor%}</td>
+                </tr>
+            {%endif%}#}
+                {% endfor %}
+            {%endfor%}
+                 
+            
+        </table>
+
+               
+</div>
+{%endblock%}

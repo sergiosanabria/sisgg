@@ -1,0 +1,459 @@
+{# <div id="main_calendar" class="hidden-phone fc">< #}
+{% extends "::base.html.twig" %}
+{%block title%}Agenda{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Agenda</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<div class="row-fluid sortable">
+ <div class="box span12" ontablet="span12" ondesktop="span12">
+    <div class="box-header">
+        <h2><span class=""><a href="#" title="Nueva etiqueta" onclick="nuevaEtiqueta();"><i class="fa-icon-plus-sign"></i></a></span><span class="break"></span>Nueva etiqueta</h2>
+            <div class="box-icon">
+                    <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+            </div>
+    </div>
+    <div class="box-content" id="etiquetaDIV"  style="overflow-y: scroll; max-height: 350px;" >
+
+
+    </div>
+</div>
+</div>
+<div class="row-fluid sortable">
+   
+    <div class="box span8" ontablet="span8" ondesktop="span8">
+        <div class="box-header">
+            <h2><span class=""><a href="#" title="Nuevo evento" onclick="nuevoAgenda();"><i class="fa-icon-plus-sign"></i></a></span><span class="break"></span>Agenda</h2>
+        </div>
+            <div class="box-content" id="calendario">
+                <div id="main_calendar" class="hidden-phone fc">
+                </div>
+
+        </div>	
+    </div>
+    <div class="box span4" ontablet="span4" ondesktop="span4">
+            <div class="box-header">
+                <h2><span class=""><a href="#" title="Nueva etiqueta" onclick="nuevaEtiqueta();"><i class="fa-icon-list"></i></a></span><span class="break"></span>Etiquetas</h2>
+                    <div class="box-icon">
+                            <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                    </div>
+            </div>
+            <div class="box-content" style="overflow-y: scroll; max-height: 850px;" >
+                <table class="table table-bordered" id="etiquetas">
+                    <thead class="header">
+                        <th>Nombre</th>
+                        <th style="width: 20px;">Color</th>
+                        <th style="text-align: center">Acciones</th>
+                    </thead>
+                    <tbody>
+                        {%for i in etiquetas%}
+                        <tr>
+                            <td  id="haber">{{i.etiqueta}}</td>    
+                            <td style="width: 10px;" bgcolor="#{{i.color}}" id="saldo" ></td>
+                            <td style="text-align: center;width: fit-content" >
+                                <a href="#" onclick="editarEtiqueta('{{i.id}}');"  title="Editar etiqueta {{i.etiqueta}}"><i class="fa-icon-edit"></i></a> 
+                                    <a href="#" onclick="mostrarModalEliminarEtiqueta('{{i.id}}', '{{i.etiqueta}}');"  title="Eliminar etiqueta {{i.etiqueta}}"><i class="fa-icon-remove"></i></a>        
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+
+            </div>
+    </div>
+
+</div>
+                <legend>Pendientes</legend>
+                <div id="divPendiente">
+                
+                
+                </div>
+                </div>
+            </div>
+        </div>
+{%endblock%}
+{%block modal%}
+<div id="agenda" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Datos de evento</h3>
+  </div>
+  <div class="modal-body">
+      <div id="agendaDIV"></div>
+  </div>
+</div>
+
+<div id="eliminarEtiquetaModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar evento</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Está seguro que desea eliminar el evento?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarEvento"  class="btn btn-primary" onclick="eliminarAgenda();">Aceptar</a>
+  </div>
+</div>
+<div id="modalEliminarEtiqueta" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar etiqueta</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Está seguro que desea eliminar la etiqueta <strong><span id="txtEliminarEtiqueta"></span>?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarEtiqueta" id-etiqueta="-1"  class="btn btn-primary" onclick="eliminarEtiqueta(this);">Aceptar</a>
+  </div>
+</div>
+{%endblock%}
+{% block javascripts %}
+
+    {{parent()}}
+
+<script>
+var AID;
+var evento;
+
+    $(document).ready(function() {
+        cargarAgenda();
+        cargarPendientes ();
+       
+    });
+    
+    function cambioFecha(ele){
+                 $('#sisgg_finalbundle_agendatype_finFec').val($(ele).val());
+    }
+   
+    function abrirModalEliminarEvento(){
+        $('#eliminarEventoModal').modal('toggle');
+    }  
+    
+    function cargarPendientes (){
+        $('#divPendiente').load("{{ path('agendasPendientes')}}", {'tipo':'1'});
+    }
+    
+    function  visto (id){
+        $.getJSON("{{ path('agendasPendientes')}}", {'tipo':'2', 'id':id}, function (json){
+            if (json.ok=='ok'){
+                msjACentro('Ha marcado como visto el evento');
+               
+            }else{
+                msjEC('ha ocurrido un error.');
+
+            }
+             cargarPendientes();
+            agendaSistemaPendiete();
+        });
+    }
+    
+function nuevoAgenda(){
+        $('#agendaDIV').load("{{ path('nuevoAgenda')}}",{'id':AID},  function() {
+            if($('.datepicker')) {
+                $('.datepicker').datepicker();
+                $(".datepicker").datepicker($.datepicker.regional['es']);
+            }
+            $('#sisgg_finalbundle_agendatype_inicioHora_hour').val(9);
+            $('#sisgg_finalbundle_agendatype_finHora_hour').val(9);
+            
+            $('#sisgg_finalbundle_agendatype_inicioHora_hour').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_hour').val($('#sisgg_finalbundle_agendatype_inicioHora_hour').val());
+            });
+            $('#sisgg_finalbundle_agendatype_inicioHora_minute').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_minute').val($('#sisgg_finalbundle_agendatype_inicioHora_minute').val());
+            });
+            $('#agenda').modal('toggle');
+            //$('#cuentaCANC').val(id);
+            cargarComboEtiquetas();
+            
+
+        }); 
+        
+    }
+
+function altaAgenda(ev){
+    ev.preventDefault();
+    $.post("{{path('altaAgenda')}}",   $("#datosAgenda").serialize() )
+            .done(function(data) {
+            $('#main_calendar').remove();
+            var div = document.createElement('div');
+            div.id='main_calendar';
+            div.class='hidden-phone fc';
+            $('#calendario').append(div);
+            cargarAgenda();
+            $('#agendaForm').remove();
+           $('#agendaDIV').append(data);
+            if($('.datepicker')) {
+                $('.datepicker').datepicker();
+                $(".datepicker").datepicker($.datepicker.regional['es']);
+            }
+            cargarComboEtiquetas();
+            cargarPendientes();
+            agendaSistemaPendiete();
+            });
+}
+
+function editarAgenda(id){
+        AID=id;
+        $('#agendaDIV').load("{{ path('editarAgenda')}}",{'id':AID},  function() {
+            if($('.datepicker')) {
+                $('.datepicker').datepicker();
+                $(".datepicker").datepicker($.datepicker.regional['es']);
+            }
+            $('#idAgenda').val(AID);
+            $('#agenda').modal('toggle');
+            $('#sisgg_finalbundle_agendatype_inicioHora_hour').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_hour').val($('#sisgg_finalbundle_agendatype_inicioHora_hour').val());
+            });
+            $('#sisgg_finalbundle_agendatype_inicioHora_minute').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_minute').val($('#sisgg_finalbundle_agendatype_inicioHora_minute').val());
+            });
+            cargarComboEtiquetas();
+            //$('#cuentaCANC').val(id);
+            
+        }); 
+        
+    }
+
+function modificarAgenda(ev){
+    ev.preventDefault();
+    $.post("{{path('modificarAgenda')}}",  $("#datosAgenda").serialize() )
+            .done(function(data) {
+            $('#main_calendar').remove();
+            var div = document.createElement('div');
+            div.id='main_calendar';
+            div.class='hidden-phone fc';
+            //alert(div);
+            $('#calendario').append(div);
+            cargarAgenda();
+            $('#agendaForm').remove();
+            $('#agendaDIV').append(data);
+            if($('.datepicker')) {
+                $('.datepicker').datepicker();
+                $(".datepicker").datepicker($.datepicker.regional['es']);
+            }
+            $('#sisgg_finalbundle_agendatype_inicioHora_hour').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_hour').val($('#sisgg_finalbundle_agendatype_inicioHora_hour').val());
+            });
+            $('#sisgg_finalbundle_agendatype_inicioHora_minute').change(function(){
+                $('#sisgg_finalbundle_agendatype_finHora_hour').val($('#sisgg_finalbundle_agendatype_inicioHora_minute').val());
+            });
+            cargarComboEtiquetas();
+            cargarPendientes ();
+            cargarPendientes();
+            agendaSistemaPendiete();
+            });
+}
+
+
+function eliminarAgenda(){
+    $('#eliminarEventoModal').modal('toggle');
+    $.post("{{path('eliminarAgenda')}}",  $("#datosAgenda").serialize() )
+            .done(function(data) {
+            
+            cargarAgenda();
+            $('#agendaForm').remove();
+            $('#agendaDIV').append(data);
+            cargarComboEtiquetas();
+            cargarPendientes();
+            agendaSistemaPendiete();
+            });
+}
+function nuevaEtiqueta(){
+        $('#etiquetaDIV').load("{{ path('nuevaEtiqueta')}}",{},  function() {
+            $('#sisgg_finalbundle_etiquetaagendatype_color').jPicker();
+            
+        }); 
+    }
+function altaEtiqueta(ev){
+    ev.preventDefault();
+        $.post("{{path('altaEtiqueta')}}",   $("#datosEtiqueta").serialize() )
+            .done(function(data) {
+              $('#etiquetaForm').remove();
+              
+              $('#etiquetaDIV').append(data);
+            $('#sisgg_finalbundle_etiquetaagendatype_color').jPicker();
+            cargarEtiquetas();
+              // actualizarMov();
+               //pintarNum();
+            });
+        }
+ function editarEtiqueta(id){
+        AID=id;
+        $('#etiquetaDIV').load("{{ path('editarEtiqueta')}}",{'id':AID},  function() {
+            $('#sisgg_finalbundle_etiquetaagendatype_color').jPicker();
+            $('#idEtiqueta').val(AID);
+            cargarAgenda();
+            //$('#cuentaCANC').val(id);
+        }); 
+    }       
+function modificarEtiqueta(ev){
+    ev.preventDefault();
+    $.post("{{path('modificarEtiqueta')}}",  $("#datosEtiqueta").serialize() )
+            .done(function(data) {
+              $('#etiquetaForm').remove();
+              
+            $('#etiquetaDIV').append(data);
+            $('#sisgg_finalbundle_etiquetaagendatype_color').jPicker();
+            cargarEtiquetas();
+            
+            });
+}
+
+function mostrarModalEliminarEtiqueta(id, nombre){
+    $('#btnEliminarEtiqueta').attr('id-etiqueta', id);
+    $('#txtEliminarEtiqueta').html(nombre);
+    $('#modalEliminarEtiqueta').modal('toggle');
+}
+function eliminarEtiqueta(ele){
+    var id = $(ele).attr('id-etiqueta');
+    if (id=='-1'){
+        msjEC('Error al eliminar la etiqueta');
+        return  true;
+    }
+    $.get("{{path('eliminarEtiqueta')}}", {id:id}  )
+            .done(function(data) {
+                cargarEtiquetas();              
+                $('#etiquetaDIV').append(data);
+                $('#modalEliminarEtiqueta').modal('toggle');
+            });
+}
+
+function cancelarEtiqueta(){
+    $('#etiquetaForm').remove();
+}
+function cargarEtiquetas(){
+    $('#etiquetas').load("{{ path('cargarEtiquetas')}}",{'tipo':1},  function() {
+            
+        }); 
+} 
+function cargarComboEtiquetas(){
+    $('#sisgg_finalbundle_agendatype_etiqueta').load("{{ path('cargarEtiquetas')}}",{'tipo':2},  function() {
+            
+        }); 
+}
+function cargarAgenda(){
+        $('#main_calendar').remove();
+            var div = document.createElement('div');
+            div.id='main_calendar';
+            div.class='hidden-phone fc';
+            //alert(div);
+            $('#calendario').append(div);
+            var data;
+            $.getJSON("{{path('cargarAgenda')}}",{ },function (json){      
+            data=json; 
+            //alert(data);
+            });
+	
+    $('#main_calendar').fullCalendar({
+		eventClick: function(calEvent, jsEvent, view) {
+                        editarAgenda(calEvent.id);
+			/*alert('Event: ' + calEvent.id);
+			alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+			alert('View: ' + view.name);
+
+			// change the border color just for fun
+			$(this).css('border-color', 'red');*/
+
+		    },
+                    defaultView:'agendaWeek',
+		header: {
+			left: 'title',
+			right: 'prevYear,nextYear,prev,next,today,month,agendaWeek,agendaDay'
+		},
+		editable: false,
+                
+                monthNames:['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+		monthNamesShort:['Ene','Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                dayNames:['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                dayNamesShort:['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                allDayText:'Todo el día',
+                timeFormat: 'H(:mm)',
+                titleFormat:{
+                    month: 'MMMM yyyy',                             // September 2009
+                    week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}", // Sep 7 - 13 2009
+                    day: 'dddd, d MMMM , yyyy'                  // Tuesday, Sep 8, 2009
+                },
+                buttonText:{
+                            prev:     '&lsaquo;', // <
+                            next:     '&rsaquo;', // >
+                            prevYear: '&laquo;',  // <<
+                            nextYear: '&raquo;',  // >>
+                            today:    'Hoy',
+                            month:    'Mes',
+                            week:     'Semana',
+                            day:      'Día'
+                        },
+                events:data /*[
+			{
+				id: 1,
+				title: 'All Day Event',
+				start: new Date(y, m, 1)
+			},
+			{
+				title: 'Long Event',
+				start: new Date(y, m, d-5),
+				end: new Date(y, m, d-2)
+			},
+			{
+				id: 2,
+				title: 'Repeating Event',
+				start: "03/04/13 8:00",
+				end: "03/04/13 8:50",
+				allDay: false
+			},
+                        {
+				id: 40,
+				title: 'Repeating Event',
+				start: "03/04/13 8:00",
+				end: "03/04/13 8:50",
+				allDay: false
+			
+            },
+			{
+				id: 3,
+				title: 'Repeating Event',
+				start: new Date(y, m, d+4, 16, 0),
+				allDay: false
+			},
+			{
+				id: 4,
+				title: 'Meeting',
+				start: new Date(y, m, d, 10, 30),
+				allDay: false,
+                                color:'red'
+			},
+			{
+				title: 'Lunch',
+				start: new Date(y, m, d, 12, 0),
+				end: new Date(y, m, d, 14, 0),
+				allDay: false
+			},
+			{
+				title: 'Birthday Party',
+				start: new Date(y, m, d+1, 19, 0),
+				end: new Date(y, m, d+1, 22, 30),
+				allDay: false
+			},
+			{
+				title: 'Click for Google',
+				start: new Date(y, m, 28),
+				end: new Date(y, m, 29),
+				url: 'http://google.com/'
+			}
+		]*/
+	});
+}
+    </script>
+{% endblock%}

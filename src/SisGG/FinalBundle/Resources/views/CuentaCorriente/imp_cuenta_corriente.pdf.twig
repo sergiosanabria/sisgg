@@ -1,0 +1,67 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Estado de Cuenta Corriente{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<h1 style='text-align: center;'>Estado de Cuenta Corriente</h1>
+<div font-size="10" font-type="helvetica" width='100%'>
+    <p></p>    
+    <table width='100%'>
+        <tr>
+            <td text-align="left"  width='100%' border.type="none">
+                <div  width='100%'>
+                    <b>Número de Cuenta: </b> {{unaCuentaCorriente.numero}}
+                </div>
+                <div  width='100%'>
+                    <b>Cliente: </b> {{unaCuentaCorriente.cliente}}
+                </div>
+                <div  width='100%'>
+                    <b>Saldo: </b> {{unaCuentaCorriente.saldo}}
+                </div>    
+            </td>
+        </tr>
+    </table>
+    <p></p>
+        <table  font-type="helvetica" font-size="10">
+            <tr background-color="#FAFAFA" >
+                <td style=" text-align: center;vertical-align: middle;"><b>Fecha y hora</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Comprobante</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Debe</b></td>
+                <td style=" text-align: center;vertical-align: middle;"><b>Haber</b></td>
+            </tr>
+            {%set debe = 0.00%}
+            {%set haber = 0.00%}
+            {% for movimiento in unaCuentaCorriente.movimientos%}  
+                                        <tr>
+                                            <td>{{movimiento.fecha|date('d/m/Y g:i a')}}</td>
+                                            {%if movimiento.isHaber%}
+                                                <td>{{movimiento.unRecibo}}</td>
+                                                <td style='text-align: center;'>---</td>
+                                                <td style='text-align: right;'>{{movimiento.importe}}</td>
+                                                {%set haber = haber + movimiento.importe%}
+                                            {%endif%}
+                                            {%if movimiento.isDebe%}
+                                                <td>{{movimiento.unaVenta}}</td>
+                                                <td style='text-align: right;'>{{movimiento.importe}}</td>
+                                                <td style='text-align: center;'>---</td>
+                                                {%set debe = debe + movimiento.importe%}
+                                            {%endif%}
+                                        </tr>    
+           {% endfor %}
+           <tr background-color="#FAFAFA" >
+                <td colspan='2' style=" text-align: right;"><b>Total</b></td>
+                <td style=" text-align: right;vertical-align: middle;"><b>{{debe|number_format(2,'.','')}}</b></td>
+                <td style=" text-align: right;vertical-align: middle;"><b>{{haber|number_format(2,'.','')}}</b></td>
+            </tr>
+        </table>
+        </div>
+{%endblock%}

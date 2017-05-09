@@ -1,0 +1,13 @@
+{%for i in msjs%}
+    <li class="{%if (app.user.username is defined) and (i.usuario.username != app.user.username) %}left{%else%}right{%endif%}">
+            {#<img class="avatar" alt="Lucas" src="img/avatar.jpg">#}
+            <span class="message"><span class="arrow"></span>
+                <span class="from"><strong>{%if (app.user.username is defined) and (i.usuario.username != app.user.username) %}{{i.usuario.nombre}}{%else%}Yo{%endif%}</strong></span>
+                    <span class="time">Enviado: {{i.fechaEnvio| date('d/m/Y g:ia')}}</span>
+                    <span class="text">
+                           {{i.mensaje}}
+                    </span>
+                   
+            </span>	                                  
+    </li>
+    {%endfor%}

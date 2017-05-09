@@ -1,0 +1,45 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Clientes</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo Grupo de Clientes</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Nuevo Grupo de Clientes <small>Complete el formulario con los datos solicitados.</small></legend>
+            <form name="cliente" class="form-horizontal" action="{{ path('nuevo_grupo_cliente') }}" method="post">
+                <fieldset id="formNuevoCliente">
+                    <div class="span6 pull-left">
+                            {{form_row(form.nombre,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.descripcion,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.descuentos,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.clientes,{'attr':{'class':'span9'} })}}
+                        </div>
+                        {{form_rest(form)}}
+                            </fieldset>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                <a onclick='history.back()'  class="btn">Cancelar</a>
+                            </div>    
+                        </form>
+                    </div>
+                </div><!--/span-->
+            </div><!--/row-->
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+            <script type="text/javascript">
+                                        
+                </script>    
+{%endblock%}

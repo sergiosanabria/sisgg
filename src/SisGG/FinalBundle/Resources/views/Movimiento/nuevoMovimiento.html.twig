@@ -1,0 +1,173 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Caja</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo Movimiento</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Nuevo Movimiento</legend>
+            <form class="form-horizontal" action="{{ path('nuevo_movimiento') }}" method="post">
+                <fieldset id="formAperturaCaja">      
+                    <div class='span6'>
+                        {{form_row(form.t,{'attr':{'class':'tipoMovimiento'} })}}
+                        {{form_row(form.tipo,{'attr':{'class':'span7 tipo'} })}}
+                        {{form_row(form.concepto,{'attr':{'class':'span7 concepto'} })}}
+                        {{form_row(form.importe,{'attr':{'class':'span9'} })}}
+                        </div>
+                        <div class='span6'>
+                            {{form_row(form.aclaracion,{'attr':{'class':'span9'} })}}  
+                            {{form_rest(form)}}
+                            </div>      
+                        </fieldset>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <button onclick='history.back()' type="button" class="btn">Cancelar</button>
+                        </div>    
+                    </form>
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+        <hr>
+{% endblock %}
+{%block modal%}
+        <div class="modal hide fade" id="busqueda">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Buscar...</h3>
+            </div>
+            <div id="dataBusqueda" class="modal-body">
+                <p>Here settings can be configured...</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+            </div>
+        </div>
+        <div class="modal hide fade" id="mensaje">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Atencion...</h3>
+            </div>
+            <div id="dataMensaje" class="modal-body">
+                <p>Here settings can be configured...</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal">Aceptar</a>
+            </div>
+        </div>
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+        <script type="text/javascript">
+                                $().ready(function() {
+                                    $('#movimientotype_importe').addClass('span9');
+                                    $(".concepto").change(function() {
+                                        $.getJSON("{{path('concepto')}}", {'id': $(this).val()}).done(function(data) {
+                                            $("#movimientotype_aclaracion").val(data.aclaracion);
+                                        });
+                                    });
+                                    $(".concepto").after("<a class='btn span2' onclick='buscarConcepto();'><i class='icon-search'></i></a>");
+                                    $(".tipo").after("<a class='btn span2' onclick='buscarTipoCobro();'><i class='icon-search'></i></a>");
+                                    $("input[name='movimientotype[t]']").change(function() {
+                                        var i = 1;
+                                        if ($(this).val() === 'Entrada') {
+                                            i = 0;
+                                        }
+                                        $.getJSON("{{path('conceptos_entrada_salida')}}", {'id': i}).done(function(data) {
+                                            $(".concepto").html('');
+                                            var string = "<option value=''>Seleccione una opción</option>";
+                                            $(data).each(function() {
+                                                string = string + "<option value='" + this.id + "'>" + this.nombre + "</option>";
+                                            });
+                                            $(".concepto").html(string);
+                                        });
+                                    });
+                                    var i = 1;
+                                    if ($("input[name='movimientotype[t]']").val() === 'Entrada') {
+                                        i = 0;
+                                    }
+                                    $.getJSON("{{path('conceptos_entrada_salida')}}", {'id': i}).done(function(data) {
+                                        $(".concepto").html('');
+                                        var string = "<option value=''>Seleccione una opción</option>";
+                                        $(data).each(function() {
+                                            string = string + "<option value='" + this.id + "'>" + this.nombre + "</option>";
+                                        });
+                                        $(".concepto").html(string);
+                                    });
+                                });
+
+                                function buscarConcepto() {
+                                    $.get("{{path('conceptos')}}").done(
+                                            function(data) {
+                                                $("#dataBusqueda").html(data);
+                                                mostrarTabla();
+                                                $("#busqueda").modal("show");
+                                            }
+                                    );
+                                }
+
+                                function buscarTipoCobro() {
+                                    $.get("{{path('tipos_cobro')}}").done(
+                                            function(data) {
+                                                $("#dataBusqueda").html(data);
+                                                mostrarTabla();
+                                                $("#busqueda").modal("show");
+                                            }
+                                    );
+                                }
+
+                                function seleccionarConcepto(event, id) {
+                                    $('#movimientotype_concepto').val(id);
+                                    $('#busqueda').modal('hide');
+                                }
+
+                                function seleccionarTipoCobro(event, id) {
+                                    $('#movimientotype_tipo').val(id);
+                                    $('#busqueda').modal('hide');
+                                }
+
+                                function mostrarTabla() {
+                                    $('.table').dataTable({
+                                        "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                                        "sPaginationType": "bootstrap",
+                                        "oLanguage": {
+                                            "sLengthMenu": "_MENU_ Registros por página",
+                                            "sSearch": "Buscar:",
+                                            "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                                            "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                                            "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                            "sZeroRecords": "Ningun registro encontrado",
+                                            "oPaginate": {
+                                                "sPrevious": "Anterior",
+                                                "sNext": "Siguiente"
+                                            }
+                                        }
+                                    });
+                                }
+
+
+            </script>    
+{%endblock%}
+{% block ajax %}
+            <form class="form-horizontal" action="{{ path('apertura_caja') }}" method="post">
+                <fieldset id="formAperturaCaja">
+                    <div class="control-group">
+                        <label class="control-label">Inicia su Turno</label>
+                        <div class="controls">
+                            <input type="text" disabled="disabled" value= "{{app.user}}" />
+                        </div>    
+                    </div>  
+                        {{form_row(form.importe,{'value':caja.minimoApertura})}}
+                        {{form_rest(form)}}
+                </fieldset>   
+            </form>
+{% endblock %}

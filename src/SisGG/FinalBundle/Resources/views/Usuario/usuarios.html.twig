@@ -1,0 +1,228 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block title%}Usuarios{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Usuarios</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content">
+            
+            <legend>Usuarios {%if estado ==1%}inactivos{%endif%}
+                <div class="pull-right btn-group">
+                    {%if app.user.role.obtenerPermiso('usuario_nuevo')%}
+                    <a title="Nuevo Usuario" href="{{path('usuarioNuevo')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                    {% endif %}
+                    {%if app.user.role.obtenerPermiso('usuario_imprimir')%}
+                    <a class="btn" target="_blank" title="Imprime los usuarios" onclick="imprimirTabla(this);"><i class="icon-print"></i></a>
+                    {% endif %}
+                </div>
+            </legend>
+            {% if msj %}
+                <div class="alert alert-info">
+                <button type='button' class='close' data-dismiss='alert'>×</button>
+                <strong>Muy bien! </strong> {{ msj }}
+                </div>  
+            {% endif %}
+            {% if error %}
+                <div class="alert alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <h4>¡CUIDADO!</h4>
+                    {{ error }}
+                </div>
+            {% endif %}
+             {%if estado!=1%}
+                <ul class="nav nav-pills">
+                  <li class="active"><a href="{{path('usuarios', {'estado':1})}}">Inactivos ({{cantidad}})</a></li>
+                </ul>
+                {%elseif estado ==1%}
+                <ul class="nav nav-pills">
+                    <li class="active"><a href="{{path('usuarios')}}"><i class="fa-icon-arrow-left"></i>Volver a activos</a></li>
+                </ul>
+            {%endif%}
+            <table class="table table-striped table-bordered" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Apellido y nombre</th>
+                        <th>Email</th>
+                        <th>Nombre de usuario</th>
+                        <th>Rol</th>
+                        <th>Empleado</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for usuario in usuarios%}
+                        <tr id="{{usuario.id}}">
+                            <td>{{usuario.apellido}}, {{usuario.nombre}}</td>
+                            <td>{{usuario.email}}</td>
+                            <td>{{usuario.username}}</td>
+                            <td>{{usuario.role}}</td>
+                            <td  style="text-align: center;width: fit-content;">{%if usuario.isEmpleado%}<i class=" fa-icon-ok"></i><span style="display: none;">empleado</span>{%else%}<i class=" fa-icon-remove"></i>{%endif%}</td>
+                            <td style="text-align: center;width: fit-content;">
+                                 {%if estado == 1%}
+                                    {%if app.user.role.obtenerPermiso('usuario_activar')%}
+                                        <a href="#" onclick="activarProducto('{{usuario.id}}', this);" activado="0" title="Activar usuario"><i id="icono{{usuario.id}}"  class="fa-icon-ok-circle"></i></a>
+                                    {%endif%}
+                                {%else%}
+                                    {%if app.user.role.obtenerPermiso('usuario_imprimir')%}
+                                        <a rel="tooltip" title="Recuperar contraseña" onclick="verModalContrasenia('{{usuario.id}}');" href="#"><i class="fa-icon-unlock"></i></a>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('usuario_recuperar_Contrseña')%}
+                                        <a rel="tooltip" title="Editar" href="{{path('editarUsuario', {'id':usuario.id})}}"><i class="fa-icon-edit"></i></a>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('usuario_borrar')%}
+                                        <a rel="tooltip" title="Desctivar" href="#" onclick="eliminarModal('{{usuario.id}}', '{{usuario.apellido}}, {{usuario.nombre}}');" data-toggle="modal"><i class="fa-icon-trash"></i></a>
+                                    {%endif%}
+                                {%endif%}
+                            </td>                
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>    
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}    
+
+{%block modal%}
+    <form action="{{path('recuperarContrasenia')}}" method="post" id="recuperarId">
+<div id="modalRecuperar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <label class="checkbox">
+          <input type="checkbox" value="check1" id="check1" checked="checked">
+                Mostrar en pantalla la nueva contraseña.
+        </label>
+        <label class="checkbox">
+            <input type="checkbox" id="check2" value="check2">
+                Enviar un e-mail con la nueva contraseña.
+        </label>
+          <div class="control-group">
+              <label class="control-label">Nueva contraseña (*)</label>
+              <div class="controls input-append">
+                  <input type="password" id="contrasenia" name="contrasenia" required="required" value="">
+                  <button type="button" class="btn" abierto="1" id="muestraContra" title="Ver contraseña">
+                      <i id="ojoUsr" class="fa-icon-eye-open"></i>
+                  </button>
+              </div>
+          </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <button type="submit" idusuario="-1"  id="btnRecuperar"   class="btn btn-primary">Aceptar</button>
+    <input type="hidden" name="tipoRec" id="tipoRec" >
+    <input type="hidden" name="idUsr" id="idUsr" >
+  </div>
+</div> 
+</form>
+    <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Desactivar</h3>
+  </div>
+  <div class="modal-body">
+      Está seguro que desea desactivar el usuario <strong><span id="aynUsuario"></span></strong>?
+  </div>
+  <div class="modal-footer">
+      <a class="btn btn-primary" id="btnEliminar">Aceptar</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+</div>
+{%endblock%}
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">    
+            
+$(document).ready(function  (){ 
+             $('#muestraContra').click(function (ev){
+                var abierto = $(this).attr('abierto');
+                if (abierto=="1"){
+                    $('#contrasenia').attr('type', 'text');
+                    $(this).attr('title', 'Ocultar contraseña');
+                    $(this).attr('abierto', '0');
+                    $("#ojoUsr").removeClass("fa-icon-eye-open").addClass("fa-icon-eye-close");
+                }else{
+                    $('#contrasenia').attr('type', 'password');
+                    $(this).attr('title', 'Ver contraseña');
+                    $(this).attr('abierto', '1');
+                    $("#ojoUsr").removeClass("fa-icon-eye-close").addClass("fa-icon-eye-open");
+                }
+             });
+             $('#recuperarId').submit(function (ev){
+                //ev.preventDefault();
+                var check1 = document.getElementById('check1').checked;
+                var check2 = document.getElementById('check2').checked;
+                if (check1&&(!(check2))){
+                    $('#tipoRec').val(1);
+                    return true;
+                }else if (check2&&(!(check1))){
+                    $('#tipoRec').val(2);
+                    return true;
+                }else if (check2&&check1){
+                    $('#tipoRec').val(3);
+                    return true;
+                }else if (!(check2&&check1)){
+                    $('#tipoRec').val(4);
+                    return true;
+                }
+             });
+         });
+
+ function eliminarModal(id,txt){
+        var url = "{{path('eliminarUsuario', { 'id': '__id__' })}}".replace(/__id__/g, id); 
+        $("#aynUsuario").html(txt);
+        $('#btnEliminar').attr('href',url);
+        $('#modalEliminar').modal('toggle');
+    }
+  function activarProducto(id, ele){
+        if ($(ele).attr('activado')=="1"){
+            msjAC('El usuario ya se ha sido activado');
+            return true;
+        }
+        $.getJSON("{{path('activarUsuario')}}", {'id':id},function (json){
+           if (json.rta=='ok'){
+               $('#icono'+id).removeClass(' fa-icon-ok-circle').addClass('fa-icon-ok-sign');
+               msjAC('El usuario <strong>'+json.nombre+'</strong> se ha <strong>activado</strong>.');
+               $(ele).attr('activado', "1");
+               $(ele).attr('title', "Empelado usuario");
+            }else{
+               msjEC('El usuario <strong>NO</strong>  ha sido activado.');
+            }
+        });
+    }
+    function imprimirTabla(ele){
+          var tabla = document.getElementById('example');
+          var rows = tabla.getElementsByTagName('tr');
+          var filas= new Array(rows.length);
+          for (var i = 1; i<rows.length ;i++){
+            filas[i-1]=rows[i].id;
+          }
+          
+        var url = "{{path('impListaUsuario', { 'ids': '__ids__' , '_format':'pdf'})}}".replace(/__ids__/g,filas);
+        url= url.replace('amp;', '');
+        url= url+'&info='+$('#example_info').text();
+        $(ele).attr('href',url);
+      
+    }
+function verModalContrasenia(id){
+    $('#contrasenia').val('');
+    $('#check1').attr('checked','checked');
+    $('#check2').attr('checked',false);
+    $('recuperarId').attr('action', false);
+    $('#idUsr').val(id);
+    $('#modalRecuperar').modal('toggle');
+    $('#btnRecuperar').attr('idusuario', id);
+    
+}
+</script>
+{% endblock%}

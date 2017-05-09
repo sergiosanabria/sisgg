@@ -1,0 +1,27 @@
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th id="primeraCol">Fecha (aaaa/mm/dd)</th>
+                    <th>N°</th>
+                    <th>Servicio</th>
+                    <th style="text-align: center" >Periodo</th>
+                    <th>Total</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+            <tr id="{{r.id}}">
+                
+                <td>{{r.fechaFactura|date("Y/m/d")}}<span style="display: none;">{{r.fechaEmision | date("H:i:s")}}</span></td>
+                <td>{{r.serie}} - {{r.numero}}</td>
+                <td>{{r.servicio.nombre}} ({{r.servicio.nombreEmpresa}})</td>
+                <td style="text-align: center;width: fit-content">{{r.periodo}}</td>
+                <td  style="text-align: right">{{r.total}}</td>
+                <td style="text-align: center;width: fit-content" >
+                    <a href="#" onclick="detallesModal('{{r.id}}');" title="Ver detalles"><i class="fa-icon-list-alt"></i></a> 
+                </td>
+                </div>
+            </tr>   
+            {% endfor %}
+        </table>
+<input type="hidden" value="{{total}}" id="totalHidden">

@@ -1,0 +1,214 @@
+{% extends "::base.html.twig" %}
+{%block title%}Categorias productos para producción (Materias primas y productos pre-elaborados){%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Categorias productos para producción (Materias primas y productos pre-elaborados)</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+                <legend>Categorias productos para producción  (Materias primas y productos pre-elaborados)</legend>
+{% if error %}
+    <div class="alert alert-error">
+    <button type='button' class='close' data-dismiss='alert'>×</button>
+    <strong>{{ error }}</strong> 
+    </div>  
+{% endif %}
+{% if msj %}
+    <div class="alert alert-success">
+    <button type='button' class='close' data-dismiss='alert'>×</button>
+    <strong>Muy bien! </strong> {{ msj }}
+    </div>  
+{% endif %}
+<form name="f" action="{{path('editarCategoriaPP')}}" method="POST" class="form-horizontal">
+
+  <div class="pull-right btn-group">
+    <a title="Nueva categoria producto producción" href="{{path('nuevaCategoriaPP')}}" class="btn"><i class="icon-plus-sign"></i></a>
+    <a title="Ver lista de productos para producción" href="{{path('pps')}}" class="btn"><i class="fa-icon-list"></i></a>
+</div>
+    <div><br><br></div>
+<input type="hidden" id="idCat" >
+<div class="control-group">
+        <label class="control-label">Nombre</label>
+        <div class="controls">
+            <input type="text" class="span3" id="nombreCat" disabled="disabled"   placeholder="Nombre de categoria...">
+        </div>
+</div>
+
+<div class="control-group">
+        <label class="control-label">Descripcion</label>
+        <div class="controls">
+            <textarea type="text" rows="5" class="span3" id="descCat" disabled="disabled" placeholder="Descripcion.."></textarea>
+        </div>
+</div>
+<div class="control-group">
+        <label class="control-label">Acciones</label>
+        <div class="controls">
+            <input type="hidden" id="idCat1" name="idCat1" />
+            <button type="button" onclick="editar(this)" title="Editar categoria" class="btn btn-primary">Editar</button>
+            <button type="button" role="button" onclick="eliminarModal(this)" title="Eliminar categoria" class="btn btn-danger "i class="icon-trash">Eliminar</button>
+        </div> 
+</div>         
+<p></p>
+<div class="control-group">
+        <div class="controls">
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                   Ver/Ocultar lista de categorias   <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse">
+                <form class="form-search">
+                    <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="input-medium search-query" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()"><i class="icon-search" title="Buscar"></i></button>
+                    </form>
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a> |
+                        <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" >Nueva categoria <i class="icon-plus"></i></a>
+                     </p>
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+  </form>
+      </div>
+    </div>
+</div>
+{% endblock %}
+        
+{%block modal%}
+<div class="modal hide fade" id="eliminarModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Eliminar categoria</h3>
+    </div>
+    <div class="modal-body">
+        <p>¿Esta seguro que desea eliminar la marcaderia: <strong id="txtElim">fff</strong>?</p>
+    </div>
+    <div class="modal-footer">
+        <form action="{{path('eliminarCategoriaPP')}}" method="POST">
+            <input type="hidden" id="idCat2" name="idCat2" value=""/>
+            <button type="submit" class="btn btn-primary" >Eliminar categoria</a>
+            <button class="btn" data-dismiss="modal">Cancelar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+<script type="text/javascript">
+ var sel=false;                    
+$(document).ready(function  (){ 
+        actualizarArbol();
+         $(document).keypress(function(e){
+
+                if(e.which == 32){
+                    eliminarPops ();
+                  return false;
+                }
+              });
+    });
+  function actualizarArbol(){
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPP')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+            if (json[i].add==1){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder_add.gif');
+            }
+            else{
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'0','/SisGG/web/tree/img/folder_noadd.gif');
+             }
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+   
+    function eliminarModal(){
+    if (sel){
+        var txt = document.getElementById('nombreCat').value;    
+        var par= document.getElementById('txtElim');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#eliminarModal').modal('toggle');}else{
+        msjWC(' Seleccione una categoria para poder eliminarla.');
+    }
+    }
+            
+    function verCategoria (nodo,target){
+        var nombre = document.getElementById(nodo).text;
+        $.getJSON("{{path ('buscarCategoriaPP1')}}",{n:nombre},function (json){
+        d.openTo(json.id, true);
+        var n=json.n;
+        var desc=json.d;
+        document.getElementById('idCat1').value=n;
+        document.getElementById('idCat2').value=n;
+        document.getElementById('nombreCat').value=n;
+        document.getElementById('descCat').value=desc;
+        document.getElementById('idCat').value=n;
+        sel=true;  
+        });                    
+   }
+    function buscarCategoria (){
+        
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPP1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        var n=json.n;
+        var desc=json.d;
+        document.getElementById('idCat1').value=n;
+        document.getElementById('idCat2').value=n;
+        document.getElementById('nombreCat').value=n;
+        document.getElementById('descCat').value=desc;
+        document.getElementById('idCat').value=n;
+        sel=true;         
+
+        });           
+    }
+    
+    function editar(b){
+        if (sel){
+            f.submit();
+        }else{
+       msjWC('Seleccione una categoria para poder editarlo.');
+        }
+    }
+    var flag;
+function mostrarPop(id, txt){
+         var botones='<div class="btn-group"> <button type="button" onclick="editar(this)"'+ '" title="Editar categoria"><i class="icon icon-edit"></i></button><button type="button" title="Eliminar categoria"  onclick="eliminarModal(this)"><i class="icon icon-trash"></i></button></div>';
+
+       $(id).popover({
+           html:true,
+            title: id.text+': '+ botones,
+            trigger:'focus',
+
+       });
+       sel=true;
+       verCategoria(id.id, null);
+         $(id).popover('toggle');
+         
+         if (flag){
+         $(flag).popover('hide');
+         flag=false;
+        }
+        flag=id;
+    }
+
+        function cerrarPop(id){
+            
+        }
+
+    </script>
+{% endblock%}

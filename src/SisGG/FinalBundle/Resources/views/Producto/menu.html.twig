@@ -1,0 +1,383 @@
+{% extends "::base.html.twig" %}
+{%block title%}Imprimir menú de productos para la venta{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="javascript:void(0);">Imprimir menú de productos para la venta</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+    <legend>Imprimir menú de productos para la venta</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+    
+        <div class="pull-right btn-group">
+            <a class="btn" href="{{path('generarMenuDigital')}}" title="Generar menu digital" ><i class="fa-icon-refresh"></i></a>
+            <a class="btn" href="javascript:void(0);" onclick="mostrarConfig();" title="Configuración de impresión" target="_blank"><i class="fa-icon-cog"></i></a>               
+            <a onclick="imprimirTablaCat(this);" href="javascript:void(0);" class="btn" title="Imprimir" target="_blank"><i class="fa-icon-print"></i></a>
+                 
+        </div>
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne" title="Hacer clic para cerrar">
+                    Seleccione una categoria <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse">
+                    <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="input-medium search-query" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()">Buscar</button>
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a></p>
+
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>  
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr class="header">
+                    <th style="color: black;"  onclick="selTodosImp(this);" id="celdaTodos" estado="0"><i class="fa-icon-print"></i></th>
+                    <th>Nombre</th>
+                    <th style="display: none;">padres</th>
+                    <th>Precio de venta</th>
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Categoria</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {%if app.user.role.obtenerPermiso('plato_listar')%}
+                {% for pe in platos%}
+                <tr id="{{pe.id}}">
+                    <td><input type="checkbox" id-fila="{{pe.id}}" class="imprimirDatos"></td>
+                    <td>{{pe.nombre}}</td>
+                    <td style="display: none;">{{pe.catPadres}}</td>
+                    <td>{{pe.precioVenta}}</td>
+                    <td>{{pe.cantidad}}</td>
+                    <td title="{{pe.tasa}}">{{pe.tasa}}</td>
+                    <td>{{pe.categoria}}</td>
+
+                    <td style="text-align: center;width: fit-content" >
+                        <a href="#" onclick="detallesModal({{pe.id}}, '1');" title="Ver detalles {{pe.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                       
+                    </td>
+                </tr>   
+                {% endfor %}
+            {% endif %}
+            {% for pe in mercaderias%}
+                <tr id="{{pe.id}}">
+                    <td><input type="checkbox" id-fila="{{pe.id}}" class="imprimirDatos"></td>
+                    <td>{{pe.nombre}}</td>
+                    <td style="display: none;">{{pe.catPadres}}</td>
+                    <td>{{pe.precioVenta}}</td>
+                    <td>{{pe.cantidad}}</td>
+                    <td title="{{pe.tasa}}">{{pe.tasa}}</td>
+                    <td>{{pe.categoria}}</td>
+
+                    <td style="text-align: center;width: fit-content" >
+                        <a href="#" onclick="detallesModal({{pe.id}}, '0');" title="Ver detalles {{pe.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                        
+                    </td>
+            </tr>   
+            {% endfor %}
+        </table>   
+        </div>
+    </div>
+</div>
+ 
+{%endblock%}
+{%block modal%}
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Detalles</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detalles">
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+<div id="modalConfigImp" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Datos a imprimir</h3>
+  </div>
+  <div class="modal-body">
+      <p>
+    <form id="formConfig">
+        <fieldset id="dataConfig">
+            {#<table class="table table-bordered table-hover" id="tablaConfig">
+          <thead class="header">
+            <th>Dato</th>
+            <th>Incluir</th>
+            <th>Color</th>
+            <th><b>Negrita</b></th>
+            <th><i>Cursiva</i></th>
+          </thead>
+          <tbody>
+            <tr>
+                <td>Categoría</td>
+                <td><input type="checkbox" name="check1" onchange="valueChecked(this);" id="check1" {%if config[0].incluye ==1%} checked="checked"{%endif%}></td>
+                <td><input type="color" id="color1" name="color1"  value="{{config[0].color}}" ></td>
+                <td><input type="checkbox" id="negrita1" onchange="valueChecked(this);"  name="negrita1"{%if config[0].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva1" onchange="valueChecked(this);" name="cursiva1" {%if config[0].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            
+            <tr style="display: none;">
+                <td>Código QR</td>
+                <td><input  type="checkbox" id="check2" onchange="valueChecked(this);"  name="check2"{%if config[1].incluye ==1%} checked="checked"{%endif%} ></td>
+                <td></td><td></td><td></td> 
+            </tr>
+            <tr>
+                <td>Ingredientes</td>
+                <td><input type="checkbox" id="check3" onchange="valueChecked(this);"  name="check3" value="{{config[2].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color3"  name="color3" value="{{config[2].color}}"></td>
+                <td><input type="checkbox" id="negrita3" onchange="valueChecked(this);"  name="negrita3"  {%if config[2].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva3" onchange="valueChecked(this);"  name="cursiva3" {%if config[2].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            <tr>
+                <td>Nombre</td>
+                <td><input type="checkbox" id="check4" onchange="valueChecked(this);"  name="check4" value="{{config[3].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color4" name="color4" value="{{config[3].color}}"></td>
+                <td><input type="checkbox" id="negrita4" onchange="valueChecked(this);"  name="negrita4" {%if config[3].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva4" onchange="valueChecked(this);"  name="cursiva4" {%if config[3].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            <tr>
+                <td>Precio de venta</td>
+                <td><input type="checkbox" id="check5" onchange="valueChecked(this);"  name="check5" value="{{config[4].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color5" name="color5" value="{{config[4].color}}"></td>
+                <td><input type="checkbox" id="negrita5" onchange="valueChecked(this);"  name="negrita5"  {%if config[4].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva5" onchange="valueChecked(this);"  name="cursiva5" {%if config[4].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            {#<tr>
+                <td>Unidad de medida</td>
+                <td><input type="checkbox" id="check6" checked="checked"></td>
+                <td><input type="color" id="color6"></td>
+                <td><input type="checkbox" id="negrita6" checked="checked"></td>
+                <td><input type="checkbox" id="cursiva6" checked="checked"></td>
+            </tr>#}
+          </tbody>
+         
+      </table>
+                 </fieldset>
+     </form>
+              
+              
+              
+    </p>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" data-dismiss="modal" onclick="guardarConfig();" aria-hidden="true">Guardar cambios</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+</div>
+{%endblock%}
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov='';         
+            
+$(document).ready(function  (){ 
+            actualizarArbol();
+         });
+
+    
+     function actualizarArbol(){
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPV')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder.gif');
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPV1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        $('#txtBuscarTabla').val(json.n);
+        $('#txtBuscarTabla').trigger('keyup');
+         
+        });
+        
+                
+    }
+    
+    function verCategoria (nodo,target){
+        var nombre = document.getElementById(nodo).text;
+        //var target = document.getElementById(nodo).target;
+        document.getElementById('txtBuscarTabla').value=nombre;
+        $('#txtBuscarTabla').trigger('keyup');
+            
+    }
+  
+   function detallesModal(id, tipo){
+        var url = "{{path('pvs')}}";
+        $('#detalles').load(url,{'id':id , 'tipo':tipo});
+        $('#verModal').modal('toggle');
+    } 
+    
+    
+      function verFoto(ele){
+        var img = document.getElementById('fotoDetalle');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img, onPhotoEnterFullscreen, onPhotoExitFullscreen);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    
+    function onPhotoEnterFullscreen() {
+        $(this).removeClass('zoom-in').addClass('zoom-out');
+    }
+
+    function onPhotoExitFullscreen() {
+        $(this).removeClass('zoom-out').addClass('zoom-in');
+    }
+    
+    function mostrarLinkFoto(ele){
+        $('#photo-demo').removeAttr('style');
+    }
+     
+    function ocultarLinkFoto(ele){
+        $('#photo-demo').hide();
+    }
+    function verFoto(ele){
+        var img = document.getElementById('fotoDetalle');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img, onPhotoEnterFullscreen, onPhotoExitFullscreen);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    function impDetallesPlato(id, ele){
+    var url = "{{path('impDetallesPlato', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+    url= url.replace('amp;', '');
+    $(ele).attr('href',url);
+}
+function impDetallesMerca(id, ele){
+    var url = "{{path('impDetallesMerca', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+    url= url.replace('amp;', '');
+    $(ele).attr('href',url);
+}
+function imprimirTabla(ele){
+       var filas= new Array();
+        $('.imprimirDatos').each(function (){
+            if ($(this).attr('checked')=="checked"){
+               filas[filas.length]=$(this).attr('id-fila');
+            }
+        });
+      var url = "{{path('impListaProducto', { 'ids': '__ids__' ,'tipo':'2','texto':'Producto para la venta', '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      $(ele).attr('href',url);
+
+  }
+  
+  function imprimirTablaCat(ele){
+        var filas= new Array();
+        $('.imprimirDatos').each(function (){
+            if ($(this).attr('checked')=="checked"){
+               filas[filas.length]=$(this).attr('id-fila');
+            }
+        });
+        
+     {# var config = new Array();
+      var color= new Array();
+      var negrita = new Array();
+      var cursiva = new Array();
+      for (var i =1;i<=5;i++){
+           if ($('#check'+i).attr('checked')=="checked"){
+               config[config.length]=true;
+            }else{
+               config[config.length]=false; 
+            }
+            if (i!=2){
+                if ($('#negrita'+i).attr('checked')=="checked"){
+                   negrita[negrita.length]=true;
+                }else{
+                   negrita[negrita.length]=false; 
+                }
+                if ($('#cursiva'+i).attr('checked')=="checked"){
+                   cursiva[cursiva.length]=true;
+                }else{
+                   cursiva[cursiva.length]=false; 
+                }
+
+                var a = $('#color'+i).val();
+                color[color.length]=  a.substring(1,7);
+            }
+           
+      }#}
+      var url = "{{path('impMenuCategoria', { 'ids': '__ids__', '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      //url= url+'&config='+config+'&color='+color+'&cursiva='+cursiva+'&negrita='+negrita;
+      $(ele).attr('href',url);
+
+  }
+  
+  function mostrarConfig (){
+      $('#dataConfig').load("{{path('guardarConfigMenu')}}",{'tipo':true});
+            cambiarChecked();
+      $('#modalConfigImp').modal('toggle');
+    }
+    
+    function valueChecked(ele){
+        if ($(ele).attr('checked')=="checked"){
+            $(ele).val('1');
+         }else{
+            $(ele).val('0'); 
+         }
+    }
+    
+    function cambiarChecked(){
+        $("#tablaConfig").find('input[type=checkbox]').each(function (e){
+            valueChecked(this);
+        });
+    }
+    function guardarConfig(){
+        alert($("#dataConfig").serialize());
+        $.post("{{path('guardarConfigMenu')}}",   $("#dataConfig").serialize() )
+            .done(function(data) {
+            if (data=='OK'){
+                msjACentro('Se guardado correctamente.');
+            }else{
+                msjEC('Ha ocurrido un error al momento de guardarlo.');
+            }
+        });
+            
+    }
+    </script>
+{% endblock%}

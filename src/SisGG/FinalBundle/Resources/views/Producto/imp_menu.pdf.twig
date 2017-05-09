@@ -1,0 +1,44 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Lista de {{texto}}{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Lista de {{texto}}</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table font-size="9">
+            <tr background-color="#FAFAFA" >
+                <td padding="2px" class="titulo" style=" text-align: left;vertical-align: middle;"><b>Nombre</b></td>
+                 {%if tipo==2 or tipo==3%}<td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio venta</b></td>{%endif%}
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio costo</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Cantidad</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>UM</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Categoria</b></td>
+              {%if tipo==4 or tipo==3%}    <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Proveedor</b></td>{%endif%}
+            </tr>
+               {% for i in items%}
+            <tr>
+                <td padding="2px" style="text-align: left;" width="300px">{{i.nombre}}</td>
+               {%if tipo==2 or tipo==3%} <td padding="2px" style=" text-align: center;">{%if i.precioVenta is defined %}{{i.precioVenta}}{%else%} --{%endif%}</td>{%endif%}
+                <td padding="2px" style=" text-align: center;">{{i.precioCosto}}</td>
+                <td padding="2px" style=" text-align: center;">{%if i.cantidad is defined %}{{i.cantidad }}{%else%} --{%endif%}</td> 
+                <td padding="2px" style=" text-align: center;">{{i.tasa}}</td> 
+                <td padding="2px" style=" text-align: center;">{%if i.categoria is defined %}{{i.categoria}}{%else%} --{%endif%}</td>
+              {%if tipo==4 or tipo==3%}  <td padding="2px" style=" text-align: center;">{%if i.proveedor is defined %}{{i.proveedor}}{%else%} --{%endif%}</td>{%endif%}
+                    
+            </tr>   
+            {% endfor %}
+        </table>
+</div>
+{%endblock%}

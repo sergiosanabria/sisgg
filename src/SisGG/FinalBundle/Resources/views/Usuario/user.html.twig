@@ -1,0 +1,15 @@
+{% extends "::base.html.twig" %}
+{% block title %}Iniciar Sesion{% endblock %}
+{% block name %}Kito's Local{% endblock%}
+{% block descripcion %}Lorem ipsum ad his scripta blandit partiendo, eum fastidii accumsan euripidis in, eum liber hendrerit an. Qui ut wisi vocibus suscipiantur, quo dicit ridens inciderint id. Quo mundi lobortis reformidans eu, legimus senserit definiebas an eos. Eu sit tincidunt incorrupte definitionem, vis mutat affert percipit cu, eirmod consectetuer signiferumque eu per. In usu latine equidem dolores. Quo no falli viris intellegam, ut fugit veritus placerat per.{% endblock%}
+{% block opciones %}
+    <li><a href="#">Opcion 1</a></li>
+    <li><a href="#">Opcion 2</a></li>
+    <li><a href="#">Opcion 3</a></li>
+{% endblock %}
+{% block content %}
+    <div class="alert alert-success">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        Bienvenido <strong>{{ app.user.username}}</strong> 
+    </div>
+{% endblock %}

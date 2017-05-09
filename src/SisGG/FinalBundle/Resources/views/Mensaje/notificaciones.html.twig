@@ -1,0 +1,64 @@
+<a class="btn dropdown-toggle" title="Notificaciones de sistema" data-toggle="dropdown" href="#">
+  <i class="icon-warning-sign icon-white"></i> 
+  <span class="label label-success hidden-phone" title="Cantidad de notificaciones">{{mensajes|length}}</span> 
+  <span class="label label-warning hidden-phone" title="Notificaciones no leidas">{{noLeidos}}</span>
+  <span class="caret"></span>
+</a>
+<ul class="dropdown-menu notifications" style="overflow-y: scroll; max-height: 700px;">
+        <li>
+
+        <a  href="#"  class="green" title="Eliminar todos los mensajes" onclick="eliminarTodosMsj();">
+            <span class="message">
+                    Eliminar todos los mensajes
+                 <i class="fa-icon-trash" ></i> 
+                
+            </span>
+        </a>
+
+        </li>
+    {%for m in mensajes %}
+        {%if m.tipo==1%}
+        <li id="notiLi{{m.id}}" class="">
+
+           <a href="#">
+            <i class="icon-remove pull-right" onclick="eliminarMsj(this,'notiLi{{m.id}}','{{m.id}}' );" title="Eliminar notificación" onclick=""></i>
+            <span class="message">
+                {%if m.leido%}<a target="_blank"  href="{{path('pvs',{'tipo':1})}}" title="Leido" style="color: #8cafed">{%else%}
+                    <a target="_blank" href="{{path('pvs',{'tipo':1})}}"  style="background-color: gainsboro" title="No leido">{%endif%}
+                    + <i class="icon-user" ></i> {{m.mensaje}}</a></span>
+        </a>
+        </li>
+    {%elseif m.tipo==2%}
+        
+        <li id="notiLi{{m.id}}" class="">
+            <a href="#">
+            <i class="icon-remove pull-right" onclick="eliminarMsj(this,'notiLi{{m.id}}','{{m.id}}' );" title="Eliminar notificación" onclick=""></i>
+            
+            <span class="message">
+                {%if m.leido == 1%}<a target="_blank" href="{{path('pvs',{'tipo':1})}}" title="Leido" style="color: #8cafed">{%else%}
+                    <a target="_blank" href="{{path('pvs',{'tipo':1})}}"  style="background-color: gainsboro" title="No leido">{%endif%}
+                    + <i class="icon-user" ></i> {{m.mensaje}}</a></span>
+            </a>
+        </li>
+     {%elseif m.tipo==3%}
+        <li id="notiLi{{m.id}}" class="">
+            <a href="#">
+            <i class="icon-remove pull-right" onclick="eliminarMsj(this,'notiLi{{m.id}}','{{m.id}}' );" title="Eliminar notificación" onclick=""></i>
+            
+            <span class="message">
+                {%if m.leido == 1%}<a target="_blank" href="{{path('pvs',{'tipo':2})}}" title="Leido" style="color: #8cafed" >{%else%}
+                    <a target="_blank" href="{{path('pvs',{'tipo':2})}}"  style="background-color: gainsboro" title="No leido">{%endif%}
+                    + <i class="icon-user" ></i> {{m.mensaje}}</a></span>
+            </a>
+        </li>   
+    {%endif%}
+    {%else%}
+    <li>
+        
+        <a href="#">
+                    <span class="message">No se han encontrado notificaciones. </span>
+
+        </a>
+    </li>
+    {%endfor%}
+</ul>

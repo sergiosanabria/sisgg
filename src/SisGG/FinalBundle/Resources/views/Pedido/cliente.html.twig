@@ -1,0 +1,6 @@
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{{form_row(form.cliente)}}
+{{form_row(form.solicitante)}}
+{%if tipo == 'delivery'%}
+{{form_row(form.direccion)}}
+{%endif%}

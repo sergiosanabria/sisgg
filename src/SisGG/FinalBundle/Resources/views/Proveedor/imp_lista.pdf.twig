@@ -1,0 +1,48 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Lista de proveedores{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Lista de proveedores</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table font-size="8">
+            <tr background-color="#FAFAFA" >
+                <td height="25px" padding="2px" style=" text-align: center;vertical-align: middle;"><b>Razon social</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>CUIT</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Condición</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>E-mail</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Dirección</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Telefonos</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Total compras</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Total pagos</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Diferencia</b></td>
+            </tr>
+               {% for i in items%}
+            <tr>
+                <td padding="2px" style="text-align: left;" width="200px">{{i.razonSocial}}</td>
+                <td padding="2px" style=" text-align: right;">{{i.cuit}}</td>
+                <td padding="2px" style=" text-align: left;" width="40px">{{i.condicionIva}}</td> 
+                <td padding="2px" style=" text-align: left;" width="70px">{{i.email}}</td> 
+                <td padding="2px" style=" text-align: left;" width="175px">{{i.direccion}}</td>
+                <td padding="2px" style=" text-align: left;">{%set ite=0%}{%for j in i.telefonos%}{%set ite=ite+1%} ({{j.nacional}}){{j.caracteristica}}-{{j.numero}} {%if ite>1%} | {%endif%} {%endfor%}</td>
+                <td padding="2px" style=" text-align: center;">${{i.saldos.total| number_format(2,'.', '')}}</td>
+                <td padding="2px" style=" text-align: center;">${{i.saldos.pagos| number_format(2,'.', '')}}</td>
+                <td padding="2px" style=" text-align: center;">${{i.saldos.diff| number_format(2,'.', '')}} </td>
+                    
+            </tr>   
+            {% endfor %}
+        </table>
+</div>
+{%endblock%}

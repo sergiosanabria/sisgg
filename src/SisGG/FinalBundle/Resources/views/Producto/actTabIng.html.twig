@@ -1,0 +1,23 @@
+<table class="table table-hover table-bordered table-condensed" data-spy="scroll">        
+        <thead class="header">
+            <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Tasa ing.</th>
+                <th>Costo</th>
+                <th style="text-align: center">Acciones</th>
+            </tr> 
+        </thead>
+   {%for i in ingredientes%}
+        <tr id="{{i.id}}">
+            <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this, 1);">{{i.productoProduccion}}</a></td>
+            <td>{{i.cantidad}}</td>
+            <td>{{i.tasa}}</td>
+            <td>{{i.precioCosto}}</td>
+            <td style="text-align: center;width: fit-content" >
+                <a href="{{ path('editarIngrediente', { 'id': i.id }) }}" target="_blank" title="Editar"><i class="fa-icon-edit"></i></a>                                
+                <a href="#" title="Eliminar"  onclick="eliminarModalIng({{i.id}}, '{{i.productoProduccion}}')"><i class="fa-icon-trash"></i></a>
+            </td>
+        </tr>
+        {%endfor%}
+</table>

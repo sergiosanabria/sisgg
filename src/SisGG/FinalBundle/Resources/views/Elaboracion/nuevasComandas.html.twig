@@ -1,0 +1,17 @@
+{%for pedido in pedidosIniciados%}
+<div class="box comanda column" id="{{pedido.id}}" data-idtanda="" draggable="true" ondragstart="drag(event)">
+    <h2>{{pedido.tipo}} {%if pedido.isMesa%}({{pedido.mesa.nombreCompleto}}){%endif%}
+        <span id="opciones{{pedido.id}}"></span>
+    </h2>
+    <span class="notification tiempo" title="{{pedido.fechaPedido|date("F j, Y g:i:m a")}}" class='notification' style='font-size:16px;'></span>    
+    <table class="table" style='font-size:12px;'>
+        <tbody class='items'style="max-height: 100px; overflow-y: visible;">
+                {%for itemPedido in pedido.itemPedido%}
+                    {%if itemPedido.estado != 'Listo' and itemPedido.estado != 'listo' and itemPedido.estado != 'cancelado' and itemPedido.estado != 'Cancelado'%}
+                        <tr data-item="{{itemPedido.sinConsideraciones}}" data-cantidad={{itemPedido.cantidad}}><td>{{itemPedido.cantidad}} - {{itemPedido}}</td></tr>
+                    {%endif%}
+                {%endfor%}
+            </tbody>    
+        </table>        
+    </div>    
+{%endfor%}

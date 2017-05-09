@@ -1,0 +1,217 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .add-on{
+            display: none;
+        }
+        .lineaVenta{
+            height: 50px;
+        }
+        .cabecera{
+            background-color: #08c;
+            color: white;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Detalles de Venta</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <legend>Detalles de la Venta <div class="btn-group" style='float:right;'>
+                    <a class='btn' rel="tooltip" title="Imprimir" href="{{path('impVenta')}}?id={{venta.id}}&_format=pdf"><i class="icon-print"></i></a>
+                </div><small>
+                        <ul class="nav nav-pills" id="myTab1">
+                            <li><a id='tabGeneral' href="#general" data-href=''>General</a></li>
+                            <li><a id='tabCobros' href="#cobros" data-href=''>Cobros</a></li>
+                        </ul></small>
+                </legend>
+                <form id='formVenta' class="form-horizontal"  method="post">
+                    <fieldset id="formNuevaVenta">
+                        <div class="tab-content">           
+                            <div class="tab-pane" id="general">
+                                <div class="span6 pull-left">
+                                    <div class='control-group'>
+                                        <label class='control-label'>Fecha de registro de venta</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.fecha|date('d/m/Y')}}' class='span12' disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'>Tipo de Factura</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.tipoFactura}}' class='span12' disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'>Número de Factura</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.serie}}' class='span3' disabled='disabled'/>
+                                            <input type='text' value='{{venta.numero}}' class='span9' disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span6 pull-left">
+                                    <div class='control-group'>
+                                        <label class='control-label'>Razón Social</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.nombre}}' class='span12' disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                    <div class='control-group'>
+                                        <label class='control-label'>Condición IVA</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.condicionIva}}' class='span12' disabled='disabled'/>
+                                        </div>
+                                    </div><div class='control-group'>
+                                        <label class='control-label'>CUIT</label>   
+                                        <div class='controls controls-row'>
+                                            <input type='text' value='{{venta.cuit}}' class='span12' disabled='disabled'/>
+                                        </div>
+                                    </div>
+                                </div>             
+                                <div class="span12 pull-right">
+                                    <div style="margin-left: 0px;" class="span12 pull-left">
+                                                {%set totalFactura = 0.00%}
+                                                {%if venta.tipoFactura.discriminarIva%}
+                                                <table id="tableLineas" class="table table-bordered table-hover" data-index='{{venta.cobros|length+1}}'>
+                                                    <thead class="cabecera">
+                                                    <th>Cantidad</th>    
+                                                    <th>Descripcion del Producto</th>
+                                                    <th>Precio Unitario</th>
+                                                    <th>Bonificación</th>
+                                                    <th>Precio Neto</th>
+                                                    </thead>
+                                                    <tbody>                                                          
+                                                            {%for linea in venta.lineasVenta%}
+                                                            <tr class='lineaVenta'>
+                                                                <td>{{linea.cantidad}}</td>
+                                                                <td>{{linea.descripcion}}</td>
+                                                                <td style="text-align: right">$ {{linea.precioUnitarioSinIva|number_format(2,'.','')}}</td>
+                                                                <td style="text-align: right">{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                                                                <td style="text-align: right">$ {{(linea.precioNetoSinIva|number_format(2,'.',''))}}</td>
+                                                            </tr>
+                                                            {%endfor%}
+                                                            {%for itemRecargo in venta.itemsRecargoVenta%}
+                                                                   <tr class='lineasVenta'>
+                                                                        <td>1</td>
+                                                                        <td>{{itemRecargo.detalle}}</td>
+                                                                        <td style="text-align: right">$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                        <td style="text-align: right">0.00%</td>
+                                                                        <td style="text-align: right">$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                                                                    </tr>
+                                                            {%endfor%}        
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr><td></td><td></td><td></td><td>Subtotal</td><td style="text-align: right">$ {{venta.subtotalSinIva|number_format(2,'.','')}}</td></tr>
+                                                                {%for itemDescuento in venta.itemsDescuentoVenta%}
+                                                                                <tr><td></td><td></td><td></td><td>Descuento {{itemDescuento.detalle}}</td><td style="text-align: right"> - $ {{itemDescuento.totalDescuentoSinIva|number_format(2,'.','')}}</td></tr>
+                                                                {%endfor%}
+                                                                {%for item in venta.itemsIvaVenta%}
+                                                                            <tr><td></td><td></td><td></td><td>IVA {{item.tasa|number_format(2,'.')}}</td><td style="text-align: right">$ {{item.total|number_format(2,'.','')}}</td></tr>
+                                                                {%endfor%}                   
+                                                            <tr><td></td><td></td><td></td><td id='totalmayor' data-total='{{venta.total}}'>Total</td><td style="text-align: right">$ {{venta.total|number_format(2,'.','')}}</td></tr>        
+                                                        <tfoot>
+                                                    </table>
+                                                                {%set totalFactura = venta.total%}
+                                                {%else%}
+                                                <table id="tableLineas" class="table table-bordered table-hover" data-index='{{venta.cobros|length+1}}'>
+                                                <thead class="cabecera">
+                                                <th>Cantidad</th>    
+                                                <th>Descripcion del Producto</th>
+                                                <th>Precio Unitario</th>
+                                                <th>Bonificación</th>
+                                                <th>Precio Neto</th>
+                                                </thead>
+                                                <tbody>                                                          
+                                                        {%for linea in venta.lineasVenta%}
+                                                        <tr class='lineaVenta'>
+                                                            <td>{{linea.cantidad}}</td>
+                                                            <td>{{linea.descripcion}}</td>
+                                                            <td style="text-align: right">$ {{linea.precioUnitario|number_format(2,'.','')}}</td>
+                                                            <td style="text-align: right">{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                                                            <td style="text-align: right">$ {{(linea.precioNeto|number_format(2,'.',''))}}</td>
+                                                        </tr>
+                                                        {%endfor%}
+                                                        {%for itemRecargo in venta.itemsRecargoVenta%}
+                                                               <tr class='lineasVenta'>
+                                                                    <td>1</td>
+                                                                    <td>{{itemRecargo.detalle}}</td>
+                                                                    <td style="text-align: right">$ {{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                                                                    <td style="text-align: right">0.00%</td>
+                                                                    <td style="text-align: right">$ {{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                                                                </tr>
+                                                        {%endfor%}        
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr><td></td><td></td><td></td><td>Subtotal</td><td style="text-align: right">$ {{venta.subtotal|number_format(2,'.','')}}</td></tr>
+                                                            {%for itemDescuento in venta.itemsDescuentoVenta%}
+                                                                        <tr><td></td><td></td><td></td><td>Descuento {{itemDescuento.detalle}}</td><td style="text-align: right"> - $ {{itemDescuento.totalDescuento|number_format(2,'.','')}}</td></tr>                             
+                                                            {%endfor%}                   
+                                                        <tr><td></td><td></td><td></td><td id='totalmayor' data-total='{{venta.total}}'>Total</td><td style="text-align: right">$ {{venta.total|number_format(2,'.','')}}</td></tr>        
+                                                    <tfoot>
+                                                </table>
+                                                            {%set totalFactura = venta.total%}
+                                                {%endif%} 
+                                                </div>
+                                        </div>
+                                    </div>
+                                                <div class="tab-pane" id="cobros">
+                                                    <table id="tableCobrosVisible" class="table table-bordered table-hover" data-index='{{venta.cobros|length+1}}'>
+                                                        <thead class='cabecera'>
+                                                        <th>Tipo de Cobro</th>
+                                                        <th>Descripcion</th>
+                                                        <th>Aclaracion</th>
+                                                        <th>Importe</th>
+                                                        </thead>
+                                                        <tbody>
+                                                                {%set i = 0%}
+                                                                {%set importes = 0.00%}        
+                                                                {%for cobro in venta.cobros%}
+                                                                    {%set c = cobro%}
+                                                                    {%set importes = importes + cobro.importe%}
+                                                                    {%set i = i+1%}
+                                                                <tr id='ventatype_cobros_{{i}}_visible'><td>{{c.tipoCobro}}</td><td>{%for valor in c.valores%}{{valor.campo.nombre}}: {{valor.valor}}<br>{%endfor%}</td><td>{{cobro.aclaracion}}</td><td style='text-align: right;'>$<span class='importe'>{{c.importe}}</span></td></tr>
+                                                                    {%endfor%}    
+                                                                    </tbody>  
+                                                                    <tfoot>
+                                                                        <tr><td></td><td></td><td>Total</td><td style="text-align:right;"><span id='totalimportes'>$ {{importes|number_format(2,'.','')}}</span></td></tr>
+                                                                        <tr><td></td><td></td><td>Cambio</td><td style="text-align:right;"><span id="cambio"  disabled="disabled"  type="text" autocomplete="off" >{%if importes > totalFactura%}$ {{(totalFactura - importes)|number_format(2,'.','')}}{%else%}$ 0.00{%endif%}</span></td></tr>
+                                                                    </tfoot>    
+                                                                </table>    
+                                                            </div>
+                                                        </div>
+                                    </div>
+                                                        </fieldset>
+                                                        </form>
+                                                    </div>
+                                                </div><!--/span-->
+                                                </div><!--/row-->
+                                                <hr>
+{% endblock %}
+{%block modal%}     
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                                                <script type="text/javascript">
+                                                    $().ready(function() {
+                                                        $('#myTab1 a').click(function(e) {
+                                                            e.preventDefault();
+                                                            $(this).tab('show');
+                                                        });
+                                                        $('#myTab1 a:first').click();
+                                                    });
+
+                                                    </script>
+{%endblock%}
+{% block ajax %}
+{% endblock %}

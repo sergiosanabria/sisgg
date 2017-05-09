@@ -1,0 +1,42 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+            <form class="form-horizontal">
+                {{form_widget(form)}}
+            </form>
+        {#<div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" title="Ver ingredientes"data-parent="#acordion2" href="#{{pe.id}}">{{pe.nombre}}: {{pe.descripcion}}</a>
+                <div class="btn-group">
+                    <button class="ex" onclick="redir(1,'{{pe.id}}')" title="Nueva tasa"><i class="icon icon-plus"></i></button>
+                    <button onclick="redir(2,'{{pe.id}}')" title="Editar"><i class="icon icon-edit"></i></button>
+                    <button href="#" title="Eliminar"  onclick=""><i class="icon icon-trash"></i></button>
+                </div>
+            </div>
+            <div id="{{pe.id}}" class="accordion-body collapse">
+                <div class="accordion-inner">#}
+        {%if ingredientes | length >0%}
+        <h3>Ingredientes</h3>
+                    <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                        <thead class="header">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Tasa ing.</th>
+                                <th>Costo</th>
+                            </tr> 
+                        </thead>
+                   {%for i in ingredientes%}
+                            <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this);">{{i.productoProduccion}}</a></td>
+                            <td>{{i.cantidad}}</td>
+                            <td>{{i.tasa}}</td>
+                            <td>{{i.precioCosto}}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+         {%endif%}           
+          {#      </div>
+            </div>
+         </div>
+    </div>#}
+
+        </div>

@@ -1,0 +1,238 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar cargo empelado{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('empleados')}}">Empleados</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar cargo empelado</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<form {% if r==0 %} action="{{path('modificarCargoEmp', {'id':empleado.id})}}" id="formCargo" name="formCargo" onsubmit="return verBtn();" {%endif%} method="post" class="form-horizontal">
+    <legend>Editar cargo de empleado {{empleado.apellido}}, {{empleado.nombre}}</legend>
+                    {% if error %}
+                    <div class="alert alert-error">
+                        <button type='button' class='close' data-dismiss='alert'>×</button>
+                        <strong>{{ error }}</strong> 
+                    </div>  
+                    {% endif %}
+                    {% if r==1 %}
+                    <div class="alert alert-info">
+                        <button type='button' class='close' data-dismiss='alert'>×</button>
+                        Para poder modificar datos del empleado (datos personales, dirección y telefonos) vea <a href="{{path('editarPersonaE', {'id':empleado.id})}}">Editar datos del empleado <i class="fa-icon-external-link"></i> </a>
+                    </div>  
+                    {% endif %}
+                    {% if r==0 %}
+                        {{ form_row(form.cargoAct.cargoSistema) }} 
+                        {{ form_row(form.cargoAct.nombre) }} 
+                        {{ form_row(form.cargoAct.descripcion) }} 
+                        {{ form_row(form.cargoAct.tipo) }} 
+                        <div id="porDia" style="display: none">{{ form_row(form.cargoAct.porDia) }}</div>  
+                        <div id="porFecha" style="display: none">{{ form_row(form.cargoAct.porFecha) }}  </div>
+                        <div id="porDiaSemana" style="display: none">{{ form_row(form.cargoAct.porDiaSemana) }}  </div>
+                        {{ form_row(form.cargoAct.monto) }} 
+                         {{ form_row(form.cargoAct.negativo) }}  
+                        {{ form_row(form.cargoAct.descuento) }} 
+                        {{ form_row(form.primerPago) }}                    
+
+                    {%endif%}
+                        <div style="display: none">
+                            {{form_rest(form)}}
+                        </div>
+                <div class="form-actions">
+                    <button type="button"  {% if r==1 %} disabled="disabled"{%else%} onclick="verModal();" {%endif%} class="btn btn-primary">Guardar cambios</button>
+                    <a type="button" class="btn"  href="{{path('empleados')}}">Cancelar</a>
+                </div>
+                        <div style="display: none"><button id="submit_button_form" onblur=""  ></button>  </div>
+        </form>
+            </div>
+        </div>
+</div>
+ {% endblock %}
+{% block modal %}
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Registrar retiro de haber contado</h3>
+  </div>
+  <div class="modal-body">
+      Para registar la modificación del cargo, deben acreditarse los siguientes haberes completos y parciales:
+      <div id="contenido"></div>
+      Esta seguro que quiere guardar los cambios?
+  </div>
+ <div class="modal-footer">
+    <button class="btn btn-primary" type="button" onclick="validar(event)" data-dismiss="modal" aria-hidden="true"  class="btn btn-primary">Guardar</button>
+    <button class="btn" id="btnCerrar" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+</div> 
+</div> 
+       
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var ele = document.getElementById(clase+'tipo');
+                cambioFormaPago(ele);
+                var div = document.getElementById(clase+'cargoSistema').parentNode;
+                $(div).append('<div class="btn-group"><button type="button" onclick="cargarCargo()" title="Actualizar lista de cargos de sistema" class="btn"><i  class="icon-refresh"></i> </button><a href="{{path('nuevoCargo')}}" title="Nuevo cargo de sistema" class="btn" target="_blank">...</a>');
+            
+                $('#'+clase+'porDia').change(function (){
+                    var primer=document.getElementById(clase2+'primerPago');
+                    var today = new Date();
+                    var tomorrow = new Date();
+                    var dias = $('#'+clase+'porDia').val();
+                    if ($.isNumeric(dias) && entreDosNros(1,31, parseInt(dias))){
+                        dias= parseFloat($('#'+clase+'porDia').val());
+                        tomorrow.setDate(today.getDate()+dias);
+                        var f =getFechaFormat(tomorrow);
+                        $('#'+clase2+'primerPago').val(f);
+                    }else{
+                        msjWC('La cantidad de dias debe ser un numero entre 1 y 31');
+                    }
+                });
+                $('#'+clase+'porDia').keyup(function (){
+                    var primer=document.getElementById(clase2+'primerPago');
+                    var today = new Date();
+                    var tomorrow = new Date();
+                    var dias = $('#'+clase+'porDia').val();
+                    if ($.isNumeric(dias) && entreDosNros(1,31, parseInt(dias))){
+                        dias= parseFloat($('#'+clase+'porDia').val());
+                        tomorrow.setDate(today.getDate()+dias);
+                        var f =getFechaFormat(tomorrow);
+                        $('#'+clase2+'primerPago').val(f);
+                    }else{
+                        msjWC('La cantidad de dias debe ser un numero entre 1 y 31');
+                        
+                    }
+                });
+                
+                $('#'+clase+'porFecha').change(function (){
+                    var primer=document.getElementById(clase2+'primerPago');
+                    var today = new Date();
+                    var tomorrow = new Date();
+                    var dias = $('#'+clase+'porFecha').val();
+                    if ($.isNumeric(dias) && entreDosNros(1,28, parseInt(dias))){
+                        dias= parseFloat($('#'+clase+'porFecha').val());
+                        tomorrow.setMonth((today.getMonth()+1));
+                        tomorrow.setDate(dias);
+                        var f =getFechaFormat(tomorrow);
+                        $('#'+clase2+'primerPago').val(f);
+                    }else{
+                       msjWC('La cantidad de dias debe ser un numero entre 1 y 31');
+                    }
+                });
+                $('#'+clase+'porFecha').keyup(function (){
+                    var primer=document.getElementById(clase2+'primerPago');
+                    var today = new Date();
+                    var tomorrow = new Date();
+                    var dias = $('#'+clase+'porFecha').val();
+                    if ($.isNumeric(dias) && entreDosNros(1,28, parseInt(dias))){
+                        dias= parseFloat($('#'+clase+'porFecha').val());
+                        tomorrow.setMonth((today.getMonth()+1));
+                        tomorrow.setDate(dias);
+                        var f =getFechaFormat(tomorrow);
+                        $('#'+clase2+'primerPago').val(f);
+                    }else{
+                       msjWC('La cantidad de dias debe ser un numero entre 1 y 31');
+                    }
+                });
+            });
+ 
+function confirmar(){
+        submitBtn=false;
+}
+function cargarCargo(){
+                $('#'+clase+'cargoSistema').load("{{ path('cargarCargo')}}", {'name':$('#'+clase+'cargoSistema').val()}, function() { 
+                    var ele = document.getElementById(clase+'cargoSistema');            
+                    obtenerCargo(ele);
+            }); 
+            }
+function validar(e){
+        submitBtn=true;
+         $('#submit_button_form').click();
+}
+function  verBtn(){
+    if (submitBtn==false){
+        $('#verModal').modal('toggle');
+        return false;
+    }
+    
+}    
+ var AID = {{empleado.id}};
+ function verModal(){
+        $('#contenido').load("{{ path('listaLiquidacion')}}",{'id':AID},  function() {
+            $('#verModal').modal('toggle');
+            
+        }); 
+    }           
+var submitBtn=false;       
+var clase='sisgg_finalbundle_personaempleadotype_cargoAct_';   
+var clase2='sisgg_finalbundle_personaempleadotype_'; 
+  
+        function cambioFormaPago(ele){
+            if ($(ele).val()=="1"){
+                $('#porDia').show();
+                $('#porFecha').hide();
+                $('#porDiaSemana').hide();
+                $('#'+clase+'porDia').attr('required', 'required');
+                $('#'+clase+'porDia').attr('disabled', false);
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');
+            }else if ($(ele).val()=="0"){
+                $('#porFecha').show();
+                $('#porDia').hide();
+                $('#porDiaSemana').hide();
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', 'required');
+                $('#'+clase+'porFecha').attr('disabled', false);
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+             }else if ($(ele).val()=="2"){
+                $('#porDiaSemana').show();
+                $('#porDia').hide();
+                $('#porFecha').hide();
+                $('#'+clase+'porDiaSemana').attr('required', 'required');
+                $('#'+clase+'porDiaSemana').attr('disabled', false);
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');   
+            }else{
+                $('#porDia').hide();
+                $('#porFecha').hide();
+                $('#porFechaSemana').hide();
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+            }
+        }
+    function obtenerCargo(ele){
+         $.getJSON("{{path ('obtenerCargo')}}",{id:$(ele).val()},function (json){        
+            $('#'+clase+'nombre').val(json.nombre);
+            $('#'+clase+'descripcion').val(json.desc);
+            $('#'+clase+'monto').val(json.monto);
+            $('#'+clase+'negativo').val(json.negativo);
+            $('#'+clase+'tipo').val(json.tipo);
+            $('#'+clase+'porDia').val(json.porDia);
+            $('#'+clase+'porFecha').val(json.porFecha);
+            $('#'+clase+'porDiaSemana').val(json.porSemana);
+            $('#'+clase+'descuento').val(json.descuento);
+            var ele = document.getElementById(clase+'tipo');
+            cambioFormaPago(ele);
+        });
+     }
+            </script>
+{% endblock%}

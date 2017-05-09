@@ -1,0 +1,110 @@
+{% extends "::base.html.twig" %}
+{%block title%}Nuevo cargo{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('cargos')}}">Cargos</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo cargo</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<form action="{{ path('nuevoCargo') }}" method="post" class="form-horizontal">
+    <legend>Nuevo cargo</legend>
+                    {% if error %}
+                    <div class="alert alert-error">
+                        <button type='button' class='close' data-dismiss='alert'>×</button>
+                        <strong>{{ error }}</strong> 
+                    </div>  
+                    {% endif %}
+                    {{ form_row(form.nombre) }} 
+                    {{ form_row(form.descripcion) }} 
+                    {{ form_row(form.tipo) }} 
+                    
+                    <div id="porDia" style="display: none">{{ form_row(form.porDia) }}</div>  
+                    <div id="porFecha" style="display: none">{{ form_row(form.porFecha) }}  </div>
+                    <div id="porDiaSemana" style="display: none">{{ form_row(form.porDiaSemana) }}  </div>
+                    {{ form_row(form.monto) }} 
+                    {{ form_row(form.negativo) }}   
+                    {{ form_row(form.descuento) }}   
+    {{ form_rest(form) }}
+                   
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a type="button" class="btn" href="">Cancelar</a>
+                </div>
+            
+        </form>
+            </div>
+        </div>
+</div>
+ {% endblock %}
+{% block modal %}
+
+        
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                
+            
+            });
+            
+            
+            
+        
+ var clase='sisgg_finalbundle_cargosistematype_';       
+        function cambioFormaPago(ele){
+            
+            if ($(ele).val()=="1"){
+                $('#porDia').show();
+                $('#porFecha').hide();
+                $('#porDiaSemana').hide();
+                $('#'+clase+'porDia').attr('required', 'required');
+                $('#'+clase+'porDia').attr('disabled', false);
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');
+            }else if ($(ele).val()=="0"){
+                $('#porFecha').show();
+                $('#porDia').hide();
+                $('#porDiaSemana').hide();
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', 'required');
+                $('#'+clase+'porFecha').attr('disabled', false);
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+             }else if ($(ele).val()=="2"){
+                $('#porDiaSemana').show();
+                $('#porDia').hide();
+                $('#porFecha').hide();
+                $('#'+clase+'porDiaSemana').attr('required', 'required');
+                $('#'+clase+'porDiaSemana').attr('disabled', false);
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');   
+            }else{
+                $('#porDia').hide();
+                $('#porFecha').hide();
+                $('#porFechaSemana').hide();
+                $('#'+clase+'porDia').attr('required', false);
+                $('#'+clase+'porDia').attr('disabled', 'disabled');
+                $('#'+clase+'porFecha').attr('required', false);
+                $('#'+clase+'porFecha').attr('disabled', 'disabled');
+                $('#'+clase+'porDiaSemana').attr('required', false);
+                $('#'+clase+'porDiaSemana').attr('disabled', 'disabled');
+            }
+        }
+            
+            </script>
+{% endblock%}

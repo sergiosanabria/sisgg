@@ -1,0 +1,49 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Auditoria{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Auditoria</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table font-size="9">
+            <tr background-color="#FAFAFA" >
+                <td padding="2px" width="60px" style=" text-align: center;vertical-align: middle;"><b>ID</b></td>
+                <td padding="2px"  style=" text-align: center;vertical-align: middle;"><b>Entidad</b></td>
+                <td padding="2px" width="85px" style=" text-align: center;vertical-align: middle;"><b>Acción</b></td>
+                <td padding="2px" width="115px" style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Usuario</b></td>
+            </tr>
+           
+            {%for entrie in items%}
+                        <tr>
+                            <td padding="2px" style=" text-align: center;vertical-align: middle;" >{{entrie.id}}</td>
+                            <td padding="2px" style=" text-align: center;vertical-align: middle;" >{{entrie.objectClass|split('\\')[3]}}</td>
+                            <td padding="2px" style=" text-align: center;vertical-align: middle;" >{{entrie.action|trans}}</td>
+                            <td padding="2px" style=" text-align: center;vertical-align: middle;" >{{entrie.loggedat|date("d/m/Y H:i")}}</td>
+                            <td padding="2px" style=" text-align: center;vertical-align: middle;" >{{entrie.username}}</td>
+                           </tr>
+                            {%if datos%}
+                           <tr >
+                                <td padding="2px" border.type="none"  style=" text-align: right;vertical-align: middle;"><b>Datos:</b></td>
+                                <td padding="2px" border.type="none" style=" text-align: left;vertical-align: middle;" colspan='4'> {%for key in entrie.data|keys%}
+                                {{key|title}}: 
+                            {%if entrie.data[key].timestamp is defined%} {{entrie.data[key]|date("d/m/Y H:i")}}{%else%}{%for en in entrie.data[key]%} {{en}}{%else%} {{entrie.data[key]}}{%endfor%}{%endif%}
+                            {%endfor%} </td>
+                            </tr>
+                            {%endif%}      
+                    {%endfor%}  
+             
+        </table>
+</div>
+{%endblock%}

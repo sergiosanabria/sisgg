@@ -1,0 +1,38 @@
+{% extends "::base.html.twig" %}
+{%block title%}Nuevo IVA{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('ivas')}}">IVA</a>
+</li></a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo IVA</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Nuevo IVA</legend>
+        <form action="{{path('nuevoIVA')}}" method="post" class="form-horizontal">
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        {{ form_widget(form) }}
+        {{ form_rest(form) }}
+       <div class="form-actions">
+            <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+            <a href="{{path('ivas')}}" type="button" class="btn">Cancelar</a>
+        </div>   
+        </form>
+        </div>
+    </div>
+    </div>
+{% endblock %}

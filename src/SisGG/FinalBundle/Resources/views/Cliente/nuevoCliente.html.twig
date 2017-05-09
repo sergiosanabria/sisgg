@@ -1,0 +1,173 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Clientes</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo Cliente</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Nuevo Cliente
+                <small>
+                    <ul class="nav nav-pills" id="myTab">
+                        <li class="active"><a href="#general">General</a></li>
+                        <li><a href="#descuentos">Descuentos</a></li>
+                        <li><a href="#grupos">Grupos de Cliente</a></li>
+                    </ul>
+                </small>
+            </legend>
+            <form id='formCliente' name="cliente" class="form-horizontal" action="{{ path('nuevo_cliente') }}" method="post">
+                <fieldset id="formNuevoCliente">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="general">
+                            <div class="span6 pull-left">
+                                        {{form_row(form.telefono)}}
+                                        {{form_row(form.apellido,{'attr':{'class':'span9'} })}}
+                                        {{form_row(form.nombre,{'attr':{'class':'span9'} })}}
+                                        {{form_row(form.tipoDocumento,{'attr':{'class':'tipoDocumento span7'} })}}
+                                        {{form_row(form.documento,{'attr':{'class':'span9'} })}}
+                                        {{form_row(form.email,{'attr':{'class':'span9'} })}}
+                                        {{form_row(form.condicionIva,{'attr':{'class':'span9'} })}}
+                                        {{form_row(form.cuit,{'attr':{'class':'span9'} })}}
+                                </div>
+                                <div class="span6 pull-right">
+                                    <div class='control-group'>
+                                        <label class='control-label'>Provincia (*)</label>
+                                        <div class='controls controls-row'>
+                                            <select id="provincias" name="provincias" class="provincias span7" onClick="cambio();">
+                                                        {% for provincia in provincias%}
+                                                    <option id="{{provincia.id}}" name="{{provincia.id}}" value="{{provincia}}">
+                                                                {{provincia}} 
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <a class="btn span2" onclick="buscarCiudad();"><i class="icon-search"></i></a>    
+                                                </div>    
+                                            </div>    
+                                    {{form_row(form.direccion.ciudad,{'attr':{'class':'ciudad span7'} })}}
+                                    {{form_row(form.direccion.calle,{'attr':{'class':'span9'} })}}    
+                                    {{form_row(form.direccion.numero,{'attr':{'class':'span9'} })}}    
+                                    {{form_row(form.direccion.manzana,{'attr':{'class':'span9'} })}}    
+                                    {{form_row(form.direccion.edificio,{'attr':{'class':'span9'} })}}    
+                                    {{form_row(form.direccion.escalera,{'attr':{'class':'span9'} })}}    
+                                    {{form_row(form.direccion.piso,{'attr':{'class':'span9'} })}}                                
+                                    {{form_row(form.direccion.departamento,{'attr':{'class':'span9'} })}}        
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane active" id="descuentos">
+                                 {{form_row(form.descuentos,{'attr':{'class':'span12'} })}}
+                                        </div>
+
+                                        
+                                        <div class="tab-pane active" id="grupos">
+                                {{form_row(form.gruposCliente,{'attr':{'class':'span12'} })}}
+                                {{form_rest(form)}}     
+                                            </div>
+
+                                        </div>
+                                    </fieldset>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                        <a onclick='history.back()'  class="btn">Cancelar</a>
+                                    </div>    
+                                </form>
+                            </div>
+                        </div><!--/span-->
+                    </div><!--/row-->
+{% endblock %}
+{%block modal%}
+                    <div class="modal hide fade" id="busqueda">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h3>Busqueda</h3>
+                        </div>
+                        <div id="dataBusqueda" class="modal-body">
+                            <p>Here settings can be configured...</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+                        </div>
+                    </div>
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                    <script type="text/javascript">
+                                                var ruta = "ruta";
+                                                $("#formNuevoCliente").ready(function() {
+                                                    $(".provincia").after("<a class='btn span2' onclick='buscarProvincia();'><i class='icon-search'></i></a>");
+                                                    $(".ciudad").after("<a class='btn span2' onclick='buscarCiudad();'><i class='icon-search'></i></a>");
+                                                    $(".tipoDocumento").after("<a class='btn span2  ' onclick='buscarTipoDocumento()'><i class='icon-search'></i></a>");
+                                                    $("#myTab a").each(function() {
+                                                        $(this).tab("show");
+                                                    });
+                                                    $("#myTab a:first").each(function() {
+                                                        $(this).tab("show");
+                                                    });
+                                                });
+
+                                                function buscarTipoDocumento() {
+                                                    $.get("{{path('tipos_documento')}}").done(
+                                                            function(data) {
+                                                                $("#dataBusqueda").html(data);
+                                                                $('#tiposdocumento').dataTable({
+                                                                    "sDom": "<'row-fluid'<'span5'l><'span7'f>r>t<'row-fluid'<'span6'i><'span6 center'p>>",
+                                                                    "sPaginationType": "bootstrap",
+                                                                    "oLanguage": {
+                                                                        "sLengthMenu": "_MENU_ Registros por página",
+                                                                        "sSearch": "Buscar:",
+                                                                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                                                                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                                                                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                                                        "sZeroRecords": "Ningun registro encontrado",
+                                                                        "oPaginate": {
+                                                                            "sPrevious": "Anterior",
+                                                                            "sNext": "Siguiente"
+                                                                        }
+                                                                    }
+                                                                });
+                                                                $("#busqueda").modal("show");
+                                                            }
+                                                    );
+                                                }
+
+                                                function buscarProvincia() {
+                                                    $.get("{{path('provincias')}}").done(
+                                                            function(data) {
+                                                                $("#dataBusqueda").html(data);
+                                                                $("#busqueda").modal("show");
+                                                            }
+                                                    );
+                                                }
+                                                function buscarCiudad() {
+                                                    var idProvincia = $(".provincia").val();
+                                                    $.get("{{path('ciudades')}}", {id: idProvincia}).done(
+                                                            function(data) {
+                                                                $("#dataBusqueda").html(data);
+                                                                $("#busqueda").modal("show");
+                                                            }
+                                                    );
+                                                }
+
+                                                function seleccionarTipoDocumento(id, abreviatura) {
+                                                    var existe = false;
+                                                    $("#cliente_tipoDocumento option").each(function() {
+                                                        if ($(this).val() == id)
+                                                            existe = true;
+                                                    });
+                                                    if (!existe) {
+                                                        $("#cliente_tipoDocumento").append('<option value="' + id + '">' + abreviatura + '</option>');
+                                                    }
+                                                    $("#cliente_tipoDocumento").val(id);
+                                                    $("#busqueda").modal("hide");
+                                                }
+                        </script>    
+{%endblock%}

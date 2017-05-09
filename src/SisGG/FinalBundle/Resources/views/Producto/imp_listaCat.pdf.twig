@@ -1,0 +1,47 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Lista de {{texto}}{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Lista de {{texto}}</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table font-size="9">
+            {%for cat in items%}
+                <tr>
+                    <td border.type="none" padding-bottom="7px" padding-top="7px"  colspan='{%if tipo==1%}5{%else%}4{%endif%}' font-size='11'><b>{%set ite=0%}{%for n in cat.productos[0]['producto'].catPadres(0)%}{%set ite=ite+1%}{%if ite>1%} -> {%endif%}{{n}}{%endfor%}</b></td>
+                </tr>
+                <tr background-color="#F1F1F1" >
+                <td padding="2px" style=" text-align: left;vertical-align: middle;"><b>Nombre</b></td>
+                 {%if tipo==1%}<td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio venta</b></td>{%endif%}
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Precio costo</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Cantidad</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>UM</b></td>
+                </tr>
+               {% for i in cat.productos%}
+            <tr>
+                <td padding="2px" style="text-align: left;" width="300px">{{i.producto.nombre}}</td>
+               {%if tipo==1%} <td padding="2px" style=" text-align: center;">{%if i.producto.precioVenta is defined %}${{i.producto.precioVenta}}{%else%} --{%endif%}</td>{%endif%}
+                <td padding="2px" style=" text-align: center;">${{i.producto.precioCosto}}</td>
+                <td padding="2px" width="90px" style=" text-align: center;">{%if i.producto.cantidad is defined %}{{i.producto.cantidad }}{%else%} --{%endif%}</td> 
+                <td padding="2px" style=" text-align: center;">{{i.producto.tasa}}</td>                     
+            </tr>   
+                {% endfor %}
+            {%endfor%}
+                 
+            
+        </table>
+
+               
+</div>
+{%endblock%}

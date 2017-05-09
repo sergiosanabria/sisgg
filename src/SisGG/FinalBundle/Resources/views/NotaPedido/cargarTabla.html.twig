@@ -1,0 +1,35 @@
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th id="primeraCol">N°</th>
+                    <th>Proveedor</th>                   
+                    <th>Fecha y hora</th>
+                    <th style="text-align: center" >Estado</th>
+                    <th>Costo total</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+             <tr>
+                 <td>{{r.id}}</td>
+                 <td>{{r.proveedor}}</td>
+                <td>{{r.fecha|date("d/m/Y H:i:s")}}</td>
+                <td style="text-align: center;width: fit-content">{%if r.estado==1%}<span class="label label-info">Editando</span> {%endif%}
+                    {%if r.estado==2%}<span class="label label-warning">Finalizado</span>{%endif%}
+                    {%if r.estado==3%}<span class="label label-success">Entregado</span>{%endif%}
+                    {%if r.estado==4%}<span class="label label-inverse">Facturado</span>{%endif%}</td>
+                <td  style="text-align: right">{{r.total}}</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if app.user.role.obtenerPermiso('notaPedido_editar')%}
+                        <a href="#" onclick="detallesModal('{{r.id}}')" title="Ver detalles"><i class="fa-icon-list-alt"></i></a> 
+                        {%if r.estado==1%}<a href="{{path('editarNotaPedido', {'id':r.id})}}"  title="Editar"><i class="fa-icon-edit"></i></a> {%endif%}
+                        {%if r.estado==2%}<a onclick="entregado('{{path('editarNotaPedido')}}', '{{r.id}}', 3)" href="#"title="Registrar entrega"><i class="fa-icon-ok-sign"></i></a>{%endif%}
+                    {%endif%}
+                    {%if app.user.role.obtenerPermiso('compra_nuevo')%}
+                        {%if r.estado==3%}<a href="#" {#href="{{path('nuevaCompra', {'np':r.id})}}" #} onclick="nuevaCompraEmpresa('{{r.id}}')" title="Registrar facturación"><i class=" fa-icon-shopping-cart"></i></a>{%endif%}
+                    {%endif%}
+                </td>
+                </div>
+            </tr>   
+            {% endfor %}
+        </table>

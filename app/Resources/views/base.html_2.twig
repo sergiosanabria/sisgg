@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- start: Meta -->
+        <meta charset="utf-8">
+        <title>Sistema Gestión Gastronómico</title>
+        <meta name="author" content="Herrera Fernando Martin - Sanabria Sergio Javier">
+        <!-- end: Meta -->
+
+        <!-- start: Mobile Specific -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- end: Mobile Specific -->
+
+        <!-- start: CSS -->
+        <link id="bootstrap-style" href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap-responsive.min.css')}}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-ui.css')}}" rel="stylesheet">
+
+        <link href="{{ asset('elFinder/jqueryFileTree.css')}}" rel="stylesheet">
+
+        <link id="base-style" href="{{ asset('css/style.css')}}" rel="stylesheet">
+        <link id="base-style-responsive" href="{{ asset('css/style-responsive.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap/table/DT_bootstrap.css') }}" />
+        {#<link rel="stylesheet" href="{{ asset('fancyBox/jquery.fancybox.css') }}" />
+        <link rel="stylesheet" href="{{ asset('fancyBox/helpers/jquery.fancybox-buttons.css') }}" />
+        <link rel="stylesheet" href="{{ asset('fancyBox/helpers/jquery.fancybox-thumbs.css') }}" />#}
+        <link rel="stylesheet" href="{{ asset('js/colorpicker/css/jPicker-1.1.6.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('js/colorpicker/css/jPicker-1.1.6.css') }}" />
+        <link rel="stylesheet" href="{{ asset('js/colorpicker/css/jPicker.css') }}" />
+        <style type="text/css">
+                {%block css%}
+                
+                .carousel {
+                    margin-bottom: 60px;
+                }
+
+                .carousel .container {
+                    position: relative;
+                    z-index: 10;
+                }
+
+                .carousel-control {
+                    height: 80px;
+                    margin-top: 0;
+                    font-size: 120px;
+                    text-shadow: 0 1px 1px rgba(0,0,0,.4);
+                    background-color: transparent;
+                    border: 0;
+                }
+
+                .carousel .item {
+                    height: 500px;
+                }
+                .carousel img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    min-width: 100%;
+                    height: 500px;
+                }
+
+                .carousel-caption {
+                    background-color: transparent;
+                    position: static;
+                    max-width: 550px;
+                    padding: 0 20px;
+                    margin-top: 200px;
+                }
+                .carousel-caption h1,
+                .carousel-caption .lead {
+                    margin: 0;
+                    line-height: 1.25;
+                    color: #fff;
+                    text-shadow: 0 1px 1px rgba(0,0,0,.4);
+                }
+                .carousel-caption .btn {
+                    margin-top: 10px;
+                }
+                .zoom-in {
+                    cursor: -webkit-zoom-in;
+                    cursor: -moz-zoom-in;
+                }
+
+                .zoom-out {
+                    cursor: -webkit-zoom-out;
+                    cursor: -moz-zoom-out;
+                }
+                .color-blanquito{
+                    color: white;
+                    text-shadow: 1px 1px 2px #0a0c0e;
+                }   
+                .header{
+                    background-color: #08c;
+                    color: white;
+                }
+                /*2FABE9*/
+            </style>
+        {%endblock%}
+
+              {%block parcheCSS%}
+              {%endblock%}
+
+            <!--[if lt IE 7 ]>
+            <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+            <![endif]-->
+            <!--[if IE 8 ]>
+            <link id="ie-style" href="css/style-ie.css" rel="stylesheet">
+            <![endif]-->
+            <!--[if IE 9 ]>
+            <![endif]-->
+
+            <!-- end: CSS -->
+
+
+            <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+            <!--[if lt IE 9]>
+              <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+
+            <!-- start: Favicon -->
+            <link rel="shortcut icon" href="{{ asset('favicon.ico')}}">
+            <!-- end: Favicon -->
+        </head>
+
+        <body>
+            <div id="overlay">
+                <ul>
+                    <li class="li1"></li>
+                    <li class="li2"></li>
+                    <li class="li3"></li>
+                    <li class="li4"></li>
+                    <li class="li5"></li>
+                    <li class="li6"></li>
+                </ul>
+            </div>	
+            <!-- start: Header -->
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                            <a class="brand" href="{{path('index')}}"> <img class="hidden-desktop" src="{{ asset('img/icono_restaurantes.png')}}"  height="16" width="16"/><img class="hidden-phone" src="{{ asset('img/icono_restaurantes.png')}}"  height="32" width="32"/> <span class="hidden-phone">SisGG</span></a>
+                        <!-- start: Header Menu -->
+                        <div class="nav-no-collapse header-nav">
+                            <ul class="nav">
+                                <li {#class="dropdown"#} >
+
+
+                                   {# <a class="dropdown-toggle btn"  data-toggle="dropdown" href="#">Dropdown trigger</a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                      <li><a tabindex="-1" href="#">Action</a></li>
+                                        <li><a tabindex="-1" href="#">Another action</a></li>
+                                        <li><a tabindex="-1" href="#">Something else here</a></li>
+                                        <li class="divider"></li>
+                                        <li><a tabindex="-1" href="#">Separated link</a></li>
+                                    </ul>#}
+
+                                </li>
+                            </ul>
+                            <ul class="nav pull-right">
+                                {% if  app.user%}
+<li>
+                                <a class="btn"  title="Abre en otra pestaña la ayuda de sistema" target="_blank" href="{{asset('Ayuda/Ayuda de Sistema de Gestión Gastronómica SisGG.htm')}}">
+                                    <i class="icon-question-sign icon-white"></i>
+                                    {#<span class="hidden-tablet"> Chat</span>#}
+                                </a>
+                            </li>
+                                    <!-- start: Notifications Dropdown -->
+                                    <audio id="player" src="{{asset('sounds/alertacocina.mp3')}}"> </audio>
+                            {%if app.user.role.obtenerPermiso('agenda_gestionar_agenda')%}
+                                        <li>
+                                            <a class="btn"  title="Abre en otra pestaña la agenda" target="_blank" href="{{path('agenda')}}">
+                                                <i class="icon-calendar icon-white"></i>
+                                    {#<span class="hidden-tablet"> Chat</span>#}
+                                            </a>
+                                        </li>
+                            {%endif%}
+                            {%if app.user.role.obtenerPermiso('chat_gestionar_chat')%}
+                                        <li>
+                                            <a class="btn" title="Abre en otra pestaña el chat" target="_blank" href="{{path('chat')}}">
+                                                <i class="icon-comment icon-white"></i>
+                                                <i class="icon-envelope icon-white"></i>
+                                                <span id="baseCantidadMsj" class="label label-important"></span>
+                                    {#<span class="hidden-tablet"> Chat</span>#}
+                                            </a>
+                                        </li>
+                            {%endif%}
+                                        <li>
+                                            <a class="btn" href="#" title="Abre en el conversor de tasas y unidades de medida" target="_blank" onclick="mostrarConversor();">
+                                                <i class="icon-retweet icon-white"></i>
+                                    {#<span class="hidden-tablet"> Chat</span>#}
+                                            </a>
+                                        </li>
+                            {%if app.user.role.obtenerPermiso('notificaciones de sistema_Mostrar')%}
+                                        <li id="noti1" class="dropdown hidden-phone" onclick="marcarLeidoMsj();">
+
+
+                                        </li>
+                            {%endif%}
+                                        <!-- end: Notifications Dropdown -->
+                                        <!-- start: Message Dropdown -->
+
+                                        <!-- end: Message Dropdown -->
+                           {# <li>
+                                <a class="btn" href="#">
+                                    <i class="icon-wrench icon-white"></i>
+                                </a>
+                            </li>#}
+                            {%endif%}
+                                        <!-- start: User Dropdown -->
+                                        <li class="dropdown">
+                                            <a class="btn dropdown-toggle" style="color: white; text-shadow: 1px 1px 2px #0a0c0e;"  data-toggle="dropdown"  href="#">
+                                                <i class="icon-user icon-white"></i>
+                                    {% if  app.user%}{{app.user.apellido}}, {{app.user.nombre}}{%endif%}
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                    {%if app.user.role.obtenerPermiso('usuario_cambiar_Contrseña')%}
+                                                    <li>
+                                                        <a target="_blank" href="{{path('cambiarContrasenia')}}"><i class="fa-icon-key"></i>Cambiar de contraseña</a>
+                                                    </li>
+                                    {%endif%}
+                                    {% if  app.user%}
+                                        {%if app.user.role.obtenerPermiso('usuario_ver_Perfil')%}
+                                                    <li>
+                                        {#<a href="{{path('perfilUsuario')}}"><i class="icon-user"></i> Perfil</a>#}
+                                                            <a href="javascript:void(0);" onclick="mostrarModalPerfilUsuario();"><i class="icon-user"></i> Perfil</a>
+                                                        </li>
+                                    {%endif%}
+
+
+                                                        <li><a href="logout"><i class="icon-off"></i> Logout</a></li>
+                                    {%else%}
+                                                            <li><a href="login"><i class="icon-off"></i> Login</a></li>
+                                    {%endif%}
+                                                            </ul>
+                                                        </li>
+                                                        <!-- end: User Dropdown -->
+                                                    </ul>
+                                                </div>				
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end: Header Menu -->
+                                    <!-- start: Header -->
+                                    <div class="container-fluid">
+                                        <div class="row-fluid">
+                                            <!-- Main Menu start-->
+                {%if app.user%}
+                                            <div id="menuCerrar">
+                                                <div class="span2 main-menu-span">
+                                                    <div class="nav-collapse sidebar-nav">
+                                                        <ul class="nav nav-tabs nav-stacked main-menu">
+                                        {%block opciones%}
+
+                                                                <li><a class="dropmenu" href="#">
+                                                                        <i class="icon-home icon-white"></i>
+                                                                        <span class="hidden-tablet"> Datos y parámetros de empresa</span>
+                                                                    </a>
+                                                                    <ul>
+                                     {%if app.user.role.obtenerPermiso('empresa_editar')%}
+                                                                            <li><a class="submenu" href="{{path('editarEmpresa')}}"><i class="icon-list-alt icon-white"></i><span class="hidden-tablet"> Datos de empresa</span></a></li>
+                                    {%endif%}
+
+                                                                                        <li><a class="submenu" href="{{path('parametros')}}"><i class="fa-icon-cogs icon-white"></i><span class="hidden-tablet"> Parámetros de sistema</span></a></li>
+
+                                                                                    </ul>	   
+                                                                                </li>
+
+                           {# <li><a href="{{path('agenda')}}">
+                                    <i class="icon-calendar icon-white"></i>
+                                    <span class="hidden-tablet"> Agenda</span>
+                                </a>
+                            </li>
+                            <li><a href="{{path('chat')}}">
+                                    <i class="fa-icon-comments-alt icon-white"></i>
+                                    <span class="hidden-tablet"> Chat</span>
+                                </a>
+                            </li>#}
+                                                                                <li>
+                                                                                    <a class="dropmenu" href="#"><i class="fa-icon-barcode"></i><span class="hidden-tablet">Productos</span></a>
+                                                                                    <ul>
+
+                                                                                        <li>
+                                                                                            <a class="dropmenu" href="javascript:void(0);"><i class="fa-icon-plus"></i><span class="hidden-tablet">Productos para la venta</span></a>
+                                                                                            <ul>
+
+                                                                                                <li>
+                                                                                                    <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Mercaderias</span></a>
+                                                                                                    <ul style="display: none;">
+                                                    {%if app.user.role.obtenerPermiso('mercaderia_nuevo')%}
+                                                                                                            <li><a class="submenu" href="{{path('nuevaMercaderia')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva</span></a></li>
+                                                    {%endif%}
+                                                    {%if app.user.role.obtenerPermiso('mercaderia_listar')%}
+                                                                                                                        <li><a class="submenu" href="{{path('mercaderias')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de mercaderias</span></a></li>
+                                                    {%endif%}
+                                                                                                                                </ul>	
+                                                                                                                            </li>
+                                                                                                                            <li>
+                                                                                                                                <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Platos</span></a>
+                                                                                                                                <ul style="display: none;">
+                                                    {%if app.user.role.obtenerPermiso('plato_listar')%}
+                                                                                                                                        <li><a class="submenu" href="{{path('nuevoPlato')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo</span></a></li>
+                                                    {%endif%}
+                                                    {%if app.user.role.obtenerPermiso('plato_listar')%}
+                                                                                                                                                    <li><a class="submenu" href="{{path('platos')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de platos</span></a></li>
+                                                    {%endif%}
+                                                                                                                                                            </ul>	
+                                                                                                                                                        </li>
+                                            {%if app.user.role.obtenerPermiso('producto_Gestión de menu')%}
+                                                                                                                                                        <li><a class="submenu" href="{{path('gestionMenu')}}"><i class="fa-icon-list"></i><span class="hidden-tablet">Gestionar impresión de menú</span></a></li>
+                                            {%endif%}
+                                            {%if app.user.role.obtenerPermiso('producto_listar_producto_venta')%}
+                                                                                                                                                                    <li><a class="submenu" href="{{path('pvs')}}"><i class="fa-icon-list"></i><span class="hidden-tablet">Lista de productos para la venta</span></a></li>
+                                            {%endif%}
+                                                                                                                                                                            </ul>	
+                                                                                                                                                                        </li>
+                                                                                                                                                                        <li>
+                                                                                                                                                                            <a class="dropmenu" href="#"><i class="fa-icon-plus"></i><span class="hidden-tablet">Productos para la producción</span></a>
+                                                                                                                                                                            <ul>
+                                                                                                                                                                                <li>
+                                                                                                                                                                                    <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Materias primas</span></a>
+                                                                                                                                                                                    <ul style="display: none;">
+                                                    {%if app.user.role.obtenerPermiso('materiaPrima_nuevo')%}
+                                                                                                                                                                                            <li><a class="submenu" href="{{path('nuevaMP')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva materia prima</span></a></li>
+                                                    {%endif%}
+                                                    {%if app.user.role.obtenerPermiso('materiaPrima_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('mps')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de materias primas</span></a></li>
+                                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Producto pre-elaborados</span></a>
+                                                                                                                                                                                                        <ul style="display: none;">
+                                                    {%if app.user.role.obtenerPermiso('pre-Elaborado_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevoPE')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo producto pre-elaborado</span></a></li>
+                                                    {%endif%}
+                                                    {%if app.user.role.obtenerPermiso('pre-Elaborado_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('pes')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de productos pre-elaborado</span></a></li>
+                                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                            {%if app.user.role.obtenerPermiso('producto_listar_producto_prodccion')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('pps')}}"><i class="fa-icon-list"></i><span class="hidden-tablet">Lista de productos para la producción</span></a></li>
+                                            {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-plus"></i><span class="hidden-tablet">Productos para el mantenimiento</span></a>
+                                                                                                                                                                                                        <ul>
+                                            {%if app.user.role.obtenerPermiso('mantenimiento_nuevo')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="submenu" href="{{path('nuevoMantenimiento')}}"><i class="fa-icon-file-alt"></i><span class="hidden-tablet">Nuevo producto mantenimiento</span></a>
+
+                                                                                                                                                                                                        </li>
+                                            {%endif%}
+                                            {%if app.user.role.obtenerPermiso('mantenimiento_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('mantenimientos')}}"><i class="fa-icon-list"></i><span class="hidden-tablet">Lista de productos para el mantenimiento</span></a></li>
+                                            {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                           {# <li>
+                                <a class="dropmenu" href="#"><i class="fa-icon-sitemap"></i><span class="hidden-tablet"> Categorias</span></a>
+                                <ul>
+                                    <li> <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Categoria producto para la venta</span></a>
+                                    <ul>
+                                        <li><a class="submenu" href="{{path('nuevaCategoriaPV')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva categoria</span></a></li>
+                                        <li><a class="submenu" href="{{path('categoriasPV')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de categorias</span></a></li>
+
+                                    </ul>
+                                    </li>
+                                    <li><a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Categoria producto para la producción</span></a>
+                                    <ul>
+                                        <li><a class="submenu" href="{{path('nuevaCategoriaPP')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva categoria</span></a></li>
+                                        <li><a class="submenu" href="{{path('categoriasPP')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de categorias</span></a></li>
+                                    </ul>
+                                    </li>
+                                </ul>	
+                            </li>#}
+                            {#<li>
+                                <a class="dropmenu" href="#"><i class="fa-icon-list-ol"></i><span class="hidden-tablet"> Unidad de medida</span></a>
+                                <ul>
+                                    <li><a class="submenu" href="{{path('nuevaUM')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva</span></a></li>
+                                    <li><a class="submenu" href="{{path('ums')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de unidades de medida</span></a></li>
+                                </ul>	
+                            </li>#}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-beaker"></i><span class="hidden-tablet"> Producción</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('registro_registro_producción_por_cantidad')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('registroProduccion1')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Registrar producción por cantidad</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('registro_registro_producción_por_ingredientes')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('registroProduccion2')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Registrar producción por ingredientes</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('registro_registro_pérdida_de_producción')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('perdidaProduccion1')}}"><i class="fa-icon-minus-sign"></i><span class="hidden-tablet"> Registrar pérdida producción</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('registro_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('registrosProduccion1')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Registros de producción</span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                            {#<li>
+                                <a class="dropmenu" href="#" onclick="mostrarConversor();"><i class="fa-icon-retweet"></i><span class="hidden-tablet"> Conversor de tasas</span></a>	
+                            </li>#}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-truck"></i><span class="hidden-tablet"> Proveedores</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('proveedor_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevoProveedor')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('proveedor_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('proveedores')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de proveedores</span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                            {#<li>
+                                <a class="dropmenu" href="#"><i class="fa-icon-home"></i><span class="hidden-tablet"> Provincias - Ciudades</span></a>
+                                <ul>
+                                    <li><a class="submenu" href="{{path('nuevaCiudad')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva ciudad</span></a></li>
+                                    <li><a class="submenu" href="{{path('ciudades')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de ciudades</span></a></li>
+                                    <li><a class="submenu" href="{{path('nuevaProvincia')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva provincia</span></a></li>
+                                    <li><a class="submenu" href="{{path('provincias')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de provincias</span></a></li>
+                                    
+                                    
+                                </ul>	
+                            </li>#}
+
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-shopping-cart"></i><span class="hidden-tablet"> Compras y pedidos</span></a>
+                                                                                                                                                                                                        <ul>
+                                                                                                                                                                                                        <li> <a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Compras</span></a>
+                                                                                                                                                                                                        <ul>
+                                        {%if app.user.role.obtenerPermiso('compra_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="#" onclick="nuevaCompraEmpresa();"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva compra</span></a></li>
+                                        {%endif%}
+                                        {%if app.user.role.obtenerPermiso('compra_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('compras')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de compras</span></a></li>
+                                        {%endif%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li><a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Nota de pedido</span></a>
+                                                                                                                                                                                                        <ul>
+                                        {%if app.user.role.obtenerPermiso('notaPedido_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevaNotaPedido')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva nota de pedido</span></a></li>
+                                        {%endif%}
+                                        {%if app.user.role.obtenerPermiso('notaPedido_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('notas')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de notas de pedido </span></a></li>
+                                        {%endif%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li><a class="dropmenu" href="#"><i class="fa-icon-file-alt"></i><span class="hidden-tablet"> Servicios</span></a>
+                                                                                                                                                                                                        <ul>
+                                         {%if app.user.role.obtenerPermiso('servicio_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevoServicio')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo servicio</span></a></li>
+                                          {%endif%}
+                                         {%if app.user.role.obtenerPermiso('servicio_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('servicios')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Servicios </span></a></li>
+                                          {%endif%}
+                                            {%if app.user.role.obtenerPermiso('facturaServicio_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" onclick="nuevaFacturaServicio();" href="{{path('nuevaFS')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nueva facturas de servicio</span></a></li>
+                                          {%endif%}
+                                         {%if app.user.role.obtenerPermiso('facturaServicio_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('fs')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Facturas de servicio </span></a></li>
+                                          {%endif%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        </ul>	
+                                {##}
+
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-money"></i><span class="hidden-tablet"> Cobros y pagos</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('pago_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="#"><i class="fa-icon-list"></i><span class="hidden-tablet"> Cobros</span></a></li>   
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('pago_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('pagos')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Pagos</span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-book"></i><span class="hidden-tablet"> Libros IVA</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('pago_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('ivaCompras')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> IVA compras</span></a></li>
+                                     {%endif%}
+                                     {%if app.user.role.obtenerPermiso('pago_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="#"><i class="fa-icon-list"></i><span class="hidden-tablet"> IVA ventas</span></a></li>
+                                     {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-user"></i><span class="hidden-tablet"> Empleados</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('empleado_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevaPersonaE')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo empleado</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('empleado_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('empleados')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de empleados</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('cargo_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('nuevoCargo')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo cargo</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('cargo_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('cargos')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de cargos </span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('cocina_gestionar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{ path('elaboracion_pedidos') }}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Elaboracion</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('cliente_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                       <a href="{{path('clientes')}}">
+                                                                                                                                                                                                        <i class=" fa-icon-user icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Clientes</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('cuenta_corriente_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('cuentas_corrientes')}}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Cuentas corrientes</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>         
+
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('pedido_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('pedidos')}}">
+                                                                                                                                                                                                        <i class="fa-icon-shopping-cart icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Pedidos</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('pedido_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('sectores_mesas')}}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Sectores y Mesas</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('envio_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('registros_envios')}}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Envios</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('venta_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('ventas')}}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Ventas</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                         {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('caja_apertura_y_cierre')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="{{path('caja')}}">
+                                                                                                                                                                                                        <i class="icon-briefcase icon-white">
+                                                                                                                                                                                                        </i>
+                                                                                                                                                                                                        <span class="hidden-tablet">Caja</span>
+                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        {%endif%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="fa-icon-group"></i><span class="hidden-tablet"> Usuarios</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('usuario_nuevo')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('usuarioNuevo')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Nuevo usuario</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('usuario_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('usuarios')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Lista de usuarios</span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                            {%if app.user.role.obtenerPermiso('auditoria_listar')%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="submenu" href="{{path('auditorias')}}"><i class="fa-icon-list-ol"></i><span class="hidden-tablet"> Historial de auditoria</span></a>	
+                                                                                                                                                                                                        </li>
+                            {%endif%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a class="dropmenu" href="#"><i class="icon-hdd icon-white"></i><span class="hidden-tablet">  Back-Up</span></a>
+                                                                                                                                                                                                        <ul>
+                                    {%if app.user.role.obtenerPermiso('backup_registrar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('backup')}}"><i class="fa-icon-plus-sign"></i><span class="hidden-tablet"> Realizar back-up</span></a></li>
+                                    {%endif%}
+                                    {%if app.user.role.obtenerPermiso('backup_listar')%}
+                                                                                                                                                                                                        <li><a class="submenu" href="{{path('backups')}}"><i class="fa-icon-list"></i><span class="hidden-tablet"> Historial de back-ups</span></a></li>
+                                    {%endif%}
+                                                                                                                                                                                                        </ul>	
+                                                                                                                                                                                                        </li>
+                            {%endblock%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        </div><!--/.well -->
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                    {%endif%}
+                                                                                                                                                                                                        <!--/span-->
+                                                                                                                                                                                                        <!-- Main Menu end-->
+
+                                                                                                                                                                                                        <noscript>
+                                                                                                                                                                                                        <div class="alert alert-block span10">
+                                                                                                                                                                                                        <h4 class="alert-heading">Warning!</h4>
+                                                                                                                                                                                                        <p>You need to have <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a> enabled to use this site.</p>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </noscript>
+
+                                                                                                                                                                                                        <div id="content" {%if app.user%}class="span10"{%endif%}>
+                                                                                                                                                                                                        <!-- start: Content -->
+                    {%if app.user%}
+                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                        <hr>
+                                                                                                                                                                                                        <ul class="breadcrumb">
+                            {%block ruta%}
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="#">Home</a> <span class="divider">/</span>
+                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                        <li>
+                                                                                                                                                                                                        <a href="#">Dashboard</a>
+                                                                                                                                                                                                        </li>
+                            {%endblock%}
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                        <hr>
+                                                                                                                                                                                                        </div>			
+                    {%else%}
+                    {#<div id="myCarousel" class="carousel slide">
+                        <div class="carousel-inner">
+                            <div class="item active">
+                                <img src="{{asset('img/imagen1.jpg')}}" alt="">
+                                <div class="container">
+                                    <div class="carousel-caption">
+                                        <h1>Gestion integral.</h1>
+                                        <p class="lead">Provee un entorno sencillo para el manejo total de todas las tareas relacionadas con el manejo de cursos, alumnos, docentes, etc.</p>
+                                        <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <img src="{{asset('img/imagen2.jpg')}}" alt="">
+                                <div class="container">
+                                    <div class="carousel-caption">
+                                        <h1>Control de Tutores.</h1>
+                                        <p class="lead">Los tutores de los alumnos pueden acceder a los datos de los alumnos sin tener que acercarse a la institución donde se encuentran.</p>
+                                        <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <img src="{{asset('img/imagen3.jpg')}}" alt="">
+                                <div class="container">
+                                    <div class="carousel-caption">
+                                        <h1>Entorno distribuido.</h1>
+                                        <p class="lead">Al ser una plataforma web, se puede acceder a las calificaciones de los alumnos desde distintas partes y en todo momento.</p>
+                                        <a class="btn btn-large btn-primary" href="#">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+                        <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                    </div>#}
+                    {%endif%}
+                    {%block content%}
+
+                    {%endblock%}
+                                                                                                                                                                                                        <!-- end: Content -->
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <!--/#content.span10-->
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <!--/fluid-row-->
+            {%block modal%}
+
+            {%endblock%}
+                                                                                                                                                                                                        <div id="conversorTasa" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                                                                                                                                                                                                        <div class="modal-header">
+                                                                                                                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                                                                                                                                                                        <h3 id="myModalLabel">Conversor de tasas</h3>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-body">
+                                                                                                                                                                                                        <div class="row-fluid sortable">
+                                                                                                                                                                                                        <div class="box-content">
+                                                                                                                                                                                                        <div id="detalles">
+                                                                                                                                                                                                        <form class="form-horizontal">
+                                                                                                                                                                                                        <div class="control-group">
+                                                                                                                                                                                                        <label class="control-label">Seleccione una unidad de medida</label>
+                                                                                                                                                                                                        <div class="controls">
+                                                                                                                                                                                                        <select id="umCVR" onchange="cargarTasaCVR(this)" name="umCVR"></select>
+                                                                                                                                                                                                        <div class="btn-group">
+                                                                                                                                                                                                        <button type="button" class="btn"><i onclick="cargarUM()" title="Actualizar lista de UM" class="icon-refresh"></i></button>
+                                                                                                                                                                                                        <a class="btn" href="{{path('ums')}}" title="Nueva Unidad de medida" target="_blank">...</a>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="control-group">
+                                                                                                                                                                                                        <label class="control-label">De</label>
+                                                                                                                                                                                                        <div class="controls span8" >
+                                                                                                                                                                                                        <div class="input-prepend input-append">
+                                                                                                                                                                                                        <span class="add-on">#</span><input  id="cantidad1CVR" class="span3"  name="cantidad1CVR" autocomplete="off" placeholder="##.##"  onkeypress="return isNumberKey(this, event);"  type="text" name="cantidad">
+                                                                                                                                                                                                        <select id="tasa1CVR" onchange="" class="span5" name="tasa1CVR"></select>                    
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="control-group">
+                                                                                                                                                                                                        <label class="control-label">A</label>
+                                                                                                                                                                                                        <div class="controls span8" >
+                                                                                                                                                                                                        <div class="input-prepend input-append">
+                                                                                                                                                                                                        <span class="add-on">#</span><input disabled="disabled" class="span3" id="cantidad2CVR" name="cantidad2CVR" autocomplete="off" placeholder="##.##"  onkeypress="return isNumberKey(this, event);"  type="text" name="cantidad">
+                                                                                                                                                                                                        <select id="tasa2CVR" onchange=""  class="span5"  name="tasa2CVR"></select>                   
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>         
+                                                                                                                                                                                                        </form>
+                                                                                                                                                                                                        </div> 
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-footer">
+                                                                                                                                                                                                        <button class="btn btn-primary" type="button" onclick="tasaCVR()">Calcular</button>
+                                                                                                                                                                                                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div id="modalCompraEmpresa" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                                                                                                                                                                                                        <div class="modal-header">
+                                                                                                                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                                                                                                                                                                        <h3 id="myModalLabel">Seleccione tipo de factura</h3>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-body">
+                                                                                                                                                                                                        <div id="modalCompraEmpresaContenido" style="text-align: center"></div>
+                                                                                                                                                                                                        </div>
+
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div id="modalFacturaServicio" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                                                                                                                                                                                                        <div class="modal-header">
+                                                                                                                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                                                                                                                                                                        <h3 id="myModalLabel">Nuevo factura de servicio</h3>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-body">
+                                                                                                                                                                                                        <div id="divFacturaServicio" style="text-align: center"></div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-footer">
+                                                                                                                                                                                                        <a class="btn btn-primary" href="#" id="botonFacturaServicio">Aceptar</a>
+                                                                                                                                                                                                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div id="modalPerfilUsario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                                                                                                                                                                                                        <div class="modal-header">
+                                                                                                                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                                                                                                                                                                        <h3 id="myModalLabel">Nuevo factura de servicio</h3>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-body">
+                                                                                                                                                                                                        <div id="divPerfilUsuario"></div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <div class="modal-footer">
+                                                                                                                                                                                                        <a class="btn btn-primary" href="#" id="botonFacturaServicio">Aceptar</a>
+                                                                                                                                                                                                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        </div>             
+                                                                                                                                                                                                        <div class="clearfix"></div>
+
+                                                                                                                                                                                                        <footer>
+                                                                                                                                                                                                        <p>
+                                                                                                                                                                                                        <span style="text-align:right;float:right">&copy; Martin &amp; Sergio 2013</span>
+                                                                                                                                                                                                        </p>
+
+                                                                                                                                                                                                        </footer>
+
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                        <!--/.fluid-container-->
+
+                                                                                                                                                                                                        <!-- start: JavaScript-->
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery-1.9.1.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery-migrate-1.0.0.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery-ui-1.10.0.custom.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.ui.touch-punch.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/bootstrap.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.cookie.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/fullcalendar.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.dataTables.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/excanvas.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.flot.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.flot.pie.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.flot.stack.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.flot.resize.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.chosen.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.uniform.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.cleditor.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.noty.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.elfinder.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.raty.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.iphone.toggle.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.uploadify-3.1.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.gritter.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.imagesloaded.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.masonry.min.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.knob.js')}}"></script>
+
+                                                                                                                                                                                                        <script src="{{ asset('js/jquery.sparkline.min.js')}}"></script>
+
+
+                                                                                                                                                                                                        <script src="{{ asset('js/custom.js')}}"></script>
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('tree/dtree.js')}}></script>
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('elFinder/jqueryFileTree.js')}}></script>
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('css/bootstrap/table/jquery.dataTables.js')}}></script>
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('css/bootstrap/table/DT_bootstrap.js')}}></script>
+
+        {#<script type="text/javascript" src={{asset('fancyBox/helpers/jquery.fancybox-buttons.js')}}></script>
+        <script type="text/javascript" src={{asset('fancyBox/helpers/jquery.fancybox-media.js')}}></script>
+        <script type="text/javascript" src={{asset('fancyBox/helpers/jquery.fancybox-thumbs.js')}}></script>#}
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('fancyBox/lib/jquery.mousewheel-3.0.6.pack.js')}}></script>
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('fancyBox/bigscreen.min.js')}}></script>
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('js/colorpicker/jpicker-1.1.6.min.js')}}></script>
+                                                                                                                                                                                                        <script type="text/javascript" src={{asset('js/colorpicker/jpicker-1.1.6.js')}}></script>
+        {#<script type="text/javascript" src={{asset('fancyBox/jquery.fancybox.pack.js')}}></script>#}
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{ asset('fc.js') }}></script>     
+
+                                                                                                                                                                                                        <script type="text/javascript" src={{ asset('js/html2canvas.js') }}></script>     
+                                                                                                                                                                                                        <script type="text/javascript" src={{ asset('js/canvas2image.js') }}></script>  
+                                                                                                                                                                                                        <script type="text/javascript">
+
+                                                function message_welcome1() {
+                                                    var unique_id = $.gritter.add({
+                                                        // (string | mandatory) the heading of the notification
+                                                        title: 'Welcome on Perfectum Dashboard',
+                                                        // (string | mandatory) the text inside the notification
+                                                        text: 'I hope you like this template',
+                                                        // (string | optional) the image to display on the left
+                                                        image: 'img/avatar.jpg',
+                                                        // (bool | optional) if you want it to fade out on its own or just sit there
+                                                        sticky: false,
+                                                        // (int | optional) the time you want it to be alive for before fading out
+                                                        time: '',
+                                                        // (string | optional) the class name you want to apply to that specific message
+                                                        class_name: 'my-sticky-class'
+                                                    });
+                                                }
+
+                                                function message_welcome2() {
+                                                    var unique_id = $.gritter.add({
+                                                        // (string | mandatory) the heading of the notification
+                                                        title: 'Perfectum is Amazing Theme',
+                                                        // (string | mandatory) the text inside the notification
+                                                        text: 'Perfectum works on all devices, computers, tablets and smartphones. Perfectum has lots of great features. Try It!',
+                                                        // (string | optional) the image to display on the left
+                                                        image: 'img/avatar.jpg',
+                                                        // (bool | optional) if you want it to fade out on its own or just sit there
+                                                        sticky: false,
+                                                        // (int | optional) the time you want it to be alive for before fading out
+                                                        time: '',
+                                                        // (string | optional) the class name you want to apply to that specific message
+                                                        class_name: 'my-sticky-class'
+                                                    });
+                                                }
+
+                                                function message_welcome3() {
+                                                    var unique_id = $.gritter.add({
+                                                        // (string | mandatory) the heading of the notification
+                                                        title: 'Buy Perfectum!',
+                                                        // (string | mandatory) the text inside the notification
+                                                        text: 'This great template can be yours today.',
+                                                        // (string | optional) the image to display on the left
+                                                        image: 'img/avatar.jpg',
+                                                        // (bool | optional) if you want it to fade out on its own or just sit there
+                                                        sticky: false,
+                                                        // (int | optional) the time you want it to be alive for before fading out
+                                                        time: '',
+                                                        // (string | optional) the class name you want to apply to that specific message
+                                                        class_name: 'gritter-light'
+                                                    });
+                                                }
+
+
+                                                function mostrarNotificacionesNoLeidos() {
+                                                    $('#noti1').load("{{ path('mostrarNotificacionesNoLeidos')}}", function() {
+                                                    });
+                                                }
+                                                function mostrarMjsNuevos() {
+
+                                                    $.getJSON("{{path ('mostrarNuevos')}}", function(json) {
+
+                                                        if ((json[0].id != 0)) {
+                                                            document.getElementById('player').play();
+                                                            for (var i = 0; i < json.length; i++) {
+
+                                                                var unique_id = $.gritter.add({
+                                                                    // (string | mandatory) the heading of the notification
+                                                                    title: 'Mensaje nuevo!',
+                                                                    // (string | mandatory) the text inside the notification
+                                                                    text: json[i].mensaje,
+                                                                    // (bool | optional) if you want it to fade out on its own or just sit there
+                                                                    sticky: false,
+                                                                    // (int | optional) the time you want it to be alive for before fading out
+                                                                    time: 5000,
+                                                                    // (string | optional) the class name you want to apply to that specific message
+                                                                    class_name: 'my-sticky-class'
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                                function marcarLeidoMsj() {
+                                                    // $('#'+li).remove();
+                                                    $.post('{{path('marcarLeido')}}', function(data) {
+                                                    });
+
+                                                }
+                                                function eliminarMsj(ele, li, id) {
+
+                                                    $.post('{{path('eliminarMsj')}}', {id: id}, function(data) {
+                                                    });
+                                                    mostrarNotificacionesNoLeidos();
+
+                                                }
+                                                function eliminarTodosMsj(ele) {
+
+                                                    $.post('{{path('eliminarTodosMsj')}}', function(data) {
+                                                    });
+                                                    mostrarNotificacionesNoLeidos();
+
+                                                }
+
+                                                function nuevaCompraEmpresa(id) {
+
+                                                    if (typeof(id) === "undefined") {
+                                                        var url = "{{path('tipoFactura')}}";
+                                                        $('#modalCompraEmpresaContenido').load(url, function() {
+                                                        });
+                                                        $('#modalCompraEmpresa').modal('toggle');
+                                                    } else {
+                                                        var url = "{{path('tipoFactura', { 'id': '__id__' })}}".replace(/__id__/g, id);
+                                                        $('#modalCompraEmpresaContenido').load(url, function() {
+                                                        });
+                                                        $('#modalCompraEmpresa').modal('toggle');
+                                                    }
+                                                }
+
+                                                                                                                                                                                                        {#function nuevaFacturaServicio (){
+                                                                                                                                                                                                        $('#divFacturaServicio').load("{{path('cargarServicios')}}", function() { 
+                                                                                                                                                                                                        $('#modalFacturaServicio').modal('toggle');
+                                                                                                                                                                                                        $('#botonFacturaServicio').click(function (ev){
+                                                                                                                                                                                                        if ($('#comboServicios').val()!='-1'){
+                                                                                                                                                                                                        var url = "{{path('nuevaFS', { 'id': '__id__' })}}".replace(/__id__/g, $('#comboServicios').val());
+                                                                                                                                                                                                        window.location=url;
+                                                                                                                                                                                                        }else{
+                                                                                                                                                                                                        $(this).attr('href', '#');
+                                                                                                                                                                                                        msjWC('Seleccione un servicio');
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        );
+                                                                                                                                                                                                        });
+                                                                                                                                                                                                        }#}
+
+                                                var listaNegraMsjChat = new Array();
+                                                listaNegraMsjChat[0] = -1;
+                                                $(document).ready(function() {
+                                                    $.ajaxSetup({
+                                                        async: false
+                                                    });
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('notificaciones de sistema_Mostrar')%}
+                                                    mostrarNotificacionesNoLeidos();
+                                                    /*setInterval(function(){    
+                                                     setTimeout("mostrarMjsNuevos ()",2000);
+                                                     if (!($('#noti1').attr('class')=='dropdown hidden-phone open'))
+                                                     mostrarNotificacionesNoLeidos ();   
+                                                     },7000);*/
+                                                                                                                                                                                                        {%endif%}
+                                                                                                                                                                                                        {%if app.user.role.obtenerPermiso('chat_gestionar_chat')%}
+                                                    msjChatNuevo();
+//                                                    setInterval(function() {
+//                                                        msjChatNuevo();
+//                                                    }, 13000);
+                                                                                                                                                                                                        {%endif%}
+                                                    var date = new Date();
+                                                    var d = date.getDate();
+                                                    var m = date.getMonth();
+                                                    var y = date.getFullYear();
+
+
+
+                                                    //setTimeout("message_welcome2()",10000);	
+                                                    //setTimeout("message_welcome3()",15000);
+
+                                                });
+
+                                                function estaEnListaNegra(id) {
+                                                    for (var i = 0; i < listaNegraMsjChat.length; i++) {
+                                                        if (listaNegraMsjChat[i] == id) {
+                                                            return true;
+                                                        }
+                                                    }
+                                                    return false;
+                                                }
+                                                function msjChatNuevo() {
+                                                    var datos;
+                                                    var nombre;
+                                                    var lista;
+
+
+                                                    $.getJSON("{{ path('cargarChat')}}", {'tipo': 3}, function(json) {
+
+                                                        lista = json;
+
+                                                    });
+                                                    if (lista[0].id === "error") {
+                                                        $('#baseCantidadMsj').html('');
+                                                        return false;
+                                                    }
+                                                    var cantidad = 0;
+                                                    for (var i = 0; i < lista.length; i++) {
+                                                        if (lista[i].val == 0) {
+
+                                                        } else {
+                                                            cantidad++;
+                                                            if (!(estaEnListaNegra(lista[i].codigo))) {
+                                                                listaNegraMsjChat[listaNegraMsjChat.length] = lista[i].codigo;
+                                                                var unique_id = $.gritter.add({
+                                                                    // (string | mandatory) the heading of the notification
+                                                                    title: 'Mensaje nuevo!',
+                                                                    // (string | mandatory) the text inside the notification
+                                                                    text: 'Tiene ' + lista[i].val + ' mensajes sin leer de ' + lista[i].nombre + '!',
+                                                                    // (bool | optional) if you want it to fade out on its own or just sit there
+                                                                    sticky: false,
+                                                                    // (int | optional) the time you want it to be alive for before fading out
+                                                                    time: 5000,
+                                                                    // (string | optional) the class name you want to apply to that specific message
+                                                                    class_name: 'my-sticky-class'
+                                                                });
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                    $('#baseCantidadMsj').html(cantidad);
+                                                }
+
+
+                                                function mostrarModalPerfilUsuario() {
+                                                    $("#divPerfilUsuario").load("{{path("perfilUsuario")}}");
+                                                    $("#modalPerfilUsario").modal("show");
+                                                }
+                                                                                                                                                                                                        </script>
+                                                                                                                                                                                                        <!-- end: JavaScript-->
+                                                                                                                                                                                                        </body>
+                                                                                                                                                                                                        </html>
+{%block javascripts%}
+
+ {%endblock%}

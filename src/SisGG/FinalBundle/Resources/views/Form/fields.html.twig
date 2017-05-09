@@ -1,0 +1,493 @@
+{# Widgets #}
+{% block form_widget %}
+{% spaceless %}
+    {% if compound %}
+        {{ block('form_widget_compound') }}
+    {% else %}
+        {{ block('form_widget_simple') }}
+    {% endif %}
+{% endspaceless %}
+{% endblock form_widget %}
+
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+                <td><input title="{{form_errors(form,{'attr':{'class':'collection-item'} })}}" type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/></td>    
+        {%else%}
+                <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+        {%endif%}    
+    {%else%}    
+        <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {%endif%}        
+{% endspaceless %}
+{% endblock form_widget_simple %}
+
+{% block form_widget_compound %}
+{% spaceless %}
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+        {{ block('form_rows') }}
+        {{ form_rest(form) }}
+    </div>
+{% endspaceless %}
+{% endblock form_widget_compound %}
+
+{% block collection_widget %}
+{% spaceless %}
+    {% if prototype is defined %}
+        {% set attr = attr|merge({'data-prototype': form_row(prototype,{'attr':{'class':'collection-item'}}) }) %}
+    {% endif %}   
+    {%if allow_add%}
+    {%set index=0%}                
+    {%for child in form%}
+        {%set index = index+1%}            
+    {%endfor%}                
+    <tbody {{ block('widget_attributes') }} data-index={{index}}>
+        {%for child in form%}
+            {{form_row(child,{'attr':{'class':'collection-item'} })}}
+        {%endfor%}    
+    </tbody>
+    <a class="btn pull-right" rel="tooltip" href="#" onclick="nuevaFila(event,'{{id}}')"><i class="icon icon-plus-sign"></i></a>
+    {%else%}
+        {{ block('form_widget') }}
+    {%endif%}
+{% endspaceless %}
+{% endblock collection_widget %}
+
+{% block textarea_widget %}
+{% spaceless %}
+        <textarea {#class="cleditor"#} rows="5" {{ block('widget_attributes') }}>{{ value }}</textarea>
+{% endspaceless %}
+{% endblock textarea_widget %}
+
+{% block choice_widget %}
+{% spaceless %}
+    {% if expanded %}
+        {{ block('choice_widget_expanded') }}
+    {% else %}
+        {{ block('choice_widget_collapsed') }}
+    {% endif %}
+{% endspaceless %}
+{% endblock choice_widget %}
+
+{% block choice_widget_expanded %}
+{% spaceless %}
+    <div {{ block('widget_container_attributes') }}>
+    {% for child in form %}
+        {{ form_widget(child) }}
+        {{ form_label(child) }}
+    {% endfor %}
+    </div>
+{% endspaceless %}
+{% endblock choice_widget_expanded %}
+
+{% block choice_widget_collapsed %}
+{% spaceless %}
+{%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+                <td title="{{form_errors(form,{'attr':{'class':'collection-item'} })}}">
+                    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple" data-rel="chosen"{% endif %}>
+                    {% if empty_value is not none %}
+                            <option value="">{{ empty_value|trans({}, translation_domain) }}</option>
+                    {% endif %}
+                    {% if preferred_choices|length > 0 %}
+                    {% set options = preferred_choices %}
+                    {{ block('choice_widget_options') }}
+                    {% if choices|length > 0 and separator is not none %}
+                            <option disabled="disabled">{{ separator }}</option>
+                    {% endif %}
+                    {% endif %}
+                    {% set options = choices %}
+                    {{ block('choice_widget_options') }}
+                        </select>
+                </td>    
+        {%else%}
+                <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple" data-rel="chosen"{% endif %} >
+                    {% if empty_value is not none %}
+                        <option value="">{{ empty_value|trans({}, translation_domain) }}</option>
+                    {% endif %}
+                    {% if preferred_choices|length > 0 %}
+                        {% set options = preferred_choices %}
+                        {{ block('choice_widget_options') }}
+                        {% if choices|length > 0 and separator is not none %}
+                            <option disabled="disabled">{{ separator }}</option>
+                        {% endif %}
+                    {% endif %}
+                    {% set options = choices %}
+                    {{ block('choice_widget_options') }}
+                </select>
+        {%endif%}    
+{%else%}
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple" data-rel="chosen"{% endif %}>
+        {% if empty_value is not none %}
+            <option value="">{{ empty_value|trans({}, translation_domain) }}</option>
+        {% endif %}
+        {% if preferred_choices|length > 0 %}
+            {% set options = preferred_choices %}
+            {{ block('choice_widget_options') }}
+            {% if choices|length > 0 and separator is not none %}
+                <option disabled="disabled">{{ separator }}</option>
+            {% endif %}
+        {% endif %}
+        {% set options = choices %}
+        {{ block('choice_widget_options') }}
+    </select>
+{%endif%}
+{% endspaceless %}
+{% endblock choice_widget_collapsed %}
+
+{% block choice_widget_options %}
+{% spaceless %}
+    {% for group_label, choice in options %}
+        {% if choice is iterable %}
+            <optgroup label="{{ group_label|trans({}, translation_domain) }}">
+                {% set options = choice %}
+                {{ block('choice_widget_options') }}
+            </optgroup>
+        {% else %}
+            <option value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}>{{ choice.label|trans({}, translation_domain) }}</option>
+        {% endif %}
+    {% endfor %}
+{% endspaceless %}
+{% endblock choice_widget_options %}
+
+{% block checkbox_widget %}
+{% spaceless %}
+    {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+            <td><input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} /></td>
+        {%else%}
+            <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        {%endif%}
+    {%else%}        
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+    {%endif%}        
+    
+{% endspaceless %}
+{% endblock checkbox_widget %}
+
+{% block radio_widget %}
+{% spaceless %}
+    {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+            <td><input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} /></td>
+        {%else%}
+            <input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        {%endif%}
+    {%else%}        
+        <input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+    {%endif%}
+{% endspaceless %}
+{% endblock radio_widget %}
+
+{% block datetime_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        {{ block('form_widget_simple') }}
+    {% else %}
+        <div {{ block('widget_container_attributes') }}>
+            {{ form_errors(form.date) }}
+            {{ form_errors(form.time) }}
+            {{ form_widget(form.date) }}
+            {{ form_widget(form.time) }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock datetime_widget %}
+
+{% block date_widget %}
+{% spaceless %}
+       {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+            <td name="{{name}}"><input type="text" class="datepicker" {{ block('widget_attributes') }} autocomplete="off" value="{{value}}"/></td>
+        {%else%}
+            <input type="text" class="datepicker" {{ block('widget_attributes') }} autocomplete="off" value="{{value}}"/>
+        {%endif%}
+    {%else%}        
+        <input type="text" class="datepicker" {{ block('widget_attributes') }} autocomplete="off" value="{{value}}"/>
+	
+    {%endif%} 
+{% endspaceless %}
+{% endblock date_widget %}
+
+{% block time_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+            <input type="time" class="time" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value}}" {% endif %}">
+    {% else %}
+        <div {{ block('widget_container_attributes') }}>
+            {{ form_widget(form.hour, { 'attr': { 'size': '1' } }) }}:{{ form_widget(form.minute, { 'attr': { 'size': '1' } }) }}{% if with_seconds %}:{{ form_widget(form.second, { 'attr': { 'size': '1' } }) }}{% endif %}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock time_widget %}
+
+{% block number_widget %}
+{% spaceless %}        
+    {% set type = type|default('text') %}
+        {% set type = type|default('text') %}
+    {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+                <td name="{{name}}" title="{{form_errors(form,{'attr':{'class':'collection-item'} })}}"><input type="{{ type }}" onkeypress="return isNumberKey(this,event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/></td>
+        {%else%}
+                <input type="{{ type }}" onkeypress="return isNumberKey(this,event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+        {%endif%}
+    {%else%}        
+    <input type="{{ type }}" onkeypress="return isNumberKey(this,event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {%endif%}        
+{% endspaceless %}
+{% endblock number_widget %}
+
+{% block integer_widget %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    {%if form.parent.parent != null%}
+        {%if form.parent.parent.parent != null%}
+    <td name="{{name}}" title="{{form_errors(form,{'attr':{'class':'collection-item'} })}}"><input type="{{ type }}" onkeypress="return isOnlyNumberKey(event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/></td>
+        {%else%}
+                <input type="{{ type }}" onkeypress="return isOnlyNumberKey(event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+        {%endif%}
+    {%else%}        
+        <input type="{{ type }}" onkeypress="return isOnlyNumberKey(event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {%endif%}        
+{% endspaceless %}
+{% endblock integer_widget %}
+
+{% block money_widget %}
+{% spaceless %}
+    {% set type = type|default('text') %} 
+    <input class="" type="{{ type }}" onkeypress="return isNumberKey(this,event);" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %} > $
+{% endspaceless %}
+{% endblock money_widget %}
+
+{% block url_widget %}
+{% spaceless %}
+    {% set type = type|default('url') %}
+    {{ block('form_widget_simple') }}
+{% endspaceless %}
+{% endblock url_widget %}
+
+{% block search_widget %}
+{% spaceless %}
+    {% set type = type|default('search') %}
+    {{ block('form_widget_simple') }}
+{% endspaceless %}
+{% endblock search_widget %}
+
+{% block percent_widget %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    {{ block('form_widget_simple') }} %
+{% endspaceless %}
+{% endblock percent_widget %}
+
+{% block password_widget %}
+{% spaceless %}
+    {% set type = type|default('password') %}
+    {{ block('form_widget_simple') }}
+{% endspaceless %}
+{% endblock password_widget %}
+
+{% block hidden_widget %}
+{% spaceless %}
+    {% set type = type|default('hidden') %}
+    {{ block('form_widget_simple') }}
+{% endspaceless %}
+{% endblock hidden_widget %}
+
+{% block email_widget %}
+{% spaceless %}
+    {% set type = type|default('email') %}
+    {{ block('form_widget_simple') }}
+{% endspaceless %}
+{% endblock email_widget %}
+
+{# Labels #}
+
+{% block form_label %}
+{% spaceless %}
+    {% set req = ""%}
+    {% if not compound %}
+        {% set label_attr = label_attr|merge({'for': id}) %}
+    {% endif %}
+    {% if required %}
+        {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% set req = " (*)"%}
+    {% endif %}
+    {% if label is empty %}
+        {% set label = name|humanize %}
+    {% endif %}
+    <label class="control-label" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}{{req}}</label>
+{% endspaceless %}
+{% endblock form_label %}
+
+{# Rows #}
+
+{% block repeated_row %}
+{% spaceless %}
+    {#
+    No need to render the errors here, as all errors are mapped
+    to the first child (see RepeatedTypeValidatorExtension).
+    #}
+    {{ block('form_rows') }}
+{% endspaceless %}
+{% endblock repeated_row %}
+
+{% block form_row %}
+{% spaceless %}
+        {%if attr and attr['class'] is defined and attr['class'] =='collection-item'%}
+             <tr id="{{id}}" {%for child in form%}{% if child.vars.errors|length %}class="error"{%endif%}{%endfor%}>
+                {%for child in form%}
+                        {{form_widget(child)}}
+                {%endfor%}
+                <td style="text-align: center">
+                    <a href="#" rel="tooltip" title="Eliminar" onclick="eliminarFila(event,'{{id}}');"><i class="icon icon-remove-sign"></i></a>
+                </td>     
+             </tr>
+        {%else%}    
+            {%if errors|length > 0 %}
+                <div class="control-group error">
+            {%else%}
+                <div class="control-group">        
+            {%endif%}    
+            {% if not compound%}
+                    {{ form_label(form) }}    
+                    <div class="controls controls-row">
+                        {{ form_widget(form) }}
+                        {{ form_errors(form) }}
+                    </div>
+            {%else%}
+                    {{ form_widget(form) }}
+                    {{ form_errors(form) }}    
+            {%endif%}            
+                </div>            
+        {%endif%}            
+{% endspaceless %}
+{% endblock form_row %}
+
+{% block hidden_row %}
+    {{ form_widget(form) }}
+{% endblock hidden_row %}
+
+{# Misc #}
+
+{% block form_enctype %}
+{% spaceless %}
+    {% if multipart %}enctype="multipart/form-data"{% endif %}
+{% endspaceless %}
+{% endblock form_enctype %}
+
+{% block form_errors %}
+{% spaceless %}
+    {% if errors|length > 0 %}
+        {% for error in errors %}
+            {%if attr and attr['class'] is defined and attr['class'] =='collection-item'%}
+                {{
+                error.messagePluralization is null
+                    ? error.messageTemplate|trans(error.messageParameters, 'validators')
+                    : error.messageTemplate|transchoice(error.messagePluralization, error.messageParameters, 'validators')
+                }}
+            {%else%}
+            <span class="help-inline">
+                {{
+                error.messagePluralization is null
+                    ? error.messageTemplate|trans(error.messageParameters, 'validators')
+                    : error.messageTemplate|transchoice(error.messagePluralization, error.messageParameters, 'validators')
+                }}
+            </span>
+            {%endif%}
+        {% endfor %}
+    {% endif %}
+{% endspaceless %}
+{% endblock form_errors %}
+
+{% block form_rest %}
+{% spaceless %}
+    {% for child in form %}
+        {% if not child.rendered %}
+            {{ form_row(child) }}
+        {% endif %}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_rest %}
+
+{# Support #}
+
+{% block form_rows %}
+{% spaceless %}
+    {% for child in form %}
+        {{ form_row(child) }}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_rows %}
+
+{% block widget_attributes %}
+{% spaceless %}
+    id="{{ id }}" name="{{ full_name }}"{% if read_only %} readonly="readonly"{% endif %}{% if disabled %} disabled="disabled"{% endif %}{% if required %} required="required"{% endif %}{% if max_length %} maxlength="{{ max_length }}"{% endif %}{% if pattern %} pattern="{{ pattern }}"{% endif %}
+    {% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue }}" {% endif %}{% endfor %}
+{% endspaceless %}
+{% endblock widget_attributes %}
+
+{% block widget_container_attributes %}
+{% spaceless %}
+    {% if id is not empty %}id="{{ id }}" {% endif %}
+    {% for attrname, attrvalue in attr %}{{ attrname }}="{{ attrvalue }}" {% endfor %}
+{% endspaceless %}
+{% endblock widget_container_attributes %}
+
+    
+{% block _movimientotype_t_row %}
+    {% spaceless %}
+    {%if form.vars.errors|length > 0%}
+            <div class="control-group error">
+        {%else%}
+            <div class="control-group">        
+        {%endif%}
+        <label class='control-label'>Tipo de Movimiento (*)</label>
+        <div class="controls controls-row">
+            {%set i = 0%}
+            {%for child in form%}
+                <label><input type="radio" id='{{child.vars.id}}' name='{{child.vars.full_name}}' {% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %}/> {{child.vars.value}}</label>
+                {%set i = i+1%}
+            {%endfor%}    
+        </div>
+    </div>                
+    {% endspaceless %}
+{% endblock %}
+{# Deprecated in Symfony 2.1, to be removed in 2.3 #}
+        
+{% block _cliente_telefono_row %}
+    {% spaceless %}
+    {%if form.nacional.vars.errors|length > 0  or form.caracteristica.vars.errors|length > 0 or form.numero.vars.errors|length > 0%}
+            <div class="control-group error">
+        {%else%}
+            <div class="control-group">        
+        {%endif%}
+    <label class='control-label'>Teléfono (*)</label>
+    <div class="controls controls-row">
+            {{form_widget(form.nacional,{'attr':{'class':'span2'} })}}
+            {{form_widget(form.caracteristica,{'attr':{'class':'span3'} })}}
+            {{form_widget(form.numero,{'attr':{'class':'span4'} })}}
+            {{form_errors(form.nacional)}}
+            {{form_errors(form.caracteristica)}}
+            {{form_errors(form.numero)}}
+            {{form_errors(form)}}
+        </div>
+    </div>                
+    {% endspaceless %}
+{% endblock %} 
+                    
+                    
+{% block generic_label %}{{ block('form_label') }}{% endblock %}
+{% block widget_choice_options %}{{ block('choice_widget_options') }}{% endblock %}
+{% block field_widget %}{{ block('form_widget_simple') }}{% endblock %}
+{% block field_label %}{{ block('form_label') }}{% endblock %}
+{% block field_row %}{{ block('form_row') }}{% endblock %}
+{% block field_enctype %}{{ block('form_enctype') }}{% endblock %}
+{% block field_errors %}{{ block('form_errors') }}{% endblock %}
+{% block field_rest %}{{ block('form_rest') }}{% endblock %}
+{% block field_rows %}{{ block('form_rows') }}{% endblock %}

@@ -1,0 +1,3 @@
+{% for tasa in tasas%}
+<option  value="{{tasa.id}}" {%if tasa==nombre%}selected="selected"{%endif%}>{{tasa}}</option>
+{% endfor %}

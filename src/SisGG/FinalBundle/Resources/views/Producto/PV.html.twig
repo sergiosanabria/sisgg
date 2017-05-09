@@ -1,0 +1,371 @@
+{% extends "::base.html.twig" %}
+{%block title%}Productos para la venta{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="javascript:void(0);">{%if app.request.get('tipo')==3%}Productos en stock minimo{%else%}Productos para la venta{%endif%}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+    <legend>{%if app.request.get('tipo')==3%}Productos en stock minimo{%else%}Productos para la venta{%endif%}</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+    
+        <div class="pull-right btn-group">
+            <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown">Acciones <span class="caret"></span></a>
+            <ul class="dropdown-menu" id="ul1">
+                {%if app.user.role.obtenerPermiso('mercaderia_nuevo')%}
+                <li><a title="Nueva mercaderia" href="{{path('nuevaMercaderia')}}">Nueva mercaderia</a></li>
+                {% endif %}
+                {%if app.user.role.obtenerPermiso('mercaderia_listar')%}
+                <li><a title="Lista de mercaderias" href="{{path('mercaderias')}}">Lista de mercaderias</a></li>
+                {% endif %}
+                <li class="divider"></li>
+                {%if app.user.role.obtenerPermiso('plato_nuevo')%}
+                <li><a title="Nuevo plato" href="{{path('nuevoPlato')}}">Nuevo plato</a></li>
+                {% endif %}
+                {%if app.user.role.obtenerPermiso('plato_listar')%}
+                <li><a title="Lista de platos" href="{{path('platos')}}">Lista de platos</a></li>
+                {% endif %}
+            </ul>
+            </div>
+                {%if app.user.role.obtenerPermiso('producto_imprimir')%}
+            <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Imprimir" ><i class="icon-print"></i> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a onclick="imprimirTabla(this);" target="_blank">Imprimir lista</a></li>
+                <li><a onclick="imprimirTablaCat(this);" target="_blank">Imprimir lista por categorias</a></li>
+            </ul>   
+            </div>
+                 {% endif %}
+        </div>
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne" title="Hacer clic para cerrar">
+                    Seleccione una categoria <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse">
+                    <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="input-medium search-query" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()">Buscar</button>
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a></p>
+
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>  
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr class="header">
+                    
+                    <th>Nombre</th>  
+                    <th style="display: none;">padres</th>
+                    <th>Precio de venta</th>
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Categoria</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {%if app.user.role.obtenerPermiso('plato_listar')%}
+                {% for pe in platos%}
+                <tr id="{{pe.id}}">
+                    
+                    <td>{{pe.nombre}}</td>
+                    <td style="display: none;">{{pe.catPadres}}</td>
+                    <td>{%if pe.precioVenta is defined%}{{pe.precioVenta}}{%endif%}</td>
+                    <td>{{pe.cantidad}}</td>
+                    <td title="{{pe.tasa}}">{{pe.tasa}}</td>
+                    <td>{{pe.categoria}}</td>
+
+                    <td style="text-align: center;width: fit-content" >
+                        {%if app.request.get('tipo')!=3%}
+                        <a href="#" onclick="detallesModal({{pe.id}}, '1');" title="Ver detalles {{pe.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                        {%if app.user.role.obtenerPermiso('ingrediente_nuevo')%}
+                        <a href="{{ path('nuevoIngredientePlato', { 'id': pe.id }) }}" target="_blank" title="Nuevo ingrediente {{pe.nombre}}"><i class="fa-icon-plus-sign"></i></a>
+                        {%endif%}
+                        {%if app.user.role.obtenerPermiso('plato_editar')%}
+                        <a href="{{ path('editarPlato', { 'id': pe.id }) }}" title="Editar {{pe.nombre}}"><i class="fa-icon-edit"></i></a>
+                        {%endif%}
+                        {%if app.user.role.obtenerPermiso('plato_borrar')%}
+                        <a href="#" title="Eliminar {{pe.nombre}}"  onclick="eliminarPlato({{pe.id}}, '{{pe.nombre}}');"><i class="fa-icon-trash"></i></a>
+                        {%endif%}
+                            {%endif%}
+                    </td>
+                </tr>   
+                {% endfor %}
+            {% endif %}
+            {% for pe in mercaderias%}
+                <tr id="{{pe.id}}">
+                    
+                    <td>{{pe.nombre}}</td>
+                    <td style="display: none;">{{pe.catPadres}}</td>
+                    <td>{{pe.precioVenta}}</td>
+                    <td>{{pe.cantidad}}</td>
+                    <td title="{{pe.tasa}}">{{pe.tasa}}</td>
+                    <td>{{pe.categoria}}</td>
+
+                    <td style="text-align: center;width: fit-content" >
+                        {%if app.request.get('tipo')!=3%}
+                        <a href="#" onclick="detallesModal({{pe.id}}, '0');" title="Ver detalles {{pe.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                        {%if app.user.role.obtenerPermiso('materiaPrima_editar')%}
+                        <a href="{{ path('editarMercaderia', { 'id': pe.id }) }}" title="Editar {{pe.nombre}}"><i class="fa-icon-edit"></i></a>
+                        {%endif%}
+                        {%if app.user.role.obtenerPermiso('materiaPrima_borrar')%}
+                        <a href="#" title="Eliminar {{pe.nombre}}"  onclick="eliminarMercaderia({{pe.id}}, '{{pe.nombre}}')"><i class="fa-icon-trash"></i></a>
+                        {%endif%}
+                            {%endif%}
+                    </td>
+            </tr>   
+            {% endfor %}
+            {% for pe in materias%}
+                <tr id="{{pe.id}}">
+                    
+                    <td>{{pe.nombre}}</td>
+                    <td style="display: none;">{{pe.catPadres}}</td>
+                    <td></td>
+                    <td>{{pe.cantidad}}</td>
+                    <td title="{{pe.tasa}}">{{pe.tasa}}</td>
+                    <td>{{pe.categoria}}</td>
+
+                    <td style="text-align: center;width: fit-content" >
+                        {%if app.request.get('tipo')!=3%}
+                        <a href="#" onclick="detallesModal({{pe.id}}, '0');" title="Ver detalles {{pe.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                        {%if app.user.role.obtenerPermiso('mercaderia_editar')%}
+                        <a href="{{ path('editarMercaderia', { 'id': pe.id }) }}" title="Editar {{pe.nombre}}"><i class="fa-icon-edit"></i></a>
+                        {%endif%}
+                        {%if app.user.role.obtenerPermiso('mercaderia_borrar')%}
+                        <a href="#" title="Eliminar {{pe.nombre}}"  onclick="eliminarMercaderia({{pe.id}}, '{{pe.nombre}}')"><i class="fa-icon-trash"></i></a>
+                        {%endif%}
+                            {%endif%}
+                    </td>
+            </tr>   
+            {% endfor %}
+        </table>   
+        </div>
+    </div>
+</div>
+ 
+{%endblock%}
+{%block modal%}
+<div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Detalles</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detalles">
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+<div id="eliminarPlato" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar plato</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar el plato <strong id="txtElimPlato">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarPlato" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+<div id="eliminarMercaderia" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar mercaderia</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar la mercaderia <strong id="txtElimMerca">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarMercaderia" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+{%endblock%}
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov='';         
+            
+$(document).ready(function  (){ 
+            actualizarArbol();
+         });
+
+    
+     function actualizarArbol(){
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPV')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder.gif');
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPV1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        $('#txtBuscarTabla').val(json.n);
+        $('#txtBuscarTabla').trigger('keyup');
+         
+        });
+        
+                
+    }
+    
+    function verCategoria (nodo,target){
+        var nombre = document.getElementById(nodo).text;
+        //var target = document.getElementById(nodo).target;
+        document.getElementById('txtBuscarTabla').value=nombre;
+        $('#txtBuscarTabla').trigger('keyup');
+            
+    }
+  
+   function detallesModal(id, tipo){
+        var url = "{{path('pvs')}}";
+        $('#detalles').load(url,{'id':id , 'tipo':tipo});
+        $('#verModal').modal('toggle');
+    } 
+    
+    function eliminarPlato(id,txt){
+        var url = "{{path('eliminarPlato', { 'id': '__id__', 'tipo':'1' })}}".replace(/__id__/g, id);
+        url= url.replace('amp;', '');       
+        var par= document.getElementById('txtElimPlato');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarPlato').attr('href',url);
+        $('#eliminarPlato').modal('toggle');
+    }
+
+    
+    function eliminarMercaderia(id,txt){       
+        var url = "{{path('eliminarMercaderia', { 'id': '__id__', 'tipo':'1' })}}".replace(/__id__/g, id);
+        url= url.replace('amp;', '');  
+        var par= document.getElementById('txtElimMerca');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarMercaderia').attr('href',url);
+        $('#eliminarMercaderia').modal('toggle');
+    }
+    function eliminarModalIng(id,txt){
+        
+        var url = "{{path('eliminarIngredientePlato', { 'id': '__id__' , 'tipo':'1'})}}".replace(/__id__/g, id); 
+        url= url.replace('amp;', '');  
+        var par= document.getElementById('txtElimIng');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarIng').attr('href',url);
+        $('#eliminarModalIng').modal('toggle');
+    }
+      function verFoto(ele){
+        var img = document.getElementById('fotoDetalle');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img, onPhotoEnterFullscreen, onPhotoExitFullscreen);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    
+    function onPhotoEnterFullscreen() {
+        $(this).removeClass('zoom-in').addClass('zoom-out');
+    }
+
+    function onPhotoExitFullscreen() {
+        $(this).removeClass('zoom-out').addClass('zoom-in');
+    }
+    
+    function mostrarLinkFoto(ele){
+        $('#photo-demo').removeAttr('style');
+    }
+     
+    function ocultarLinkFoto(ele){
+        $('#photo-demo').hide();
+    }
+    function verFoto(ele){
+        var img = document.getElementById('fotoDetalle');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img, onPhotoEnterFullscreen, onPhotoExitFullscreen);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    function impDetallesPlato(id, ele){
+    var url = "{{path('impDetallesPlato', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+    url= url.replace('amp;', '');
+    $(ele).attr('href',url);
+}
+function impDetallesMerca(id, ele){
+    var url = "{{path('impDetallesMerca', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+    url= url.replace('amp;', '');
+    $(ele).attr('href',url);
+}
+function imprimirTabla(ele){
+      var tabla = document.getElementById('example');
+      var rows = tabla.getElementsByTagName('tr');
+      var filas= new Array(rows.length);
+      for (var i = 1; i<rows.length ;i++){
+        filas[i-1]=rows[i].id;
+      }
+
+      var url = "{{path('impListaProducto', { 'ids': '__ids__' ,'tipo':'2','texto':'Producto para la venta', '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      $(ele).attr('href',url);
+
+  }
+  
+  function imprimirTablaCat(ele){
+      var tabla = document.getElementById('example');
+      var rows = tabla.getElementsByTagName('tr');
+      var filas= new Array(rows.length);
+      for (var i = 1; i<rows.length ;i++){
+        filas[i-1]=rows[i].id;
+      }
+
+      var url = "{{path('impListaProductoCategoria', { 'ids': '__ids__' ,'tipo':'1','texto':'Producto para la venta', '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      $(ele).attr('href',url);
+
+  }
+    </script>
+{% endblock%}

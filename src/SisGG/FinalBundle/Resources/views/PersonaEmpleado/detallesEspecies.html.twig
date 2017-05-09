@@ -1,0 +1,71 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Pagos en especies</legend>
+            <form class="form-horizontal">
+                <div class="pull-right btn-group">
+                    <a class="btn" target="_blank" onclick="imprimirRetiro('{{id}}', 'especies' ,this);"><i class="icon-print"></i></a>
+                </div>
+                    
+                  <div class="control-group">
+                    <label class="control-label">Fecha</label>
+                    <div class="controls">
+                        <input  type="datetime" disabled="disabled" value="{{esp.fecha | date("d/m/Y")}}">
+                    </div>
+                </div>   
+            <div class="control-group">
+                    <label class="control-label">Fecha de emisión</label>
+                    <div class="controls">
+                        <input  type="datetime" disabled="disabled" value="{{esp.fechaEmision | date("d/m/Y g:ia")}}">
+                    </div>
+                </div>  
+                    <div class="control-group">
+                    <label class="control-label">Descripción</label>
+                    <div class="controls">
+                        <input  type="datetime" disabled="disabled" value="{{esp.descripcion}}">
+                    </div>
+                </div>  
+               
+                    {%if items | length > 0%}
+                    <h3>Productos</h3>
+                            <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                                <thead class="header">
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>UM</th>
+                                <th>Precio unitario</th>
+                                <th>Total</th>
+                                </thead>
+                                {%set total=0.00%}
+                                {%for i in items%}
+                                <tr>
+                                    <td>{{i.producto}}</td>
+                                    <td>{{i.cantidad}}</td>
+                                    <td>{{i.tasa}}</td>
+                                    <td>{{i.precioCosto}}</td>
+                                    <td>{{i.total}}</td>
+                                </tr>
+                                {%set total=total+i.total %}
+                                {%endfor%}
+                                <tfoot>
+                                <td style="text-align: right;" colspan="4"><b>TOTAL</b></td>
+                                <td style="text-align: center;">{{total}}</td>
+                                </tfoot>
+                            </table>
+                    <div class="control-group">
+                        <label class="control-label" >Descuento</label>
+                        <div class="controls">
+                            <div class="input-prepend input-append"><span class="add-on">%</span>
+                                <input class="" type="text" pattern="[0-9]*[.]?[0-9]+" autocomplete="off" onkeypress="return isNumberKey(this,event);" id="sisgg_finalbundle_especiesempleadotype_monto" name="sisgg_finalbundle_especiesempleadotype[monto]" readonly="readonly" disabled="disabled" required="required" dir="rtl" value="{{esp.descuento}}">
+                            </div>
+                            </div>
+                    </div>
+                    {{ form_row(form.monto) }} 
+                   {%else%}
+                    <h3>No tiene productos registrados</h3>
+                    {%endif%}
+                </form>
+            </div>
+        </div>
+    </div>

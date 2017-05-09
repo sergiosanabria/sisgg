@@ -1,0 +1,53 @@
+ <table class="table table-bordered table-hover" id="tablaConfig">
+          <thead class="header">
+            <th>Dato</th>
+            <th>Incluir</th>
+            <th>Color</th>
+            <th><b>Negrita</b></th>
+            <th><i>Cursiva</i></th>
+          </thead>
+          <tbody>
+            <tr>
+                <td>Categoría</td>
+                <td><input type="checkbox" name="check1" onchange="valueChecked(this);" id="check1" {%if config[0].incluye ==1%} checked="checked"{%endif%}></td>
+                <td><input type="color" id="color1" name="color1"  value="{{config[0].color}}" ></td>
+                <td><input type="checkbox" id="negrita1" onchange="valueChecked(this);"  name="negrita1"{%if config[0].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva1" onchange="valueChecked(this);" name="cursiva1" {%if config[0].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            
+            <tr style="display: none;">
+                <td>Código QR</td>
+                <td><input  type="checkbox" id="check2" onchange="valueChecked(this);"  name="check2"{%if config[1].incluye ==1%} checked="checked"{%endif%} ></td>
+                <td></td><td></td><td></td> 
+            </tr>
+            <tr>
+                <td>Ingredientes</td>
+                <td><input type="checkbox" id="check3" onchange="valueChecked(this);"  name="check3" value="{{config[2].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color3"  name="color3" value="{{config[2].color}}"></td>
+                <td><input type="checkbox" id="negrita3" onchange="valueChecked(this);"  name="negrita3"  {%if config[2].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva3" onchange="valueChecked(this);"  name="cursiva3" {%if config[2].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            <tr>
+                <td>Nombre</td>
+                <td><input type="checkbox" id="check4" onchange="valueChecked(this);"  name="check4" value="{{config[3].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color4" name="color4" value="{{config[3].color}}"></td>
+                <td><input type="checkbox" id="negrita4" onchange="valueChecked(this);"  name="negrita4" {%if config[3].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva4" onchange="valueChecked(this);"  name="cursiva4" {%if config[3].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            <tr>
+                <td>Precio de venta</td>
+                <td><input type="checkbox" id="check5" onchange="valueChecked(this);"  name="check5" value="{{config[4].incluye}}" checked="checked"></td>
+                <td><input type="color" id="color5" name="color5" value="{{config[4].color}}"></td>
+                <td><input type="checkbox" id="negrita5" onchange="valueChecked(this);"  name="negrita5"  {%if config[4].negrita ==1%} checked="checked"{%endif%}></td>
+                <td><input type="checkbox" id="cursiva5" onchange="valueChecked(this);"  name="cursiva5" {%if config[4].cursiva ==1%} checked="checked"{%endif%}></td>
+            </tr>
+            {#<tr>
+                <td>Unidad de medida</td>
+                <td><input type="checkbox" id="check6" checked="checked"></td>
+                <td><input type="color" id="color6"></td>
+                <td><input type="checkbox" id="negrita6" checked="checked"></td>
+                <td><input type="checkbox" id="cursiva6" checked="checked"></td>
+            </tr>#}
+          </tbody>
+         
+      </table>

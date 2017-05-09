@@ -1,0 +1,286 @@
+{% extends "::base.html.twig" %}
+{%block title%}Platos{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pvs')}}">Productos para la venta</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Platos</a>
+</li>
+{%endblock%}
+{% block content %}
+
+<div id="dias"  class="center" style="height:400px" ></div>
+<div id="semanas"  class="center" style="height:400px" ></div>
+<div id="meses"  class="center" style="height:400px" ></div>
+
+{%endblock%}
+{% block javascripts %}
+
+    {{parent()}}
+
+<script>
+    $(document).ready(function() {
+        chartsDias();
+        //chartsSemanas();
+        chartsMeses();
+    });
+
+
+
+    function chartsDias() {
+        var n='{{ json }}';
+             var data=convertirJSON(n);
+
+            //data=$().html(data);;
+            alert(data);
+        if ($("#dias").length)
+        {
+            var compras = [];
+            var elTick=[];
+           {%set it=0%}
+            {%for i in dias%}
+               
+                    compras[{{it}}]=[{{it}}, {{i.total}}];
+                    elTick[{{it}}]=[{{it}}, '{{i.fecha|date("d/m/y")}}'];
+                {%set it=it+1%}
+            {% endfor %}
+            var plot = $.plot($("#dias"),
+                    //date es un arrar[] de array[], donde el primero es la lista de elementos, y el segundo tiene en la pos 0 el valor de x y en la 1 el valor de y
+                            [{data: compras, label: "sin(x)/x"}/*, {data: cos, label: "cos(x)"}*/], {
+                         series: {
+                            lines: {show: true,
+                                lineWidth: 2,
+                            },
+                            points: {show: true},
+                            shadowSize: 2
+                        },
+                        xaxis: {
+				ticks: elTick
+                                
+			},
+                        grid: {hoverable: true,
+                            clickable: true,
+                            tickColor: "#dddddd",
+                            borderWidth: 0
+                        },
+                        yaxis: {min: 0, max: 1500}, //Valores minimos y maximos de los valores -y o +y
+                        colors: ["#FA5833", "#2FABE9"]//Colores de cada linea
+                    });
+
+                   
+          
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#dfeffc',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#semanas").bind("plothover", function(event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                showTooltip(item.pageX, item.pageY,
+                                        item.series.label + " de " + x + " = " + y);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+
+
+
+                    $("#semanas").bind("plotclick", function(event, pos, item) {
+                        alert();
+                        if (item) {
+                            $("#clickdata").text("You clicked point " + pos.y.toFixed(2) + " in " + item.series.label + ".");
+                            plot.highlight(item.series, item.datapoint);
+                        }
+                    });
+            }
+         }   
+         
+    function chartsSemanas() {
+
+        if ($("#semanas").length)
+        {
+            var compras = [];
+            var elTick=[];
+           {%set it=0%}
+            {%for i in semanas%}
+               
+                    compras[{{it}}]=[{{it}}, {{i.total}}];
+                    elTick[{{it}}]=[{{it}}, '{{i.fecha }}'];
+                {%set it=it+1%}
+            {% endfor %}
+            
+            var plot = $.plot($("#semanas"),
+                    //date es un arrar[] de array[], donde el primero es la lista de elementos, y el segundo tiene en la pos 0 el valor de x y en la 1 el valor de y
+                            [{data: compras, label: "sin(x)/x"}/*, {data: cos, label: "cos(x)"}*/], {
+                        series: {
+                            lines: {show: true,
+                                lineWidth: 2,
+                            },
+                            points: {show: true},
+                            shadowSize: 2
+                        },
+                        xaxis: {
+				ticks: elTick
+                                
+			},
+                        grid: {hoverable: true,
+                            clickable: true,
+                            tickColor: "#dddddd",
+                            borderWidth: 0
+                        },
+                        yaxis: {min: 0, max: 8000}, //Valores minimos y maximos de los valores -y o +y
+                        colors: ["#FA5833", "#2FABE9"]//Colores de cada linea
+                    });
+
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#dfeffc',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#semanas").bind("plothover", function(event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                showTooltip(item.pageX, item.pageY,
+                                        item.series.label + " de " + x + " = " + y);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+
+
+
+                    $("#semanas").bind("plotclick", function(event, pos, item) {
+                        
+                        if (item) {
+                            $("#clickdata").text("You clicked point " + pos.y.toFixed(2) + " in " + item.series.label + ".");
+                            plot.highlight(item.series, item.datapoint);
+                        }
+                    });
+                }
+            }
+ function chartsMeses() {
+
+        if ($("#meses").length)
+        {
+            var compras;
+            var elTick;
+           
+            
+            var plot = $.plot($("#meses"),
+                    //date es un arrar[] de array[], donde el primero es la lista de elementos, y el segundo tiene en la pos 0 el valor de x y en la 1 el valor de y
+                            [{data: compras, label: "sin(x)/x"}/*, {data: cos, label: "cos(x)"}*/], {
+                        series: {
+                            lines: {show: true,
+                                lineWidth: 2,
+                            },
+                            points: {show: true},
+                            shadowSize: 2
+                        },
+                        xaxis: {
+				ticks: elTick
+                                
+			},
+                        grid: {hoverable: true,
+                            clickable: true,
+                            tickColor: "#dddddd",
+                            borderWidth: 0
+                        },
+                        yaxis: {min: 0, max: 8000}, //Valores minimos y maximos de los valores -y o +y
+                        colors: ["#FA5833", "#2FABE9"]//Colores de cada linea
+                    });
+
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#dfeffc',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#meses").bind("plothover", function(event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                showTooltip(item.pageX, item.pageY,
+                                        item.series.label + " de " + x + " = " + y);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+
+
+
+                    $("#meses").bind("plotclick", function(event, pos, item) {
+                        if (item) {
+                            $("#clickdata").text("You clicked point " + pos.y.toFixed(2) + " in " + item.series.label + ".");
+                            plot.highlight(item.series, item.datapoint);
+                        }
+                    });
+                }
+            }
+    </script>
+{% endblock%}

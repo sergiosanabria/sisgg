@@ -1,0 +1,256 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar empresa {%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<span class="divider">/</span>
+<li>
+    <a href="#">Editar servicio</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Editar empresa </legend>
+        <form action="{{path('modificarEmpresa')}}" id="formEmpresa" method="post" class="form-horizontal" {{ form_enctype(form) }}>
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        <div class="row-fluid sortable ui-sortable">
+<div class="box span6">
+        <div class="box-header">
+                <h2><i class="icon-th"></i><span class="break"></span>Datos principales</h2>
+                <div class="box-icon">
+                        <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                </div>
+        </div>
+        <div class="box-content">
+                    <p>
+                    {{ form_row(form.nombre) }}
+                    {{ form_row(form.descripcion) }}
+                    {{ form_row(form.slogan) }}
+                    {{ form_row(form.cuit) }}
+                    {{ form_row(form.condicionIva) }}
+                    {{ form_row(form.inicioAct) }}
+                    {{ form_row(form.email) }} 
+                    {{form_row(form.contrasenia)}}
+                    {{form_row(form.edad)}}
+                    {{form_row(form.ip)}}
+<div class="control-group">
+    <label class="control-label">Foto de plato</label>
+    <div class="controls">
+        <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" title="Click para desplegar/replegar foto" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                     Agregar imagen<i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                 <div onmouseover="mostrarLinkFoto(this);" onmouseout="ocultarLinkFoto(this);" >
+                    {{ form_widget(imagen.file) }}
+                    {{ form_widget(imagen.name) }} 
+                    <button type="button" id="btnFoto" style="display: none" class="btn" onclick="verFoto();" title="Mostrar foto en patalla completa"><i class="fa-icon-external-link"></i></button>      
+                   <a href="#" class="thumbnail span8" title="Cambiar Foto" onclick="$('input[id={{imagen.file.get('id')}}]').click();"><img id="imagen" data-src="holder.js/180x160" {%if pathFoto!=null%} src="{{asset('uploads/imagenes/')}}{{pathFoto}}" {%else%} src="{{asset('images/logo.jpg')}}" {%endif%}/></a>     
+                </div>
+            </div>
+        </div>  
+    </div>
+</div> 
+         
+
+                    </p>                  
+</div>
+</div><!--/span-->
+
+<div class="box span6">
+        <div class="box-header">
+                <h2><i class="icon-th"></i><span class="break"></span>Dirección y telefonos</h2>
+                <div class="box-icon">
+                        <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                </div>
+        </div>
+        <div class="box-content">
+<p>
+    <h3>Dirección</h3>
+
+    <div class="control-group">
+        <label class="control-label">Provincia</label>
+        <div class="controls">
+             <div id="reemplazarProv" class="provinciasR" name="reemplazarProv">
+                    <select id="provincias" name="provincias" class="provincias" onClick="cambio();">
+                    {% for provincia in provincias%}
+                            <option id="{{provincia.id}}" name="{{provincia.id}}" value="{{provincia}}">
+                            {{provincia}} 
+                                </option>
+
+                    {% endfor %}    
+                            </select> <a href="#prov" role="button" class="btn" data-toggle="modal">...</a>
+                   </div>
+        </div>
+    </div>
+<div class="control-group">
+        <label class="control-label">Ciudad</label>
+        <div class="controls">
+            <div id="reemplazarCiu" name="reemplazarCiu">
+                        {{ form_widget(form.direccion.ciudad) }}  
+                   </div>
+        </div>
+    </div>     
+                    {{ form_row(form.direccion.calle) }}
+                    {{ form_row(form.direccion.numero) }}
+                    {{ form_row(form.direccion.manzana) }}
+                    {{ form_row(form.direccion.edificio) }}
+                    {{ form_row(form.direccion.escalera) }}
+                    {{ form_row(form.direccion.piso) }}
+                    {{ form_row(form.direccion.departamento) }}
+<h3>Teléfonos</h3>
+                    
+                            <table class="table table-condensed">
+                                <thead class="header">
+                                    <th>Nacional</th>
+                                    <th>Caracteristica</th>
+                                    <th>Número</th>
+                                    <th>Acciones</th>
+                                </thead>
+                                    {{form_widget(form.telefonos)}}    
+                            </table> 
+</p>               
+</div>
+</div><!--/span-->
+</div>
+                <div style="display: none;">  {{ form_rest(form) }}</div>
+       <div class="form-actions">
+            <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+            <a href="{{path('index')}}" type="button" class="btn">Cancelar</a>
+        </div>   
+        </form>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+var clase ='sisgg_finalbundle_empresatype_';
+$(document).ready(function  (){
+    
+    $('#'+clase+'contrasenia').attr('type', 'password');
+    var papa = document.getElementById(clase+'contrasenia').parentNode ;
+    $(papa).append('<button type="button" class="btn" abierto="1" id="muestraContra" title="Ver contraseña"><i class="fa-icon-eye-open"></i></button>');
+    $('#muestraContra').click(function (ev){
+       var abierto = $(this).attr('abierto');
+       if (abierto=="1"){
+           $('#'+clase+'contrasenia').attr('type', 'text');
+           $(this).attr('title', 'Ocultar contraseña');
+           $(this).attr('abierto', '0');
+           $(this.firstChild).removeClass("fa-icon-eye-open").addClass("fa-icon-eye-close");
+       }else{
+           $('#'+clase+'contrasenia').attr('type', 'password');
+           $(this).attr('title', 'Ver contraseña');
+           $(this).attr('abierto', '1');
+           $(this.firstChild).removeClass("fa-icon-eye-close").addClass("fa-icon-eye-open");
+       }
+    });
+    var indexCiudad= $('#sisgg_finalbundle_empresatype_direccion_ciudad').val();
+    $('#reemplazarCiu').load("{{ path('ciudadesprovincia')}}",{'tipo':'empresatype','id':{{idP}}}); 
+                var combo=document.getElementById('provincias');
+                $('#{{idP}}').attr('selected', 'selected');
+    $('#sisgg_finalbundle_empresatype_ciudad').val(indexCiudad);
+                $('#provincias').change(function() {
+                var posicion=document.getElementById('provincias').options.selectedIndex; //posicion
+                $('#reemplazarCiu').load("{{ path('ciudadesprovincia')}}",{'tipo':'empresatype','id':document.getElementById('provincias').options[posicion].id});
+                });  
+
+ });
+ function cambioResp(ele){
+     if ($(ele).val()==true){
+         $('#'+clase+'iva').attr('disabled', false);
+         $('#'+clase+'iva').attr('required', true);
+     }else{
+         $('#'+clase+'iva').attr('disabled', true);
+         $('#'+clase+'iva').attr('required', false);
+     }
+ }
+ 
+   function handleFileSelect(evt) {
+    var files = evt.target.files; 
+    for (var i = 0, f; f = files[i]; i++) {
+      if (!f.type.match('image.*')) {
+        continue;
+      }
+
+      var reader = new FileReader();
+
+      reader.onload = (function(theFile) {
+        return function(e) {
+            document.getElementById('imagen').src = e.target.result;
+            var url = "{{path('modificarEmpresa', {'tipo': '__tipo__' })}}".replace(/__tipo__/g, 1);
+            url= url.replace('amp;', ''); 
+            $("#formEmpresa").attr("action", url);
+        };
+      })(f);
+      reader.readAsDataURL(f);
+    }
+  }
+  
+    document.getElementById('{{imagen.file.get('id')}}').addEventListener('change', handleFileSelect, false);
+    
+    function verFoto(ele){
+        var img = document.getElementById('imagen');
+        if (BigScreen.element !== img) {
+                BigScreen.request(img);
+        }
+        else {
+                BigScreen.exit();
+        }
+    }
+    
+    
+    function mostrarLinkFoto(ele){
+        $('#btnFoto').removeAttr('style');
+    }
+     
+    function ocultarLinkFoto(ele){
+        $('#btnFoto').hide();
+    }
+    
+     function cargarProv (){  
+            $('#provinciasR').load("{{ path('altaPinC')}}",{'nomProv':document.getElementById('nomProv').value},function() {         
+            }); 
+            $('.provincias').load("{{ path('provCombo')}}",function() {
+                $('#a2').modal('hide');
+            });
+            actualizarCiudad();
+            }
+            
+            function cargarCiudad (){   
+               var prov=$('#sisgg_finalbundle_ciudadtype_provincia').val();
+              // alert(prov+'-'+document.getElementById('nomCiu').value+'-'+document.getElementById('codPos').value);
+            $('#errorCiu').load("{{ path('altaCiuErr')}}",{'nomCiu':document.getElementById('nomCiu').value, 
+                'codPos':document.getElementById('codPos').value, 
+                'prov': prov  
+            },function() {
+                $('#nomCiu').val('');
+                $('#codPos').val('');
+                actualizarCiudad();
+                }); 
+            }
+            
+        function actualizarCiudad(){
+            var posicion=document.getElementById('provincias').options.selectedIndex; //posicion
+            $('#reemplazarCiu').load("{{ path('ciudadesprovincia')}}",{'tipo':'empresatype','id':document.getElementById('provincias').options[posicion].id});
+            $('#nomCiu').val('');
+            $('#codPos').val('');
+            $('#nomProv').val('');
+        }
+            
+ </script>
+{%endblock%}

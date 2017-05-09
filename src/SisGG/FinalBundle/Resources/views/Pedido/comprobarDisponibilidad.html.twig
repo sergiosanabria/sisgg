@@ -1,0 +1,11 @@
+Al parecer no se dispone de cantidad suficiente para la elaboración.
+Detalle:
+{%for a in arg%}
+    <br>
+    1-
+    {%for ingrediente in a%}
+        {{ingrediente.productoProduccion}}
+        {{ingrediente.tasa}}
+        {{ingrediente.cantidad}}
+     {%endfor%}   
+{%endfor%}

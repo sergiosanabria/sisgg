@@ -1,0 +1,151 @@
+{% extends "::base.html_2.twig" %}
+{% block css %}
+{{parent()}}
+{% endblock %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a>
+</li>
+{%endblock%}
+{% block opciones %}
+{{parent()}}
+
+
+
+
+{% endblock %}
+{% block content %}	
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <div class="hero-unit" style="padding: 40px; ">
+                <h1 style="font-size: 55px;">Bienvenidos a SisGG<br>Sistema de Gestión Gastronómica <img width="60px" height="60px" src="{{ asset('favicon.ico')}}"/></h1>
+            <p>
+                Es una aplicación orientada a mejorar todas las operaciones diarias de su restaurante, bar o cantina
+                aplicando las mejores prácticas en la gestión de operaciones administrativas propias de una empresa gastronómica.           
+            </p>
+            {#<p><a class="btn btn-primary btn-large">Learn more »</a></p>#}
+          </div>
+    <div class="sortable row-fluid ui-sortable">
+		{%if app.user.role.obtenerPermiso('compra_listar')%}		
+                <a class="quick-button span2" href="{{path('compras')}}">
+                        <i class="fa-icon-shopping-cart"></i>
+                        <p>Compras</p>
+                </a>
+                 {%endif%}
+                {%if app.user.role.obtenerPermiso('venta_listar')%}
+                <a class="quick-button span2" href="{{path('ventas')}}">
+                        <i class="fa-icon-barcode"></i>
+                        <p>Ventas</p>
+                </a>
+                 {%endif%}
+            {%if app.user.role.obtenerPermiso('proveedor_editar')%}
+                <a class="quick-button span2" href="{{path('proveedores')}}" >
+                        <i class="fa-icon-truck"></i>
+                        <p>Proveedores</p>
+                </a>
+             {%endif%}
+            {%if app.user.role.obtenerPermiso('cliente_listar')%}
+            <a class="quick-button span2"  href="{{path('clientes')}}" >
+                        <i class="fa-icon-user"></i><i class="fa-icon-money"></i>  
+                        <p>Clientes</p>
+                </a>
+             {%endif%}
+            {%if app.user.role.obtenerPermiso('pago_listar')%}
+            <a class="quick-button span2" href="{{path('pagos')}}">
+                        <i class="fa-icon-circle-arrow-down"></i>
+                        <i class="fa-icon-money"></i>  
+                        <p>Pagos</p>
+                </a>
+             {%endif%}
+            {%if app.user.role.obtenerPermiso('caja_apertura_y_cierre')%}
+                <a class="quick-button span2" href="{{path('caja')}}">
+                        <i class="fa-icon-inbox"></i> 
+                        <i class="fa-icon-money"></i>                        
+                        <p>Caja</p>
+                </a>
+             {%endif%}
+            
+               		
+        </div>
+                <div><br></div>
+                <div class="sortable row-fluid ui-sortable">
+                    
+                  
+                         
+                        {%if app.user.role.obtenerPermiso('usuario_listar')%}
+                     <a class="quick-button span2" href="{{path('usuarios')}}">
+                        <i class="fa-icon-group"></i>
+                        <p>Usuarios</p>
+                </a>
+                         {%endif%}
+                        {%if app.user.role.obtenerPermiso('empleado_listar')%}
+          <a class="quick-button span2" href="{{path('empleados')}}">
+                        <i class="fa-icon-user"></i>
+                        <p>Empleados</p>
+                </a>
+                         {%endif%}
+                        {%if app.user.role.obtenerPermiso('agenda_gestionar_agenda')%}
+          <a class="quick-button span2" href="{{path('agenda')}}">
+                        <i class="fa-icon-calendar"></i>
+                        <p>Agenda</p>
+                </a>
+                         {%endif%}
+                        {%if app.user.role.obtenerPermiso('chat_gestionar_chat')%}
+                <a class="quick-button span2" href="{{path('chat')}}">
+                        <i class="fa-icon-comment"></i>
+                        <p>Chat</p>
+                </a>
+                        {%endif%}
+                    {%if app.user.role.obtenerPermiso('backup_listar')%}
+                <a class="quick-button span2" href="{{path('backups')}}">
+                        <i class="fa-icon-hdd"></i>
+                        <p>Back-up</p>
+                </a>
+                        {%endif%}
+                    {%if app.user.role.obtenerPermiso('auditoria_listar')%}
+                <a class="quick-button span2" href="{{path('auditorias')}}">
+                        <i class="fa-icon-list-ol"></i>
+                        <p>Auditorias</p>
+                </a>
+                        {%endif%}
+                </div>
+        </div>
+    </div>
+</div> 
+{# <img src="{{ qrcode_url("http://192.168.1.22/SisGG/web/app.php/redireccionar?url=http://192.168.1.140/SisGG/web/app.php/editarPedidoMostrador?id=86") }}" />#}
+{% endblock %}
+{% block modal %}	
+{{parent()}}
+<div class="modal hide fade" id="redirecciones">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Atención!!!</h3>
+    </div>
+    <div id="dataRedireccionar" class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Ignorar</a>
+        <a class="btn btn-primary" id='ir'>Ir</a>
+    </div>
+</div>
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+<script type='text/javascript'>
+    $(document).ready(function() {
+        setInterval(function() {
+            $.getJSON("{{path('obtener_redireccion')}}").done(function(json) {
+                if (json.length > 0){
+                    $("#ir").attr("href", json[ 0 ].url);
+                    $("#dataRedireccionar").html("El usuario "+json[0].usuario+" quiere que veas lo siguiente.");
+                    $("#redirecciones").modal("show");
+                }else{
+                    
+                }
+            });
+        }, 3000);
+    });
+    </script>    
+{%endblock%}

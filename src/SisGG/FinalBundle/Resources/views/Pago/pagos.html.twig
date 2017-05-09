@@ -1,0 +1,959 @@
+{% extends "::base.html.twig" %}
+{%block title%}Pagos{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Pagos</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Pagos</legend>
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+            <form target="_blank" method="post"id="formImp" >
+                {%if app.user.role.obtenerPermiso('compra_nuevo')%}
+                <a  href="#" onclick="nuevaCompraEmpresa();" title="Nueva registro de compra"class="btn"><i class="icon-plus-sign"></i></a>
+                {% endif %}
+                {%if app.user.role.obtenerPermiso('compra_listar')%}
+                <a title="Ver lista de compras" href="{{path('compras')}}" class="btn"><i class="fa-icon-list"></i></a>
+                {% endif %}
+                <input type="hidden" name="imgSRC" id="imgSRC">
+                <input type="hidden" name="ids" id="ids">
+                {%if app.user.role.obtenerPermiso('pago_imprimir')%}
+                <button class="btn" title="Imprime lista de pagos" type="button" onclick="imprimirTabla(this);"><i class="icon-print"></i></button>
+                {% endif %}
+            </form>
+        </div>
+        <div><br> <br></div>
+        <div>
+        <div>
+        <div class="accordion" id="acordion">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#acordion" href="#collapseOne">
+               Buscar por fechas
+              </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse">
+              <div class="accordion-inner">
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#1B" data-toggle="tab">Por los últimos </a>
+                        </li>
+                        <li>
+                            <a href="#2B" data-toggle="tab">Entre dos fechas</a>
+                        </li>
+                        <li>
+                            <a href="#3B" data-toggle="tab">Por periodo</a>
+                        </li>
+                    </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active"  id="1B">
+                                
+                                 <div class="input-append">
+                                <input class="" type="number" autocomplete="off" min="0" onkeypress="return isNumberKey(this,event);" id="1BTiempo"  placeholder="##">
+                                <select id="1BCombo">
+                                    <option value="1">Días</option>
+                                    <option value="2">Semanas</option>
+                                    <option value="3">Meses</option>
+                                    <option value="4">Años</option>
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="buscar1()">Buscar  <i class="fa-icon-search"></i></button>    
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="2B"> 
+                                Desde
+                                <input type="text" id="2BFecha1"  value="{{'now'| date('d/m/Y')}}" class="datepicker">
+                                Hasta
+                                <div class="input-append">
+                                    <input type="text" id="2BFecha2" value="{{'now'| date('d/m/Y')}}"  class="datepicker" >
+                                
+                                    <button type="button" class="btn btn-primary" onclick="buscar2()">Buscar  <i class="fa-icon-search"></i></button>
+                                 </div>
+                            </div>
+                            <div class="tab-pane"  id="3B">
+                                <div class="input-append">
+                                <select id="3BCombo">
+                                    <option value="0" title="Busca por la fecha exacta">Fecha exacta</option>
+                                    <option value="1" title="Busca todos hasta la fecha establecida">Hasta</option>
+                                    <option value="2" title="Busca todos desde la fecha establecida, hasta el dia de hoy">Desde</option>
+                                </select>
+                               
+                                <input type="text" id="3BFecha1"  value="{{'now'| date('d/m/Y')}}" class="datepicker">
+                                <button type="button" class="btn btn-primary" onclick="buscar3()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>
+                                    <br>
+                               <div class="input-append">
+                                <select id="4BCombo">
+                                    <option value="0" title="Busca solo por años">Buscar sólo por años</option>
+                                    <option value="1">Enero</option><option value="2">Febrero</option>
+                                    <option value="3">Marzo</option><option value="4">Abril</option>
+                                    <option value="5">Mayo</option><option value="6">Junio</option>
+                                    <option value="7">Julio</option><option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                </select>
+                                <input class=""  value="{{'now'| date('Y')}}" type="number" autocomplete="off"  min="0" onkeypress="return isNumberKey(this,event);" id="4BAño"  placeholder="Ej. 2013">
+                                <button type="button" class="btn btn-primary" onclick="buscar4()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>     
+                            </div>
+                        </div>
+                </div>  
+              </div>
+            </div>
+          </div>
+        </div>
+                 <div class="accordion" id="acordion2">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#acordion2" href="#collapseDOS">
+               Gráficos de pagos
+              </a>
+            </div>
+            <div id="collapseDOS" class="accordion-body collapse">
+              <div class="accordion-inner">
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#1E" data-toggle="tab">Compras totales</a>
+                        </li>
+                        <li>
+                            <a href="#2E" data-toggle="tab">Comparar anual y mensualmente</a>
+                        </li>
+                        
+                    </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane graf active"  id="1E">
+                                Agrupados por
+                                 <div class="input-append">
+                                <select id="1ECombo">
+                                    <option value="1">Días</option>
+                                    <option value="2">Semanas</option>
+                                    <option value="3">Meses</option>
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="graficoDias();">Graficar  <i class="fa-icon-bar-chart"></i></button>    
+                                </div>
+                            </div>
+                            <div class="tab-pane graf"  id="2E">
+                                Comparar los años: 
+                                 <div class="input-append">
+                                     <label></label>
+                                <input class=""  value="{{'now'| date('Y')}}" type="number" autocomplete="off"  min="0" onkeypress="return isNumberKey(this,event);" id="año1_1"  placeholder="Ej. 2013">     
+                                <input class=""  value="{{'now'| date('Y')}}" type="number" autocomplete="off"  min="0" onkeypress="return isNumberKey(this,event);" id="año2_1"  placeholder="Ej. 2013">     
+                               
+                                <button type="button" class="btn btn-primary" onclick="graficoComparar();">Graficar  <i class="fa-icon-bar-chart"></i></button>    
+                                </div>
+                            </div>
+                            
+                        </div>
+                </div>
+                      <div class="row-fluid sortable">
+                        <div class="box span9" ontablet="span9" ondesktop="span9">
+                           <div class="box-header">
+                               <h2><i class="fa-icon-bar-chart"></i><span class="break"></span>Gráfico de compras</h2>
+                                   <div class="box-icon">
+                                           <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                                   </div>
+                           </div>
+                           <div class="box-content">
+                                <div id="grafico" class="center" style="height:400px"></div>
+
+                           </div>
+                       </div>
+                        <div class="box span3" ontablet="span3" ondesktop="span3">
+                           <div class="box-header">
+                               <h2><i class="fa-icon-list-alt"></i><span class="break"></span>Tabla de compras</h2>
+                                   <div class="box-icon">
+                                           <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                                   </div>
+                           </div>
+                                <div class="box-content" style="overflow-y: scroll; max-height: 400px;">
+                                <table class="table table-bordered table-hover"  id="tblGrafico">
+                                    <thead class="header">
+                                        <th>Fecha</th>
+                                        <th style="text-align: center">Totales </th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered table-hover"  id="tblCompara">
+                                    <thead>
+                                        <th>Fecha</th>
+                                        <th bgcolor="#FA5833" id="titulo1" style="text-align: center"></th>
+                                        <th bgcolor="#2FABE9" id="titulo2" style="text-align: center"></th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                           </div>
+                       </div>
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>        
+        </div>    
+            <div class="pull-left">
+                <button class="btn" type="button" onclick="restablecer();">Restablecer tabla <i class="fa-icon-refresh"></i></button>
+            </div>
+        </div>
+            <div class="pull-right">Total <div class="input-prepend input-append">
+                <span class="add-on">$</span>
+                <input class="" value="{{total}}" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                       id="totalCompras" readonly="readonly"></div> 
+          </div> 
+            <div><br> <br></div>
+            <div id="divTabla">
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th title="Mostrar datos"></th>
+                    <th id="primeraCol">Fecha (aaaa/mm/dd)</th>
+                    <th>Monto</th>
+                    <th>Tipo de pago</th>
+                     <th >Aclaración</th>
+                     <th>Relación</th>
+                     <th >Fecha y hora de registro</th>
+                     <th >Salida de caja</th>
+                    <th style="text-align: center">Acciones</th>
+                    <th style="display: none" >Datos</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+             <tr id="{{r.id}}">
+                 <td>{%if r.valores is defined and r.valores | length >0%} <a href="#" title='Mostrar Datos' onclick="detalles('{{r.id}}',this);"><i class="icon icon-chevron-right"></i></a>{%endif%}</td>
+                <td >{{r.fecha|date("Y/m/d")}}<span style="display: none;">{{r.fechaEmision | date("H:i:s")}}</span></td>
+                <td>{{r.importe}}</td>
+                <td>{{r.tipoCobro}}</td>
+                <td>{{r.aclaracion}}</td>
+                {%if r.facturaServicio%}<td title="Factura de servicio">{{r.facturaServicio.serie}} - {{r.facturaServicio.numero}}</td>{%elseif r.compra%}<td title="Factura de compra">{{r.compra.serie}} - {{r.compra.numero}}</td>{%elseif r.contado%}<td title="DNI del empleado al que se le realizó el pago">{{r.contado.cuenta.empleado.dni}} </td>{%endif%}
+                <td>{{r.fechaEmision|date("d/m/Y H:i")}}</td>
+                <td style="text-align: center;width: fit-content;">{%if r.salida%}<span style="display: none;">salida</span> <i class="fa-icon-ok"></i>{%else%}<span style="display: none;">no salida</span><i class="fa-icon-remove"></i>{%endif%}</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if app.user.role.obtenerPermiso('pago_registrar_salidad_de_caja')%}
+                        {%if r.tipoCobro == 'Efectivo no registrable'%}<a href="#" onclick="registrarPago('{{r.id}}');" title="Registrar pago en caja"><i class="fa-icon-money"></i></a>{%endif%}
+                    {%endif%}
+                    {%if r.facturaServicio%}<a href="#" onclick="detallesModalFS('{{r.facturaServicio.id}}');" title="Ver detalles de factura de servicio"><i class="fa-icon-list-alt"></i></a>{%elseif r.compra%}
+                    <a href="#" onclick="detallesModalCompra('{{r.compra.id}}');" title="Ver detalles de factura de compra"><i class="fa-icon-list-alt"></i></a>
+                    {%elseif r.contado%}
+                        <a href="{{path('verDetallesEmpleado', {'id':r.contado.cuenta.empleado.id})}}" title="Ver detalles y acciones de cobro y pago del empleado"><i class="fa-icon-list-alt"></i></a>
+                    {%endif%}
+                    {#{%if r.valores is defined and r.valores | length >0%}  
+                            <a title="Mostrar detalles de tipo de pago." href="#" id="btn{{r.id}}" onclick="pop('{{r.id}}', this);"><i class="fa-icon-eye-open"></i></a>        
+                         {%endif%} #}  
+                </td>
+                <td style="display: none;" class="datos"> 
+                    {%if r.valores is defined and r.valores | length >0%} 
+                        {%for v in r.valores%}
+                        <span class="span2"><strong>{{v.campo.nombre}}</strong>:<br> {{v.valor}} 
+                        </span>
+                        {%endfor%}
+                    {%endif%}   
+                    </td> 
+                
+            </tr>   
+            {% endfor %}
+        </table>
+        </div>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+ {%block modal%}      
+ <div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  <div class="modal-body">
+      <div id="detalles">
+      </div>         
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+<div id="modalRegistrar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Registrar pago en caja</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detallesRegistrar">
+      </div>         
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" id="btnRegistrar" type="button">Aceptar</button>
+      <button class="btn" data-dismiss="modal" type="button" aria-hidden="true">Cancelar</button>
+  </div>
+</div>
+
+{% endblock %}
+        
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+function eliminarModal(id,txt){
+        
+        var url = "{{path('eliminarMP', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElim');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminar').attr('href',url);
+        $('#eliminarModal').modal('toggle');
+    }
+    
+    function detalles(id,ele){
+            if ($(ele).attr("class")=='expanded'){
+                $(ele).html("<i class='icon icon-chevron-right'></i>");
+                $(ele).removeAttr("class");
+                $(ele).attr("title","Mostrar Datos");    
+                $("#"+id+"detalles").remove();
+            }else{
+                $(ele).html("<i class='icon icon-chevron-down'></i>");
+                $(ele).attr("class","expanded");
+                $(ele).attr("title","Ocultar Datos");
+                $("#"+id).after("<tr id='"+id+"detalles'><td></td><td colspan='5'>"+$("#"+id+" .datos").html()+"</td></tr>");
+                
+            }
+        }
+    function registrarPago(id){
+        $('#detallesRegistrar').html('Registrar el pago como movimiento de caja.');
+        $('#modalRegistrar').modal('toggle');
+        $('#btnRegistrar').click(function (ev){
+           $('#detallesRegistrar').load("{{path('pagoRegistrable')}}", {id:id}, function (){
+               restablecer();
+           }); 
+        });
+    }
+    function detallesModalFS(id){
+        var url = "{{path('fs')}}";
+        $('#detalles').load(url,{'id':id});
+        $('#verModal').modal('toggle');
+    }
+    function detallesModalCompra(id){
+        var url = "{{path('compras')}}";
+        $('#detalles').load(url,{'id':id});
+        $('#verModal').modal('toggle');
+    }
+    
+    function imprimirTabla(ele){
+          var tabla = document.getElementById('example');
+          var rows = tabla.getElementsByTagName('tr');
+          var filas= new Array(rows.length);
+          for (var i = 1; i<rows.length ;i++){
+            filas[i-1]=rows[i].id;
+          }
+          
+        var url = "{{path('impListaPago', {'_format':'pdf'})}}";
+        url= url.replace('amp;', '');
+        url= url+'&info='+$('#example_info').text();
+        $(".graf.active").each(function (){        
+                if (this.id=='1E'){
+                    
+                    graficoDias();
+                    //alert('soy yo 1e');
+                     
+                }else{
+                    graficoComparar();
+                } 
+              });
+        html2canvas(document.getElementById("grafico"), {
+            onrendered: function(canvas) {
+              var img    = canvas.toDataURL("image/png");
+              var oImgJPEG = Canvas2Image.saveAsPNG(canvas, true); 
+                                        //alert(oImgJPEG);
+              //$('#archivo').attr('href',$(oImgJPEG).attr('src'));
+              //Canvas2Image.saveAsPNG(canvas);
+                $('#imgSRC').val($(oImgJPEG).attr('src'));
+                $('#formImp').attr('action',url);
+                $('#ids').val(filas);
+                $('#formImp').submit();
+
+
+            }
+          });
+      
+    }
+    $(document).ready(function  (){
+        $("#txtBuscarTabla").keyup(function(){
+                $(".expanded").each(function(){
+                    $(this).removeAttr("class");
+                    $(this).attr("title","Mostrar Datos");
+                    $(this).html("<i class='icon icon-chevron-right'></i>");
+                });
+            });
+        txt();
+        $('#tblCompara').hide();
+        $('#primeraCol').trigger('click');
+        $('#primeraCol').trigger('click');
+         var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+            var total = parseFloat('0.00');
+            for (var i = 1; i <rows.length; ++i) {          
+                var num =$(rows[i].cells[1]).text(); 
+                if (!($.isNumeric(num))){
+                    num = parseFloat('0.00');;
+                }else{
+                    num = parseFloat(num);             
+                }
+                total=num+total;
+            }
+            if ($.isNumeric(total))
+            $('#totalCompras').val(total.toFixed(2)); 
+         });
+    
+    
+    function eliminarModalIng(id,txt){
+        
+        var url = "{{path('eliminarIngrediente', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElimIng');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarIng').attr('href',url);
+        $('#eliminarModalIng').modal('toggle');
+    }
+        var flag;
+
+    function entregado(url, id, tipo){
+
+       $.post(url, {id:id, tipo:tipo} , function(data) {
+           
+    });
+        location.reload();
+    }
+    
+    function buscar1(){
+        var tiempo=$('#1BTiempo').val(); 
+        var clase= $("#1BCombo").val() ;
+        if ($.isNumeric(tiempo)&&tiempo>=0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarPago')}}',{'tipo':'0','tiempo':tiempo, 'clase':clase}, function (){
+                cargarTabla();
+                $("#totalCompras").val($("#totalHidden").val()); 
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    function buscar2(){
+    var tabla = document.getElementById('example');
+        var fecha1=$('#2BFecha1').val();
+        var fecha2=$('#2BFecha2').val();      
+        if (isDate(fecha1)&&isDate(fecha2)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarPago')}}',{'tipo':'1','fecha1':fecha1, 'fecha2':fecha2}, function (){
+                cargarTabla();
+                $("#totalCompras").val($("#totalHidden").val()); 
+            });
+       } else
+            msjWC('Error al ingresar las fechas');
+        
+    }
+    
+    function buscar3(){
+        var fecha1=$('#3BFecha1').val();
+        var clase= $("#3BCombo").val() ;
+        if (isDate(fecha1)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarPago')}}',{'tipo':'2','fecha1':fecha1, 'clase':clase}, function (){
+                cargarTabla();
+                $("#totalCompras").val($("#totalHidden").val()); 
+            });
+       } else
+            msjWC('Error al ingresar la fecha');
+        
+    }
+    function buscar4(){
+        var año=$('#4BAño').val(); 
+        var mes= $("#4BCombo").val() ;
+        if ($.isNumeric(año)&&año>0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarPago')}}',{'tipo':'3','año':año, 'mes':mes}, function (){
+                cargarTabla();
+                $("#totalCompras").val($("#totalHidden").val()); 
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    
+    function cargarTabla(){
+        $('.table.table-striped.table-bordered').dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ Registros por página",
+                        "sSearch": "Buscar:",
+                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sZeroRecords": "Ningun registro encontrado",
+                        "oPaginate": {
+				             "sPrevious": "Anterior",
+                                             "sNext": "Siguiente"
+				     }
+		}
+	} );
+        txt();
+    }
+    function imprimirDetalle(ele, id){
+       var url = "{{path('notas', { 'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+       url= url.replace('amp;', ''); 
+       $(ele).attr('href',url);
+    }
+     function txt(){
+       $("#txtBuscarTabla").keyup (function() {
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+            var total = parseFloat('0.00');
+            for (var i = 1; i <rows.length; ++i) {          
+                var num =$(rows[i].cells[2]).text(); 
+                if (!($.isNumeric(num))){
+                    num = parseFloat('0.00');;
+                }else{
+                    num = parseFloat(num);             
+                }
+                total=num+total;
+            }
+            if ($.isNumeric(total))
+            $('#totalCompras').val(total.toFixed(2)); 
+
+               });
+               
+        $(example_length).click (function() {
+            var table = document.getElementById('example');
+            var rows = table.getElementsByTagName('tr');
+            var total = parseFloat('0.00');
+            for (var i = 1; i <rows.length; ++i) {          
+                var num =$(rows[i].cells[1]).text(); 
+                if (!($.isNumeric(num))){
+                    num = parseFloat('0.00');;
+                }else{
+                    num = parseFloat(num);             
+                }
+                total=num+total;
+            }
+            if ($.isNumeric(total))
+            $('#totalCompras').val(total.toFixed(2)); 
+
+               });
+               
+   }
+   
+   
+   function graficoDias(){
+        $('#tblCompara').hide();
+        $('#tblGrafico').show();
+        var tabla = document.getElementById('example');
+        var rows = tabla.getElementsByTagName('tr');
+        var filas='';
+        for (var i = 1; i<rows.length ;i++){
+          filas+=rows[i].id+',';
+        }
+        var tipo = $('#1ECombo').val();
+        var retorno;
+        $.getJSON("{{path('pagos_total')}}",{tipo:tipo, ids:filas},function (json){      
+            retorno=json; 
+            });
+        var compras= new Array(retorno.length);
+        var elTick= new Array(retorno.length);
+        var total = parseFloat(0.00);
+        
+        var tblGrafico = document.getElementById('tblGrafico') ;
+        var tBody=tblGrafico.getElementsByTagName('tbody');
+        $(tBody).remove();
+        var tBody = document.createElement('tbody');
+        $(tblGrafico).append(tBody);
+        var max = parseFloat(0.00);
+        for (var i = 0; i<retorno.length ;i++){
+            compras[i]=[i, retorno[i].total];
+            elTick[i]=[i, retorno[i].fecha];
+            var tr=document.createElement('tr');
+            $(tBody).append(tr);
+            var td=document.createElement('td');
+            td.innerHTML=retorno[i].fecha;
+            $(tr).append(td); 
+            
+            var td=document.createElement('td');
+            td.innerHTML=retorno[i].total.toFixed(2);
+            var sum = parseFloat(retorno[i].total);
+            total += sum ;
+            $(tr).append(td); 
+            
+            if (max<sum){
+                max=sum;
+            }
+            
+        }
+        
+        var tr=document.createElement('tr');
+        $(tBody).append(tr);
+        var td=document.createElement('td');
+        td.innerHTML='Suma total';
+        $(tr).append(td); 
+        var td=document.createElement('td');
+        td.innerHTML=total.toFixed(2) ;
+        $(tr).append(td); 
+
+        chartsTotales(compras, elTick, max , tipo);
+      
+    }
+    function graficoComparar(){
+        $('#tblGrafico').hide();
+        $('#tblCompara').show();
+        var tabla = document.getElementById('example');
+        var rows = tabla.getElementsByTagName('tr');
+        var filas='';
+        for (var i = 1; i<rows.length ;i++){
+          filas+=rows[i].id+',';
+        }
+        var tipo = $('#1ECombo').val();
+        var año1= {{'now'| date('Y')}};
+        var año2= {{'now'| date('Y')}};
+        if ($.isNumeric($('#año1_1').val())){
+            año1=$('#año1_1').val();
+        }
+        if ($.isNumeric($('#año2_1').val())){
+            año2=$('#año2_1').val();
+        }
+        var retorno;
+        $('#titulo1').text  (año1);
+        $('#titulo2').text(año2);
+        $.getJSON("{{path('pagos_comparar')}}",{tipo:1, ids:filas, año1:año1, año2:año2},function (json){      
+            retorno=json; 
+            });
+        var compras1= new Array(retorno[0].length);
+        var compras2= new Array(retorno[1].length);
+        var elTick= new Array(12);
+        var total1 = parseFloat(0.00);
+        var total2 = parseFloat(0.00);
+        
+        
+        var tblGrafico = document.getElementById('tblCompara') ;
+        var tBody=tblGrafico.getElementsByTagName('tbody');
+        $(tBody).remove();
+        var tBody = document.createElement('tbody');
+        $(tblGrafico).append(tBody);
+        var max = parseFloat(0.00);
+        for (var i = 0; i<retorno[0].length ;i++){
+            compras1[i]=[retorno[0][i].fecha, retorno[0][i].total];
+            var sum = parseFloat(retorno[0][i].total);
+            total1 += sum ;
+             if (max<sum){
+                max=sum;
+            }
+
+        }
+        for (var i = 0; i<retorno[1].length ;i++){
+            compras2[i]=[retorno[1][i].fecha, retorno[1][i].total];
+            var sum = parseFloat(retorno[1][i].total);
+            total2 += sum ;
+            if (max<sum){
+                max=sum;
+            }
+        }
+        
+        var datos1= new Array(12);
+        var datos2= new Array(12);
+        
+        for (var i = 1; i<retorno[2].length ;i++){
+            elTick[i]=[i, retorno[2][i]];
+            var tr=document.createElement('tr');
+            $(tBody).append(tr);
+            
+            var td=document.createElement('td');
+            td.innerHTML=retorno[2][i];
+            $(tr).append(td); 
+            var mes =encontrarIndice(compras1, i);
+            if (mes!=-1){
+                var td=document.createElement('td');
+                td.innerHTML=compras1[mes][1].toFixed(2);
+                $(tr).append(td); 
+                datos1[i]=[i, compras1[mes][1]];
+            }else{
+                var td=document.createElement('td');
+                td.innerHTML='0.00';
+                $(tr).append(td); 
+                datos1[i]=[i, 0.00];
+            }
+            var mes =encontrarIndice(compras1, i);
+            if (mes!=-1){
+                var td=document.createElement('td');
+                td.innerHTML=compras2[mes][1].toFixed(2);
+                $(tr).append(td); 
+                datos2[i]=[i, compras2[mes][1]];
+            }else{
+                var td=document.createElement('td');
+                td.innerHTML='0.00';
+                $(tr).append(td); 
+                datos2[i]=[i, 0.00];
+            }
+        }
+        
+
+        
+        var tr=document.createElement('tr');
+        $(tBody).append(tr);
+        var td=document.createElement('td');
+        td.innerHTML='Suma total';
+        $(tr).append(td); 
+        var td=document.createElement('td');
+        td.innerHTML=total1.toFixed(2) ;
+        $(tr).append(td); 
+        var td=document.createElement('td');
+        td.innerHTML=total2.toFixed(2) ;
+        $(tr).append(td); 
+
+        chartsComparar(datos1, datos2, elTick, max, año1, año2, 0);
+      
+    }
+    
+    function encontrarIndice(array, mes){
+        for (var i = 0; i<array.length ;i++){
+            if (array[i][0]==mes){
+                return i;
+            }
+        }
+        return -1;
+    }
+    function chartsComparar(compras1, compras2, elTick ,max, año1, año2, tipo) {
+        tipo=1;
+        if ($("#grafico").length)
+        {   
+            var formato='';
+            if (tipo==1){
+                formato='Formato fecha: dd-mm-aa';
+            }else if (tipo==2){
+                 formato='Formato fecha:  aaaa-sem';
+            }else if (tipo==3){
+                 formato='Formato fecha:  aaaa-mes';
+            }
+            var plot = $.plot($("#grafico"),
+                    //date es un arrar[] de array[], donde el primero es la lista de elementos, y el segundo tiene en la pos 0 el valor de x y en la 1 el valor de y
+                            [{data: compras1, label: año1}, {data: compras2, label: año2}], {
+                        series: {
+                            lines: {show: true,
+                                lineWidth: 2,
+                            },
+                            points: {show: true},
+                            shadowSize: 2
+                        },
+                        xaxis: {
+				ticks: elTick
+                                
+			},
+                        grid: {hoverable: true,
+                            clickable: true,
+                            tickColor: "#dddddd",
+                            borderWidth: 0
+                        },
+                        yaxis: {min: 0, max:  max/10+max}, //Valores minimos y maximos de los valores -y o +y
+                        colors: ["#FA5833", "#2FABE9"]//Colores de cada linea
+                    });
+
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#dfeffc',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#grafico").bind("plothover", function(event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                showTooltip(item.pageX, item.pageY,
+                                        item.series.label + " de " + x + " = " + y);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+
+
+
+                    $("#grafico").bind("plotclick", function(event, pos, item) {
+                        if (item) {
+                            $("#clickdata").text("You clicked point " + pos.y.toFixed(2) + " in " + item.series.label + ".");
+                            plot.highlight(item.series, item.datapoint);
+                        }
+                    });
+                }
+            }
+    function chartsTotales(compras, elTick, max, tipo) {
+
+        if ($("#grafico").length)
+        {   
+            var formato='';
+            if (tipo==1){
+                formato='Formato fecha: dd-mm-aa';
+            }else if (tipo==2){
+                 formato='Formato fecha:  aa-sem-mes';
+            }else if (tipo==3){
+                 formato='Formato fecha:  aaaa-mes';
+            }
+            var plot = $.plot($("#grafico"),
+                    //date es un arrar[] de array[], donde el primero es la lista de elementos, y el segundo tiene en la pos 0 el valor de x y en la 1 el valor de y
+                            [{data: compras, label: formato}/*, {data: cos, label: "cos(x)"}*/], {
+                        series: {
+                            lines: {show: true,
+                                lineWidth: 2,
+                            },
+                            points: {show: true},
+                            shadowSize: 2
+                        },
+                        xaxis: {
+				ticks: elTick
+                                
+			},
+                        grid: {hoverable: true,
+                            clickable: true,
+                            tickColor: "#dddddd",
+                            borderWidth: 0
+                        },
+                        yaxis: {min: 0, max: max/10+max}, //Valores minimos y maximos de los valores -y o +y
+                        colors: ["#FA5833", "#2FABE9"]//Colores de cada linea
+                    });
+
+                    function showTooltip(x, y, contents) {
+                        $('<div id="tooltip">' + contents + '</div>').css({
+                            position: 'absolute',
+                            display: 'none',
+                            top: y + 5,
+                            left: x + 5,
+                            border: '1px solid #fdd',
+                            padding: '2px',
+                            'background-color': '#dfeffc',
+                            opacity: 0.80
+                        }).appendTo("body").fadeIn(200);
+                    }
+
+                    var previousPoint = null;
+                    $("#grafico").bind("plothover", function(event, pos, item) {
+                        $("#x").text(pos.x.toFixed(2));
+                        $("#y").text(pos.y.toFixed(2));
+
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                showTooltip(item.pageX, item.pageY,
+                                        item.series.label + " de " + x + " = " + y);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+
+
+
+                    $("#grafico").bind("plotclick", function(event, pos, item) {
+                        if (item) {
+                            $("#clickdata").text("You clicked point " + pos.y.toFixed(2) + " in " + item.series.label + ".");
+                            plot.highlight(item.series, item.datapoint);
+                        }
+                    });
+                }
+            }
+            
+    function restablecer(){
+        var div = document.getElementById('divTabla');
+        $(div.firstElementChild).remove();
+        var img = document.createElement('img');
+        img.src='{{asset('images/loading.gif')}}';      
+        $(div).append(img);
+        $(div).load('{{path('buscarPago')}}',{'tipo':'-1'}, function (){
+                cargarTabla();
+                $("#totalCompras").val($("#totalHidden").val()); 
+            });
+        $('#primeraCol').trigger('click');
+        $('#primeraCol').trigger('click');
+    }  
+    function pop(id, btn){
+       var icono=btn.firstChild;
+       if ($(icono).attr('class')=='fa-icon-eye-open'){
+        $.getJSON("{{path ('obtenerValores')}}",{'id':id} ,function (json){
+            var div='';
+            for (var i =0;i<json.length;i++ )
+                div=div+'<b>'+json[i].nombre+':</b> '+json[i].valor+'<br>';
+            
+            btn.title='Ocultar detalles de tipo de pago.';
+            $(icono).removeClass('fa-icon-eye-open').addClass('fa-icon-remove');
+            $(btn).popover({
+                html:true,
+                trigger:'manual',
+                title:'Datos de tipo de pago: ',
+                content:div,
+                placement:'right'
+            });
+           $(btn).popover('show');           
+        });
+        }else{
+            btn.title='Mostrar detalles de tipo de pago.';
+            $(icono).removeClass('fa-icon-remove').addClass('fa-icon-eye-open');
+            $(btn).popover('hide'); 
+        }
+    }
+     
+    </script>
+{% endblock%}

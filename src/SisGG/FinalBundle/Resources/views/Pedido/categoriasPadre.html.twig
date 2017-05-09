@@ -1,0 +1,14 @@
+{%if tipo == ''%}
+{%for categoria in categorias%}
+    <a style='cursor:pointer;' class="btn quick-button-small span2 producto" onclick="{%if categoria.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoria.id}});">
+        <i class="fa-icon-list"></i>
+        <p>{{categoria.nombre}}</p>
+    </a>
+{%endfor%}
+{%elseif tipo == 'modal'%}
+{%for categoria in categorias%}
+    <li style='cursor:pointer;'>
+        <a  onclick="{%if categoria.hijo|length >0%}mostrarCategorias{%else%}mostrarProductos{%endif%}({{categoria.id}});"><b>{{categoria.nombre}}{%if categoria.hijo|length >0%}<i class='icon icon-white icon-chevron-down'></i>{%endif%}</b></a>
+    </li>
+{%endfor%}
+{%endif%}

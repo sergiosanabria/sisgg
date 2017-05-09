@@ -1,0 +1,150 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Cuentas corrientes</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content">
+            {% set activos = 0%}
+            {% set inactivos = 0%}    
+            {% for cuentaCorriente in cuentasCorrientes%}
+                {%if cuentaCorriente.estado=='activo'%}
+                    {% set activos = activos+1%}
+                {% elseif cuentaCorriente.estado=='inactivo'%}
+                    {% set inactivos = inactivos+1%}
+                {% endif %}
+            {% endfor %}     
+                <legend>Cuentas corrientes
+                    <div class="btn-group" style='float:right;'>
+                        <a title="Abrir Cuenta" href="{{path('nuevo_cuenta_corriente')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                        <a class="btn" onclick='imprimirTabla(this)'><i class="icon-print"></i></a>
+                    </div>
+                    <small class='filtros'>
+                        <ul class="nav nav-pills" id="myTab1">
+                            <li class='filtro {%if (estado=='activo') or (estado==null)%}active{%endif%}'><a href='{{path('cuentas_corrientes')}}' >Activos({{activos}})</a></li>
+                            <li class='filtro {%if estado=='inactivo'%}active{%endif%}'><a href='{{path('cuentas_corrientes')}}?estado=inactivo' >Inactivos({{inactivos}})</a></li> 
+                            <li class='filtro {%if estado=='todos'%}active{%endif%}' ><a href='{{path('cuentas_corrientes')}}?estado=todos' >Todos({{activos+inactivos}})</a></li>
+                        </ul>
+                    </small>                
+                </legend>
+                <table class="table table-striped table-bordered" id="cuentasCorrientes">
+                    <thead class="header">
+                        <tr>
+                            <th>Número de Cuenta</th>
+                            <th>Fecha de Creación</th>
+                            <th>Cliente</th>
+                            <th>Saldo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                {%if estado==null%}
+                        {%set estado='activo'%}        
+                {% endif %}        
+                {% for cuentaCorriente in cuentasCorrientes%}
+                     {%if estado=='todos' or cuentaCorriente.estado==estado%}   
+                            <tr data-id='{{cuentaCorriente.id}}'>
+                                <td>{{cuentaCorriente}}</td>
+                                <td>{{cuentaCorriente.fechaCreacion|date('d/m/Y g:i a')}}</td>
+                                <td>{{cuentaCorriente.cliente}}</td>
+                                <td style='text-align: right;'>$ {{cuentaCorriente.saldo|number_format(2,'.','')}}</td>
+                                <td class='estado' style='text-align: center;'>{%if cuentaCorriente.estado=='activo'%}<span class="label label-success">Activo</span>{%elseif cuentaCorriente.estado=='inactivo'%}<span class="label label-important">Inactivo</span>{%endif%}</td>
+                                <td style='text-align: center;'>
+                            {%if cuentaCorriente.estado=='activo'%}
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_editar') %}
+                                        <a rel="tooltip" title="Editar" href="{{path('editar_cuenta_corriente')}}?id={{cuentaCorriente.id}}"><i class="fa-icon-edit"></i></a>
+                                {%endif%}
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_editar') %}
+                                            <a rel="tooltip" title="Detalles" href="{{path('detalle_cuenta_corriente')}}?id={{cuentaCorriente.id}}"><i class="fa-icon-list-alt"></i></a>
+                                {%endif%}
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_editar') %}
+                                                <a rel="tooltip" title="Registrar Cobro" href="{{path('registrar_cobro_cuenta_corriente')}}?id={{cuentaCorriente.id}}"><i class="fa-icon-money"></i></a>
+                                {%endif%}        
+                                {% if gestor_autenticacion.isGranted(app.user,'cliente_borrar') %}
+                                                    <a class='borrar' href='#' rel="tooltip" title="Pasar a Inactivo" data-cuentaCorriente='{{cuentaCorriente}}' data-id='{{cuentaCorriente.id}}'><i class="fa-icon-trash"></i></a>
+                                {%endif%}        
+                            {%else%}
+                                                        <a rel="tooltip" title="Pasar a Activo" href="{{path('activar_cuenta_corriente')}}?id={{cuentaCorriente.id}}"><i class="fa-icon-plus-sign"></i></a>
+                                                    </td>
+                            {% endif %}
+                                                </tr>
+                     {% endif %}       
+                {% endfor %}       
+                                            </tbody>
+                                        </table>  
+
+
+                                    </div>
+                                </div><!--/span-->
+                            </div><!--/row-->
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                            <div class="modal hide fade" id="eliminarCondicionIva">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                    <h3>Atención!!!</h3>
+                                </div>
+                                <div id="dataEliminar" class="modal-body">
+                                    ¿Esta seguro que desea pasar la condición <span id='cuenta_corriente' style='font: bold cursive;'></span> a estado Inactivo?
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                    <a class="btn btn-primary" id='borrar'>Confirmar</a>
+                                </div>
+                            </div>
+{%endblock%} 
+{%block javascripts%}
+{{parent()}}    
+                            <script type="text/javascript">
+                            $().ready(function() {
+                                $('.borrar').each(function() {
+                                    $(this).click(function(ev) {
+                                        ev.preventDefault();
+                                        $('#dataEliminar #cuenta_corriente').html($(this).data('cuentacorriente'));
+                                        $('#borrar').attr('href', '{{path('borrar_cuenta_corriente')}}?id=' + $(this).data('id'));
+                                        $('#eliminarCondicionIva').modal('show');
+                                    });
+                                });
+                            })
+
+                            function imprimirTabla(ele) {
+                                var filas = new Array();
+                                var i = 0;
+                                $('tbody tr').each(function() {
+                                    filas[i] = $(this).data('id');
+                                    i = i + 1;
+                                });
+                                var url = "{{path('imp_lista_cuenta_corriente', { 'ids': '__ids__' , '_format':'pdf'})}}".replace(/__ids__/g, filas);
+                                url = url.replace('amp;', '');
+                                url = url + '&info=' + $('#cuentasCorrientes_info').text();
+                                $(ele).attr('href', url);
+
+                            }
+                                </script>    
+{%endblock%}    
+{%block ajax%}
+                                <table class="table table-striped table-bordered table-hover" id="example">
+                                    <thead class="header">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Descripcion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                {% for cuentaCorriente in cuentasCorrientes%}
+                                            <tr onclick='seleccionarCondicionIva(event,{{cuentaCorriente.id}});' style='cursor:pointer;'>
+                                                <td>{{cuentaCorriente.nombre}}</td>
+                                                <td>{{cuentaCorriente.descripcion}}</td>               
+                                            </tr>   
+                {% endfor %}       
+                                        </tbody>
+                                    </table>
+{%endblock%} 

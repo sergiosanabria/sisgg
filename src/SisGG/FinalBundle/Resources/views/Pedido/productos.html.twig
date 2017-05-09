@@ -1,0 +1,8 @@
+{%for producto in productos%}
+    <a {%if producto.foto %}style='background-image: {{asset('uploads/imagenes/')}}{{producto.foto.path}}'{%endif%} class="btn quick-button-small span2 producto" onclick="seleccionarProducto({{producto.id}},{{producto.precioVenta}});">
+        <p>{{producto.nombre}}</p>
+        <p class='agregar'>Agregar a la lista</p>
+        {#<span class="notification green">{{producto.cantidadDisponible}}</span>#}
+    </a>
+{%endfor%}
+

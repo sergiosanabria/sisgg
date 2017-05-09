@@ -1,0 +1,43 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Configuracion</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Caja</a> <span class="divider">/</span>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Caja</legend>
+            <form class="form-horizontal" action="{{ path('editar_caja') }}" method="post">
+                <fieldset id="formAperturaCaja">
+                        {{form_row(form.puntoVenta,{'value':("%1$04d"|format(form.puntoVenta.vars.value)),'attr':{'maxlength':4} })}}
+                        {{form_row(form.ultimaFactura,{'value':("%1$08d"|format(form.puntoVenta.vars.value)),'attr':{'maxlength':8} })}}
+                        {{form_rest(form)}}
+                        </fieldset>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <button id="cancelCliente" type="button" class="btn">Cancelar</button>
+                        </div>    
+                    </form>
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+        <hr>
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}    
+{%endblock%}
+{% block ajax %}
+{% endblock %}
+
+

@@ -1,0 +1,48 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Lotes</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Lotes
+            </legend>
+            <table class="table table-striped table-bordered" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>N°</th>
+                        <th>Fecha y Hora de Apertura</th>
+                        <th>Fecha y Hora de Cierre</th>
+                        <th>Usuario</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%set n=1%}    
+                {% for lote in lotes%}
+                        <tr>
+                            <td>{{n}}</td>
+                            <td>{{lote.fechaApertura|date("d/m/Y g:ia")}}</td>
+                            <td>{%if lote.fechaCierre != null%}{{lote.fechaCierre|date("d/m/Y g:ia")}}{%else%}Abierto{%endif%}</td>
+                            <td>{{lote.usuario}}</td>
+                            <td>
+                                <a rel="tooltip" title="Ver Movimientos" href="{{path('movimientos')}}?id={{lote.id}}"><i class="icon-th-list"></i></a>
+                                {#<a rel="tooltip" title="Eliminar" href="#{{concepto.id}}" data-toggle="modal"><i class="icon-remove"></i></a>#}
+                            </td>                
+                        </tr>
+                        {%set n= n+1%}
+                {% endfor %}       
+                    </tbody>
+                </table>    
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}
+{%block ajax%}
+{%endblock%} 

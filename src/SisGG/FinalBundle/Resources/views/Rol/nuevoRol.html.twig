@@ -1,0 +1,107 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%block title%}Nuevo rol{%endblock%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('gestion_roles')}}">Roles</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo Rol</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Nuevo rol</legend>
+            <form class="form-horizontal" action="{{ path('rol_nuevo') }}" method="post">
+                <fieldset id="formNuevaVenta">
+                            {{form_row(form.role)}}
+                        <div class="control-group">
+                            <label class="control-label" for="appendedInputButton">Buscar entidad</label>
+                            <div class="controls">
+                              <div class="input-append">
+                                  <input id="txtBuscar"  placeholder="Nombre de entidad" size="16" type="text"><button title="Buscar" onclick="buscarEntidad();" class="btn" type="button"><i class="fa-icon-search"></i></button>
+                              </div>
+                            </div>
+                      </div>
+                        
+                                <table id="tablapermisos" class="table table-hover">
+                                    <tbody>
+                                        <tr><td>Permisos</td>    
+                                        {% set conjunto = '' %}
+                                        {%for i in 1..((form.permisos|length)) %}
+                                            {{form_widget(form.permisos[i-1].objeto)}}
+                                            {% set array = (form.permisos[i-1].objeto.vars.value|title)|split('_')%}
+                                            {%if array[0]!=conjunto%}
+                                                        {%set conjunto = array[0]%}
+                                            </tr><tr id="{{conjunto}}"  class="fila-permisos"><td><b>{{conjunto}}</b></td>
+                                            {%endif%}
+                                                    <td>
+                                                            {%for i in 1..((array|length-1)) %}
+                                                                {{array[i]}}
+                                                                
+                                                            {%endfor%}    
+                                                            {{form_widget(form.permisos[i-1].otorgado)}}    
+                                                        </td>        
+                                        {% endfor %}
+                                        </tbody>    
+                                            </table>
+                                            <a class="btn" onclick="seleccionarTodos();">Seleccionar Todos</a>
+                                            <a class="btn" onclick="deseleccionarTodos();">Deseleccionar Todos</a>    
+                                     
+                                {{form_rest(form)}}        
+                                </fieldset>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    <button id="cancelCliente" type="button"class="btn">Cancelar</button>
+                                </div>    
+                            </form>
+                        
+                    </div><!--/span-->
+                </div><!--/row-->
+                </div><!--/row-->
+                
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+                <script type="text/javascript">
+                    
+function seleccionarTodos(ele) {
+    $("input:checkbox").each(function() {
+        $(this).attr("checked", "checked");
+    });
+}
+function deseleccionarTodos() {
+    $("input:checkbox").each(function() {
+        $(this).removeAttr('checked');
+    });
+}
+ 
+ var base=location.href;
+function buscarEntidad(){
+    var txt = ($('#txtBuscar').val()).toUpperCase();
+    var tabla = document.getElementById('tablapermisos');
+    var rows = tabla.getElementsByTagName('tr');
+     $(".fila-permisos").each(function() {
+                $(this).attr('style', false);
+            });
+    for (var i = 1; i<rows.length ;i++){
+        var pal=rows[i].id.toUpperCase();
+        if (pal.indexOf(txt) != -1){
+            location.href=base+'#'+rows[i].id;
+           
+            $(rows[i]).attr('style',"background-color: #F1F1F1;");
+        }
+    }
+    
+}
+                    </script>    
+{%endblock%}
+{% block ajax %}
+{% endblock %}

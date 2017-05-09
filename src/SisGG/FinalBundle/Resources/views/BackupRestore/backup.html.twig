@@ -1,0 +1,61 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block title%}Realizar back-up{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('backups')}}">Historial de back-up</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Backup</legend>
+            <form class="form-horizontal" action="{{ path('backup') }}" method="post">
+                {% if error %}
+                    <div class="alert alert-block">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <h4>¡CUIDADO!</h4>
+                        {{ error }}
+                    </div>
+                {% endif %}
+                    <div class="alert alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <h4>¡ATENCIÓN!</h4>
+                        La carpeta en la cual se guardara el archivo de backup debe tener permisos necesarios.
+                    </div>
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label" >Carpeta</label>
+                        <div class="controls">
+                            <input type="text" id="carpeta" readonly="readonly" disabled="disabled" name="carpeta" value="{{empresa.carpeta}}" required="required" class="span8">
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Realizar back-up</button>
+                    <a href="{{path('index')}}" class="btn">Cancelar</a>
+                </div>    
+            </form>
+        </div>
+    </div><!--/span-->
+</div><!--/row-->
+<hr>
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}  
+<script>
+
+
+    </script>
+
+{%endblock%}
+{% block ajax %}
+{% endblock %}
+
+

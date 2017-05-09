@@ -1,0 +1,61 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Proveedor</legend>
+            <form class="form-horizontal">
+                <div class="pull-right btn-group">
+                    <a class="btn" target="_blank" title="Imprimir los datos" onclick="impDetallesProv('{{form.vars.data.id}}', this)"><i class="icon-print"></i></a>
+                </div>
+                
+                    {{ form_row(form.razonSocial) }}
+                    {{ form_row(form.cuit) }}
+                    {{ form_row(form.condicionIva) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.direccion.ciudad) }}  
+                    {{ form_row(form.direccion.calle) }}
+                    {{ form_row(form.direccion.numero) }}
+                    {{ form_row(form.direccion.manzana) }}
+                    {{ form_row(form.direccion.edificio) }}
+                    {{ form_row(form.direccion.escalera) }}
+                    {{ form_row(form.direccion.piso) }}
+                    {{ form_row(form.direccion.departamento) }}
+                    {%if telefonos | length > 0 %}
+                    <h3>Telefonos</h3>
+                            <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                                <thead class="header">
+                                <th>Nacional</th>
+                                <th>Caracteristica</th>
+                                <th>Número</th>
+                                </thead>
+                                {%for t in telefonos%}
+                                <tr>
+                                    <td>{{t.nacional}}</td>
+                                    <td>{{t.caracteristica}}</td>
+                                    <td>{{t.numero}}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                   {%else%}
+                    <h3>No tiene telefonos registrados</h3>
+                    {%endif%}
+                    <br>
+                     <h2>Totales de compras y pagos del proveedor </h2>
+                    <table class="table table-bordered table-hover" id="pagos">
+                    <thead>
+                        <th>Total de compras</th>
+                        <th>Total de pagos</th>
+                        <th>Diferencia</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: right" id="haber">${{p.saldos.total | number_format(2,'.', '')}}</td>    
+                            <td style="text-align: right" id="debe">${{p.saldos.pagos | number_format(2,'.', '')}}</td>
+                            <td style="text-align: right" id="saldo" >${{p.saldos.diff | number_format(2,'.', '')}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>

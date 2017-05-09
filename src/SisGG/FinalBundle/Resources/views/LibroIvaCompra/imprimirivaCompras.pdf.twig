@@ -1,0 +1,88 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Libro iva compras {{mes}} de {{año}}{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Libro iva compras: {{mes}} de {{año}}</div>
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+        <table  font-type="helvetica" font-size="7.5">
+            <tr background-color="#FAFAFA" >
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+                <td padding="2px" width="25px" style=" text-align: center;vertical-align: middle;"><b>Tipo</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Número</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Proveedor</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>CUIT</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Cond. IVA</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Neto</b></td>
+                {%for i in tasas%}
+                    {%if i.gravado%}
+                    <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>IVA gravado {{i.tasa}} %</b></td>
+                    {%else%}
+                    <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>IVA no gravado {{i.tasa}} %</b></td>
+                   {%endif%} 
+                {%endfor%}
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Acrecentamiento</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Total</b></td>
+            </tr>
+               {% for i in items%}
+            <tr>
+                <td padding="2px" style=" text-align: center;">{{i.fecha | date("d/m/Y")}}</td>
+                <td padding="2px" width="25px" style="text-align: center;" >{{i.tipo}}</td>
+                <td padding="2px" style=" text-align: center;">{{i.compra.serie}} - {{i.compra.numero}}</td>
+                <td padding="2px" style=" text-align: center;">{{i.razonSocial}}</td> 
+                <td padding="2px" style=" text-align: center;">{{i.cuit}}</td> 
+                <td padding="2px" width="30px" style=" text-align: center;">{{i.condIva}}</td> 
+                <td padding="2px" style=" text-align: right;">{{i.Neto}}</td>
+                {%if (i.tipo=='A') %}
+                    {%for item in i.item%}
+                        <td padding="2px" style=" text-align: right;">{{item.total}}</td>
+                    {%endfor%}
+                    {%if (i.item|length < tasas|length) %}
+                        {% for j in range(1,(tasas|length - i.item|length )) %}
+                                <td padding="2px" style=" text-align: right;">0.00</td>
+                        {% endfor %}  
+                    {%endif%}
+                {%else%}
+                    {% for j in range(1,(tasas|length)) %}
+                            <td padding="2px" style=" text-align: right;">0.00</td>
+                    {% endfor %}
+                {%endif%}
+                <td padding="2px" style=" text-align: center;">{{i.acrecent}}</td>
+                <td padding="2px" style=" text-align: right;">{{i.total}}</td> 
+                    
+            </tr>   
+            {% endfor %}
+            <tr background-color="#FAFAFA" >
+                    <td  height="25px" style="text-align: right;vertical-align: middle;" colspan="6">
+                        <b>TOTALES</b>
+                    </td>
+                    
+                     <td height="25px" style="text-align: center; vertical-align: middle;">
+                        <b>$ {{totales.neto}}</b>
+                        </td>
+                    {%for i in totales.totales%}
+                        <td  height="25px" style="text-align: center; vertical-align: middle;">
+                        <b>$ {{i.total}}</b>
+                        </td>
+                    {%endfor%}
+                       <td  height="25px" style="text-align: center; vertical-align: middle;">
+                        <b>$ {{totales.acre}}</b>
+                        </td> 
+                         <td  height="25px" style="text-align: center; vertical-align: middle;">
+                        <b>${{totales.total}}</b>
+                        </td> 
+                </tr>
+        </table>
+
+{%endblock%}

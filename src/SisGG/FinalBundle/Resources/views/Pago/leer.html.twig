@@ -1,0 +1,91 @@
+{% extends "::base.html.twig" %}
+{%block title%}Nuevo tipo de pago{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('tiposPagos')}}">Tipos de pago</a>
+</li></a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nuevo tipo de pago</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Nuevo tipo de pago</legend>
+        <form action="{{path('nuevoTipoPago')}}" method="post" class="form-horizontal">
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+                <input type="textarea" id="txt">
+                <select id="voz"><option value="salma22k">Arabic (Saudi Arabia) - Salma</option>
+                    Arabic (Saudi Arabia)<option value="youssef22k">Arabic (Saudi Arabia) - Youssef</option>
+                    Arabic (Saudi Arabia)<option value="nawfal22k">Arabic (Saudi Arabia) - Nawfal</option>Arabic (Saudi Arabia)<option value="eliska22k">Czech - Eliska</option>Czech<option value="sabrine22k">Czech - Sabrine</option>Czech<option value="mette22k">Danish - Mette</option>Danish<option value="poul22k">Danish - Poul</option>Danish<option value="jeroen22k">Dutch (Belgium) - Jeroen</option>Dutch (Belgium)<option value="sofie22k">Dutch (Belgium) - Sofie</option>Dutch (Belgium)<option value="els22k">Dutch (Belgium) - Els</option>Dutch (Belgium)<option value="femke22k">Dutch (Netherlands) - Femke</option>Dutch (Netherlands)<option value="max22k">Dutch (Netherlands) - Max/option&gt;Dutch (Netherlands)</option><option value="hilde22k">Dutch (Netherlands) - Hilde</option>Dutch (Netherlands)<option value="jan22k">Dutch (Netherlands) - Jan</option>Dutch (Netherlands)<option value="graham22k">English (UK) - Graham</option>English (UK)<option value="lucy22k">English (UK) - Lucy</option>English (UK)<option value="peter22k">English (UK) - Peter</option>English (UK)<option value="rachel22k">English (UK) - Rachel</option>English (UK)<option value="kate22k">English (UK) - Kate</option>English (UK)<option value="heather22k">English (USA) - Heather</option>English (USA)<option value="kenny22k">English (USA) - Kenny</option>English (USA)<option value="laura22k">English (USA) - Laura</option>English (USA)<option value="nelly22k">English (USA) - Nelly</option>English (USA)<option value="ryan22k">English (USA) - Ryan</option>English (USA)<option value="jane22k">English (USA) - Jane</option>English (USA)<option value="john22k">English (USA) - John</option>English (USA)<option value="sjurdur22k">Faroese - Sjurdur</option>Faroese<option value="sanna22k">Finnish - Sanna</option>Finnish<option value="matti22k">Finnish - Matti</option>Finnish<option value="justine22k">French (Belgium) - Justine</option>French (Belgium)<option value="louise22k">French (Canada) - Louise</option>French (Canada)<option value="alice22k">French (France) - Alice</option>French (France)<option value="bruno22k">French (France) - Bruno</option>French (France)<option value="claire22k">French (France) - Claire</option>French (France)<option value="julie22k">French (France) - Julie</option>French (France)<option value="margaux22k">French (France) - Margaux</option>French (France)<option value="robot22k">French (France) - Robot</option>French (France)<option value="caroline22k">French (France) - Caroline</option>French (France)<option value="pierre22k">French (France) - Pierre</option>French (France)<option value="julia22k">German - Julia</option>German<option value="klaus22k">German - Klaus</option>German<option value="sarah22k">German - Sarah</option>German<option value="gerhard22k">German - Gerhard</option>German<option value="helga22k">German - Helga</option>German<option value="dimitris22k">Greek - Dimitris</option>Greek<option value="snorri22k">Icelandic - Snorri</option>Icelandic<option value="chiara22k">Italian - Chiara</option>Italian<option value="vittorio22k">Italian - Vittorio</option>Italian<option value="roberto22k">Italian - Roberto</option>Italian<option value="kari22k">Norwegian - Kari</option>Norwegian<option value="olav22k">Norwegian - Olav</option>Norwegian<option value="trygve22k">Norwegian - Trygve</option>Norwegian<option value="vegard22k">Norwegian - Vegard</option>Norwegian<option value="ania22k">Polish - Ania</option>Polish<option value="marcia22k">Portuguese (Brazil) - Marcia</option>Portuguese (Brazil)<option value="carlos22k">Portuguese (Brazil) - Carlos</option>Portuguese (Brazil)<option value="paola22k">Portuguese (Brazil) - Paola</option>Portuguese (Brazil)<option value="celia22k">Portuguese (Portugal) - Celia</option>Portuguese (Portugal)<option value="elia22k">Portuguese (Portugal) - Elia</option>Portuguese (Portugal)<option value="ester22k">Portuguese (Portugal) - Ester</option>Portuguese (Portugal)<option value="alyona22k">Russian - Alyona</option>Russian<option value="antonio22k">Spanish (Spain) - Antonio</option>Spanish (Spain)<option value="maria22k">Spanish (Spain) - Maria</option>Spanish (Spain)<option value="javier22k">Spanish (Spain) - Javier</option>Spanish (Spain)<option value="rosa22k">Spanish (USA) - Rosa</option>Spanish (USA)<option value="elin22k">Swedish - Elin</option>Swedish<option value="emma22k">Swedish - Emma</option>Swedish<option value="erik22k">Swedish - Erik</option>Swedish<option value="annmarie22k">Swedish - AnnMarie</option>Swedish<option value="ingmar22k">Swedish - Ingmar</option>Swedish<option value="ipek22k">Turkish - Ipek</option>Turkish<option value="baris22k">Turkish - Baris</option>Turkish<option value="ceren22k">Turkish - Ceren</option>Turkish</select>
+                <button type="button" onclick="acapela()" class="btn btn-primary" >Leer</button>
+                <button type="button" onclick="play()" class="btn btn-primary" >PLAY <i class="fa-icon-play-circle"></i></button>
+                <audio controls src="file:///media/Datolos/musica81.mp3" id="player">
+                </audio>
+       <div class="form-actions">
+            <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+            <a href="{{path('tiposPagos')}}" type="button" class="btn">Cancelar</a>
+        </div>   
+        </form>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+<script type="text/javascript">
+    function leer(){
+        var txt = $('#txt').val();
+        $.getJSON("{{path ('leer')}}", {'txt':txt},function (json){
+                    $('#player').attr('src',json.href);
+
+        });
+    }
+    
+    function acapela(){
+        $.getJSON( "http://vaas.acapela-group.com/webservices/1-32-01-JSON/synthesizer.php?jsoncallback=?",
+  {
+    prot_vers: 2, cl_login: "EXAMPLE_ID", cl_app: "EXAMPLE_APP", cl_pwd: "x0hzls5cqs", 
+    req_voice:$("#voz").val(),
+    req_text:$('#txt').val()
+  },
+ function(data) 
+ {
+    alert(data);
+// Data exploitation 
+$('#player').attr('src',data.snd_url);	
+ });
+    }
+    
+    function play (){
+        document.getElementById('player').play();
+    }
+    function eliminarUM(id, txt){
+        var url = "{{path('eliminarUM', { 'id': '__id__' })}}".replace(/__id__/g, id);
+        var par= document.getElementById('txtum');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarUM').attr('href',url);
+        $('#eliminarUM').modal('toggle');
+    }
+
+    function redir(op,id){
+        if (op==2)
+            document.location= "{{path('editarUM', { 'id': '__id__' })}}".replace(/__id__/g, id);
+        if (op==1)
+            document.location= "{{path('nuevaTasa', { 'id': '__id__' })}}".replace(/__id__/g, id);
+    }
+    </script>
+{% endblock%}

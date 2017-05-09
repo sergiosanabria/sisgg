@@ -1,0 +1,14 @@
+<div id="errorCiu">
+                     {% if error %}
+        <div class="alert alert-error">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>{{ error }}</strong> 
+        </div>  
+                    {% endif %}
+                    {% if msje %}
+        <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msje }}
+        </div>  
+                    {% endif %}
+    </div>

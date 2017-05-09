@@ -1,0 +1,135 @@
+<legend>Sector {{mesa.sector|capitalize}} Mesa {{mesa}}
+    <small>
+        <ul class="nav nav-pills" id="tabDetalles">
+            <li><a href="#generalDetalles">General</a></li>
+            <li><a href="#historialDetalles">Cancelados</a></li>
+        </ul> 
+    </small>
+</legend>
+<div class='tab-content'>
+    <div class='tab-pane' id='generalDetalles' style='margin:0px;'>
+        <table id="tablaResumen" class="table table-hover table-condensed">
+            <thead>
+                <tr><th>Items de la Mesa</th><th></th><tr>
+            </thead>
+            <tbody id="items">
+           {%set suma = 0.00%}
+           {%if mesa.pedidoActivo != null%} 
+           {%for item in mesa.pedidoActivo.itemPedido%}
+           {%if item.estado!='cancelado' and item.estado!='Cancelado'%} 
+           {%set total = item.cantidad * item.productoVenta.precioVenta%}
+           {%set suma = total + suma%}
+                    <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                        <td>
+                            <div class="media">
+                                <div style='float:left;margin: 5px;' href="#">
+                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                                    {{item.cantidad}} x $ {{item.productoVenta.precioVenta}}
+                                    <span class='total' style='float: right;'>$ {{total|number_format(2,'.','')}}</span>
+                                    <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+            {%endif%}
+            {%endfor%}
+            {%else%}
+                <td id='items_empty' style='height:64px'>Esta mesa se encuentra {{mesa.estado|capitalize}}</td>
+            {%endif%}
+                </tbody>
+                <tfoot>
+                    {%if mesa.pedidoActivo !=null%}
+                        {%set pedido = mesa.pedidoActivo%}
+                        {%set recargos = 0.00%}    
+                    {%set i = 0%}
+                    {%for item in pedido.tipoPedido.recargosActivos%}
+                                    {%set recargoTotal = 0.00%}
+                                    {%if item.tipoPorcentaje%}
+                                            {%set recargoTotal = (suma * item.porcentaje /100)%}
+                                                <tr id = '{{i}}_itemRecargo' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%else%}
+                                            {%set recargoTotal = item.importe%}
+                                                <tr id = '{{i}}_itemRecargo' class ='Importe' data-importe='{{recargoTotal|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%endif%}
+                                    {%set recargos = recargos + recargoTotal|number_format(2,'.','')%}
+                                    {%set i = i +1%}
+                    {%endfor%}
+                    <tr><td>Subtotal<span id ="suma" data-total="{{pedido.subtotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{pedido.subtotal|number_format(2,'.','')}}</span></td></tr>
+                    {%set descuentos = 0.00%}    
+                    {%set i = 0%}
+                        {%if pedido.cliente != null%}       
+                               {%for item in pedido.cliente.descuentosActivos%}
+                                               {%set descuentoTotal = 0.00%}
+                                               {%if item.tipoPorcentaje%}
+                                                       {%set descuentoTotal = (pedido.subtotal * item.porcentaje /100)%}
+                                                       <tr id = '{{i}}_itemDescuento' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%else%}
+                                                       {%set descuentoTotal = item.importe%}
+                                                       <tr id = '{{i}}_itemDescuento' class ='Importe' data-importe='{{descuentoTotal|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%endif%}
+                                               {%set descuentos = descuentos + descuentoTotal|number_format(2,'.','')%}
+                                               {%set i = i +1%}
+                               {%endfor%}
+                        {%endif%}         
+                   {%set total = pedido.precio%}
+                    <tr><td>Total <span id ="total" data-total="" class="total" style='float:right'>$ {{total|number_format(2,'.','')}}</span></td></tr>
+                   
+                    {%endif%}    
+                </tfoot>
+            </table>
+        </div>
+        <div class="tab-pane" id="historialDetalles">
+            <table id="tablaResumenCancelados" class="table table-hover table-condensed">
+                <thead>
+                    <tr><th>Items cancelados</th><th></th><tr>
+                </thead>
+                <tbody id="items_cancelados">
+        {%set suma = 0.00%}
+           {%if mesa.pedidoActivo != null%} 
+           {%for item in mesa.pedidoActivo.itemPedido%}
+           {%if item.estado=='cancelado' or item.estado=='Cancelado'%} 
+           {%set total = item.cantidad * item.productoVenta.precioVenta%}
+           {%set suma = total + suma%}
+                        <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                            <td>
+                                <div class="media">
+                                    <div style='float:left;margin: 5px;' href="#">
+                                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                            {{item.cantidad}} x $ {{item.productoVenta.precioVenta}}
+                                        <span class='total' style='float: right;'>$ {{total}}</span>
+                                        <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+            {%endif%}
+            {%endfor%}
+            {%else%}
+                    <td id='items_empty' style='height:64px'>Esta mesa se encuentra {{mesa.estado}}</td>
+            {%endif%}
+                    </tbody>
+                    <tfoot><tr><td></td></tr></tfoot>
+                </table>
+            </div>        
+
+        </div>        
+{%if mesa.pedidoActivo != null%}
+        <a class='btn' onclick='cancelar({{mesa.pedidoActivo.id}}, event);'>Cancelar</a>
+        <a class='btn' href="#" onclick="transformar('{{mesa.pedidoActivo.id}}', event);">Pasar a ...</a>
+        <a class='btn' href="{{path('editar_pedido_mesa')}}?idMesa={{mesa.id}}">Editar</a>
+        <a class='btn' href="#" onclick="cambiarMesa('{{mesa.id}}', event);">Cambiar de Mesa</a>
+    {%if mesa.pedidoActivo.estado == 'Listo'%}
+        <a class='btn' href="{{path('facturar')}}?id={{mesa.pedidoActivo.id}}">Registrar Venta</a>
+    {%endif%}
+    {%if mesa.pedidoActivo.estado == 'Facturado'%}
+        <a class='btn' href="{{path('liberar_mesa')}}?id={{mesa.id}}">Liberar Mesa</a>
+    {%endif%}    
+{%else%}
+        <a class='btn' href="{{path('nuevo_pedido_mesa')}}?idMesa={{mesa.id}}">Nuevo</a>
+{%endif%}

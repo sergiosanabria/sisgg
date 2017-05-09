@@ -1,0 +1,16 @@
+{%set i = 0%}
+{%for solicitud in solicitudes%}
+    <br>
+    {{solicitud.encabezado}}
+    <select style="width: initial" class="pull-right" id="solicitud{{i}}" data-solicitud-id="{{solicitud.id}}">
+        <option value="true">Si</option>
+        <option value="false">No</option>
+    </select>    
+    <ul>
+    {%for detalleSolicitud in solicitud.detalles%}
+            <li>{{detalleSolicitud.texto}}</li>
+    {%endfor%}
+    </ul>
+    {%set i = i + 1%}
+{%endfor%}
+<input id="cantidadSolicitudes" type="hidden" data-cantidad="{{i}}" />    

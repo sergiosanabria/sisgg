@@ -1,0 +1,68 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Lote</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Lote<div class="pull-right btn-group">
+                    <a class="btn"><i class="icon-print"></i></a>
+                </div></legend>
+            <div class='span12 form-horizontal'>
+                <div class='span6'>
+                    <div class='control-group'>
+                        <label class='control-label'>Fecha y hora de apertura: </label>
+                        <div class='controls'>
+                            <input class='span9' type='text' disabled='disabled' value="{{lote.movimientos.first.fecha|date('d/m/Y g:ia')}}" />
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <label class='control-label'>Usuario que realizó la apertura: </label>
+                        <div class='controls'>
+                            <input class='span9' type='text' disabled='disabled' value="{{lote.movimientos.first.usuario.apellido}},{{lote.movimientos.first.usuario.nombre}}({{lote.movimientos.first.usuario}})" />
+                        </div>
+                    </div>
+                </div>
+                <div class='span6'>
+                    <div class='control-group'>
+                        <label class='control-label'>Saldo Inicial ({{lote.movimientos.first.tipo}})</label>
+                        <div class='controls'>
+                            <input class='span9' type='text' disabled='disabled' value="{{lote.movimientos.first.importe|number_format(2,'.','')}}" />
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="control-group">
+                <label class="control-label">Totales</label>
+                <div class="controls controls-row">
+                    <table class='table table-hover'>
+                        <thead>
+                            <tr><th></th><th>Saldo Estimado</th><th>Saldo Real</th><th>Diferencia</th><th>Diferencia %</th></tr>
+                        </thead>
+                        <tbody>    
+                               {%for itemCierre in lote.movimientos.last.itemCierre %}
+                                <tr>
+                                    <td>{{itemCierre.tipoCobro}}</td>
+                                    <td>{{itemCierre.importeSistema|number_format(2,'.','')}}</td>
+                                    <td>{{itemCierre.importeReal|number_format(2,'.','')}}</td>
+                                    <td>{{(itemCierre.importeSistema- itemCierre.importeReal)|number_format(2,'.','') }}</td>
+                                    <td>{%if itemCierre.importeSistema != 0%}{{((itemCierre.importeSistema|number_format(2,'.','') - itemCierre.importeReal)*100/itemCierre.importeSistema|number_format(2,'.',''))|number_format(2,'.','')}}{%else%}0.00{%endif%}</td>
+                                </tr>        
+                               {% endfor %}
+                                </tr>
+                            </tbody>    
+                        </table>
+                    </div>    
+                </div>    
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+{% endblock %}
+{% block ajax %}
+{% endblock %}

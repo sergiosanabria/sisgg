@@ -1,0 +1,635 @@
+{% extends "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .comanda{
+            width: 25%;
+            max-width: 500px;
+            min-height: 100px;
+            margin: 20px;
+            display: inline-block;
+            position: relative;
+            border: 1px solid #ddd;
+        }
+
+        {%for marcaTiempo in cocina.marcasTemporales %}
+        .minuto{{marcaTiempo.minutos}}{
+            border-color: #ddd;
+            background-image:-webkit-linear-gradient(top, hsl({{marcaTiempo.RGBToHSL.h}}, {{marcaTiempo.RGBToHSL.s + 1}}%, {{marcaTiempo.RGBToHSL.l + ((100-marcaTiempo.RGBToHSL.l)/3)|number_format(2)}}%), hsl({{marcaTiempo.RGBToHSL.h}}, {{marcaTiempo.RGBToHSL.s}}%, {{marcaTiempo.RGBToHSL.l}}%));
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hslhsl({{marcaTiempo.RGBToHSL.h}}, {{marcaTiempo.RGBToHSL.s + 1}}%, {{marcaTiempo.RGBToHSL.l}}%)), color-stop(100%, hslhsl({{marcaTiempo.RGBToHSL.h}}, {{marcaTiempo.RGBToHSL.s + 1}}%, {{marcaTiempo.RGBToHSL.l}}%)));
+            background-image: -moz-linear-gradient(top, hsl({{marcaTiempo.RGBToHSL.h}}, 80%, 82%), hsl({{marcaTiempo.RGBToHSL.h}}, 81%, 67%));
+            background-image: linear-gradient(top, hsl({{marcaTiempo.RGBToHSL.h}}, 80%, 82%), hsl({{marcaTiempo.RGBToHSL.h}}, 81%, 67%));
+        }
+        {%endfor%}
+
+
+        .comanda:hover{
+            text-decoration: none;
+            border-color: #a5a5a5;
+            color: #444444;
+            text-shadow: 0 1px 0px rgba(255, 255, 255, 1);
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -ms-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+            -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,.25);
+            -moz-box-shadow: 0px 0px 3px rgba(0,0,0,.25);
+            box-shadow: 0px 0px 3px rgba(0,0,0,.25);
+        }        
+
+        .items{
+            height: 100%;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+        }
+
+        .comandas{
+            height: 180px;
+            overflow-x: overlay;
+        }
+
+        .tandas{
+            min-height: 800px;
+        }
+
+        .tanda{
+            width: available;
+            height: 500px;
+        }
+
+        .posible{
+            background-color: darkseagreen;
+            color: white;
+        }
+
+        .tanda>.comandas{
+            height: 100%;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+        }
+        .comandas>comanda{
+            width: 25%;
+            border: 1px solid #ddd;
+        }
+        .tanda>.resumen{
+            max-height: 100%;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            height: 100%;
+        }
+
+        .listacomandas{
+            height: 100%;
+            max-width: available;
+            overflow-y:scroll; 
+        }
+
+        .tanda>.comandas>.box.comanda.column{
+            width: 25%;
+        }
+
+        .itemsresumen{
+            height: 100%;
+        }
+
+
+    </style>
+{%endblock%}
+
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Elaboración</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid">
+        <div class="box span12">
+            <div class="box-content">
+                <legend>Cocina<small>
+                        <ul class="nav nav-pills" id="myTab">
+                            <li><a href="#general">General</a></li>
+                            <li><a href="#historial">Historial</a></li>
+                            <li><a href="#configuracion">Configuración</a></li>
+                        </ul></small>
+                </legend>
+                <div class='tab-content' style='margin:0px;'>
+                    <div class='tab-pane' id='general'>    
+                        <div class="box">
+                            <div class="box-header" data-original-title>
+                                <h2>Pedidos en espera</h2>
+                                <div class="box-icon">  
+                                    <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a> 
+                                </div>
+                            </div>
+                            <div class="box-content comandas" id="comandas" ondrop="desvincularComanda(event, this)" ondragover="allowDrop(event)"> 
+                            {%for pedido in pedidosIniciados%}
+                                    <div class="box comanda column" id="{{pedido.id}}" data-idtanda="" draggable="true" ondragstart="drag(event)">
+                                        <h2>{{pedido.tipo}} {%if pedido.isMesa%}({{pedido.mesa.nombreCompleto}}){%endif%}
+                                            <span id="opciones{{pedido.id}}"></span>
+                                        </h2>
+                                        <span class="notification tiempo" title="{{pedido.fechaPedido|date("F j, Y g:i:m a")}}" class='notification' style='font-size:16px;'></span>    
+                                        <table class="table" style='font-size:12px;'>
+                                            <tbody class='items' style="max-height: 100px; overflow-y: visible;">
+                                                {%for itemPedido in pedido.itemPedido%}
+                                                            {%if itemPedido.estado != 'Listo' and itemPedido.estado != 'listo' and itemPedido.estado != 'cancelado' and itemPedido.estado != 'Cancelado' and itemPedido.estado != 'Entregado' and itemPedido.estado != 'entregado'%}
+                                                    <tr data-item="{{itemPedido.sinConsideraciones}}" data-cantidad={{itemPedido.cantidad}}><td>{{itemPedido.cantidad}} - {{itemPedido}}</td></tr>
+                                                            {%endif%}
+                                                {%endfor%}
+                                                </tbody>    
+                                            </table>        
+                                        </div>    
+                                    {%endfor%}
+                                    </div>
+                                </div>        
+                                <hr>
+                                <div class="box">
+                                    <div class="box-header" data-original-title>
+                                        <h2>Tandas</h2>
+                                        <div class="box-icon">
+                                            <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="box-content tandas" id="tandas">
+                                    {%for tanda in tandas%}
+                                            <div class="box" id="tanda{{tanda.id}}">
+                                                <div class="box-header" data-original-title="">
+                                                    <h2>Tanda</h2>
+                                                </div>
+                                                <div class="tanda">
+                                                    <div id="comandas1" class="comandas span9" data-idtanda="{{tanda.id}}" ondrop="vincularComanda(event,{{tanda.id}})" ondragover="allowDrop(event)">
+                                                        <div class="box-header" data-original-title="">
+                                                            <h2>Pedidos de esta Tanda</h2>
+                                                            <div class="box-icon">
+                                                            </div>
+                                                        </div>
+                                                        {%for pedido in tanda.comandas%}
+                                                        <div class="box comanda column" id="{{pedido.id}}" data-idtanda="{{pedido.tanda.id}}" draggable="true" ondragstart="drag(event)">
+                                                            <h2>{{pedido.tipo}} {%if pedido.isMesa%}({{pedido.mesa.nombreCompleto}}){%endif%}
+                                                               <span id="opciones{{pedido.id}}"> 
+                                                                    <a href="#" title="Ver Detalles" onclick="verDetalles({{pedido.id}}, event);"><i class="icon-edit"></i></a>
+                                                                </span>
+                                                            </h2>
+                                                            <span class="notification tiempo hidden-phone" title="{{pedido.fechaPedido|date("F j, Y g:i:m a")}}" class='notification' style='font-size:16px;'></span>    
+                                                            <table class="table" style='font-size:12px;'>
+                                                                <tbody class='items'  style="max-height: 100px; overflow-y: visible;">
+                                                                {%for itemPedido in pedido.itemPedido%}
+                                                                        {%if itemPedido.estado != 'Listo' and itemPedido.estado != 'listo' and itemPedido.estado != 'cancelado' and itemPedido.estado != 'Cancelado' and itemPedido.estado != 'Entregado' and itemPedido.estado != 'entregado'%}
+                                                                        <tr data-item="{{itemPedido.sinConsideraciones}}" data-cantidad={{itemPedido.cantidad}}><td>{{itemPedido.cantidad}} - {{itemPedido}}</td></tr>
+                                                                        {%endif%}
+                                                                {%endfor%}
+                                                                    </tbody>    
+                                                                </table>        
+                                                            </div> 
+
+                                                {%endfor%}
+                                                        </div>
+                                                        <div class="resumen span3" id="resumen{{tanda.id}}" data-id-tanda="{{tanda.id}}">
+                                                            <div class="box-header" data-original-title="">
+                                                                <h2>Resúmen</h2>
+                                                                <div class="box-icon">
+                                                                </div>
+                                                            </div>
+                                                            <div class="itemsresumen">        
+                                                                <table class="table table-bordered table-hover">
+                                                                    <tbody>
+                                                                     {%for linea in tanda.lineasTanda%}
+                                                                            <tr onclick="mostrarRegistrar({{linea.id}});" style='cursor:pointer;' data-linea="{{linea}}" data-cantidad={{linea.cantidad}} data-cantidad-elaborada={%if linea.cantidadElaborados == null%}0{%else%}{{linea.cantidadElaborados}}{%endif%}>
+                                                                                <td><h3>{{linea}}</h3>
+                                                                        {%if linea.cantidadElaborados == null%}0{%else%}{{linea.cantidadElaborados}}{%endif%} elaborados de {{linea.cantidad}}<br>
+                                                                                    </td>
+                                                                                </tr>
+                                                                        {%endfor%}
+                                                                            </tbody>    
+                                                                        </table>        
+                                                                    </div> 
+                                                                </div>    
+                                                            </div>    
+                                                        </div> 
+                                                {%endfor%}     
+                                                    </div>  
+                                                </div>
+                                            </div>
+                                            <div class='tab-pane' id='historial'>
+                                                <table class="table table-striped table-bordered" id="tableHistorial">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>N°</th>
+                                                            <th>Fecha y Hora</th>
+                                                            <th>Tipo</th>
+                                                            <th>Estado</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                            {%set n=1%}                
+                            {%for pedido in historialPedidos%}
+                                                            <tr style='cursor:pointer;' onclick="seleccionarPedidoMostrador({{pedido.id}}, '{{pedido.solicitante}}',{{n}})">
+                                                                <td>{{n}}</td>
+                                                                <td>{{pedido.fechaPedido|date("d/m/Y g:ia")}}</a></td>
+                                                                <td>{{pedido.tipo|capitalize}}</a></td>
+                                                                <td>{{pedido.estado}}</td>
+                                                            </tr>
+                                            {%set n = n+1%}    
+                            {%endfor%}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class='tab-pane' id='configuracion'>
+                                                    <form name="configuracion" class="form-horizontal span12" style='margin:0px;' action="{{ path('elaboracion_pedidos') }}?idCocina={{idCocina}}" method="post">
+                                                        <fieldset id="formNuevoCliente">
+                                                            <div class="span6 pull-left">
+                                                                {{form_row(form.nombre,{'attr':{'class':'span9'} })}}
+                                                                {{form_row(form.numeroTandas,{'attr':{'class':'span9'} })}}
+                                                                
+                                                                </div>
+                                                                <div class="span6 pull-right">
+                                                                    <span>Marcas Temporales</span>
+                                                                    <table class='table'>
+                                                                        <thead>
+                                                                            <tr><td>Minutos</td><td>Color</td></tr>
+                                                                        </thead>    
+                                                                    {{form_widget(form.marcasTemporales)}}
+                                                                    </table>    
+                                                                </div>
+
+                                                            {{form_rest(form)}}
+                                                            </fieldset>
+                                                            <div class="form-actions span12" style='margin:0px;'>
+                                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                            </div>    
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <audio id="player" src="{{asset('sounds/alertacocina.mp3')}}"> </audio>
+                                <hr>
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                                <div class="modal hide fade" id="solicitudes">
+                                    <div class="modal-header">
+                                        <h3>Atención</h3>
+                                    </div>
+                                    <div id="dataSolicitudes" class="modal-body">
+                                        <p>Here settings can be configured...</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="#" onclick="responder();"class="btn btn-primary" id="borrarItem" >Responder</a>
+                                    </div>
+                                </div>
+                                <div class="modal hide fade" id="registrar">
+                                    <div class="modal-header">
+                                        <h3>Registrar Lineas Elaboradas</h3>
+                                    </div>
+                                    <div id="dataRegistrar" class="modal-body">
+                                        <p>Here settings can be configured...</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                        <a href="#" onclick="registrar();"class="btn btn-primary">Registrar</a>
+                                    </div>
+                                </div>
+
+                                <div class="modal hide fade" id="detalles">
+                                    <div class="modal-header">
+                                        <h3>Detalles del Pedido
+                                            <div class="btn-group" style='float:right;'>
+                                            <btn class="btn" id='imprimirDetalles' onclick='imprimir(event,this);'><i class="icon-print"></i></btn>
+                                        </div>
+                                            </h3>
+                                    </div>
+                                    <div id="dataDetalles" class="modal-body">
+                                        <p>Here settings can be configured...</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                                        <a id="despachar" href="#" onclick="despachar(this, event);" class="btn btn-primary">Terminar Pedido</a>
+                                    </div>
+                                </div>
+{%endblock%}               
+{%block javascripts%}
+{{parent()}}
+                                <script>
+                                var esperaSolicitudes = 0;
+                                var esperaComandas = 0;
+                                var colores = new Array();
+
+                                $().ready(function() {
+                                    $(".color").attr('type', 'color');
+                                    {%set i = 0%}
+                                    {%for marcaTiempo in cocina.marcasTemporales %}
+                                    colores [{{i}}] = {{marcaTiempo.minutos}};
+                                        {%set i = i+1%}
+                                    {%endfor%}
+                                    $('#myTab1 a').click(function(e) {
+                                        e.preventDefault();
+                                        $(this).tab('show');
+                                    });
+                                    $('#myTab1 a').click();
+                                    esperaSolicitudes = setInterval(function() {
+                                        obtenerSolicitudes();
+                                    }, 3000);
+                                    var refreshId = setInterval(function() {
+                                        obtenerComandas();
+                                    }, 4000);
+                                    setInterval(function() {
+                                        actualizarTiempos();
+                                    }, 2000);
+                                    marcarPosibles()
+                                });
+
+                                function responder() {
+                                    var cant = $("#cantidadSolicitudes").attr("data-cantidad");
+                                    for (var i = 0; i < cant; i++) {
+                                        var id = $("#solicitud" + i).attr("data-solicitud-id");
+                                        var r = $("#solicitud" + i).val();
+                                        $.get("{{ path('responder_solicitud') }}", {idSolicitud: id, respuesta: r}).done(
+                                                function(data) {
+                                                });
+                                    }
+                                    esperaSolicitudes = setInterval(function() {
+                                        obtenerSolicitudes();
+                                    }, 2000);
+                                    $("#solicitudes").modal("hide");
+                                }
+
+                                function obtenerSolicitudes() {
+                                    $.get("{{ path('ver_solicitudes_pendientes') }}").done(
+                                            function(data) {
+                                                clearInterval(esperaSolicitudes);
+                                                $("#dataSolicitudes").html(data);
+                                                $("#solicitudes").modal("show");
+                                            });
+                                }
+
+                                function  inicializarFila(index) {
+                                    $(".color").attr('type', 'color');
+                                }
+
+                                function obtenerComandas() {
+                                    $.getJSON("{{ path('elaboracion_nuevas_comandas') }}").done(
+                                            function(data) {
+                                                var nuevasComandas = false;
+                                                data.forEach(function(ps) {
+                                                    if ($("#" + ps.id).length) {
+                                                        var pedido = "";
+                                                        ps.itemsPedido.forEach(function(it) {
+                                                            var productoVenta = it.productoVenta;
+                                                            var cantidad = it.cantidad;
+                                                            var ingredientes = it.ingredientes;
+                                                            var ing = "";
+                                                            ingredientes.forEach(function(i) {
+                                                                ing = ing + i;
+                                                            });
+                                                            pedido = pedido + "<tr data-item='" + productoVenta + "(" + ing + ")' data-cantidad='" + cantidad + "'><td>" + cantidad + " - " + productoVenta + "(" + ing + ")</td></tr>";
+                                                        });
+                                                        $("#" + ps.id + " .items").html(pedido);
+                                                        if ($("#" + ps.id).data("idtanda")) {
+                                                                $.post("{{ path('desvincular_pedido_tanda') }}", {tanda: $("#" + ps.id).data("idtanda"), pedido: ps.id}).done(
+                                                                    function(datos) {
+                                                                        $("#resumen" + $("#" + ps.id).data("idtanda")).html(datos);
+                                                                        $("#" + ps.id).attr('data-idtanda', "");
+                                                                        $("#" + ps.id + " .items tr").each(function() {
+                                                                            $(this).attr('class', '');
+                                                                        });
+                                                                        $.post("{{ path('vincular_pedido_tanda') }}", {tanda: $("#" + ps.id).data("idtanda"), pedido: ps.id}).done(
+                                                                                function(data) {
+                                                                                    $("#" + ps.id).attr('data-idtanda', $("#" + ps.id).data("idtanda"));
+                                                                                    $("#resumen" + $("#" + ps.id).data("idtanda")).html(data);
+                                                                                    marcarPosibles();
+                                                                                });
+                                                                    });
+                                                        }
+                                                    } else {
+                                                        var id = ps.id;
+                                                        var tipo = ps.tipo;
+                                                        var fecha = ps.fecha;
+                                                        var pedido = "<div class='box comanda column' id='" + id + "' data-idtanda='' draggable='true' ondragstart='drag(event)'><h2>" + tipo + "<span id='opciones" + id + "'></span></h2><span class='notification tiempo' title='" + fecha + "' style='font-size:16px;'></span><table class='table' style='font-size:12px;'><tbody class='items' style='max-height: 100px; overflow-y: visible;'>";
+                                                        ps.itemsPedido.forEach(function(it) {
+                                                            var productoVenta = it.productoVenta;
+                                                            var cantidad = it.cantidad;
+                                                            var ingredientes = it.ingredientes;
+                                                            var ing = "";
+                                                            ingredientes.forEach(function(i) {
+                                                                ing = ing + i;
+                                                            });
+                                                            pedido = pedido + "<tr data-item='" + productoVenta + "(" + ing + ")' data-cantidad='" + cantidad + "'><td>" + cantidad + " - " + productoVenta + "(" + ing + ")</td></tr>";
+                                                        });
+                                                        pedido = pedido + "</tbody></table></div>";
+                                                        $("#comandas").append($(pedido));
+                                                        nuevasComandas = true;
+                                                    }
+
+                                                });
+                                                if (nuevasComandas) {
+                                                    document.getElementById('player').play();
+                                                    var unique_id = $.gritter.add({
+                                                        // (string | mandatory) the heading of the notification
+                                                        title: 'Mensaje',
+                                                        // (string | mandatory) the text inside the notification
+                                                        text: 'Hay nuevos pedidos!!! Vea sus Pedidos en Espera. ',
+                                                        // (bool | optional) if you want it to fade out on its own or just sit there
+                                                        sticky: false,
+                                                        // (int | optional) the time you want it to be alive for before fading out
+                                                        time: '',
+                                                        // (string | optional) the class name you want to apply to that specific message
+                                                        class_name: 'my-sticky-class'
+                                                    });
+                                                }
+
+                                            });
+                                        }
+
+                                        function allowDrop(ev) {
+                                            ev.preventDefault();
+                                        }
+
+                                        function drag(ev) {
+                                            ev.dataTransfer.setData("Text", ev.target.id);
+                                        }
+
+                                        function drop(ev) {
+                                            ev.preventDefault();
+                                            var data = ev.dataTransfer.getData("Text");
+                                            ev.target.appendChild(document.getElementById(data));
+                                        }
+
+                                        function vincularComanda(ev, obj) {
+                                            var data = ev.dataTransfer.getData("Text");
+                                            ev.target.appendChild(document.getElementById(data));
+                                            var idComanda = data;
+                                            var idTandaPrevia = $("#" + idComanda).attr('data-idtanda');
+                                            if (idTandaPrevia != "") {
+                                                $.post("{{ path('desvincular_pedido_tanda') }}", {tanda: idTandaPrevia, pedido: idComanda}).done(
+                                                        function(data) {
+                                                            $("#resumen" + idTandaPrevia).html(data);
+                                                            $("#opciones" + idComanda).html("<a href='#'title='Ver Detalles' onclick='verDetalles(" + idComanda + ",event);'><i class='icon-edit'></i></a>");
+                                                            $.post("{{ path('vincular_pedido_tanda') }}", {tanda: obj, pedido: idComanda}).done(
+                                                                    function(data) {
+                                                                        $("#" + idComanda).attr('data-idtanda', obj);
+                                                                        $("#resumen" + obj).html(data);
+                                                                        marcarPosibles();
+                                                                    });
+                                                        });
+                                            } else {
+                                                $("#opciones" + idComanda).html("<a href='#'title='Ver Detalles' onclick='verDetalles(" + idComanda + ",event);'><i class='icon-edit'></i></a>");
+                                                $.post("{{ path('vincular_pedido_tanda') }}", {tanda: obj, pedido: data}).done(
+                                                        function(data) {
+                                                            $("#" + idComanda).attr('data-idtanda', obj);
+                                                            $("#resumen" + obj).html(data);
+                                                            marcarPosibles();
+                                                        });
+                                            }
+                                            $.post("{{ path('desvincular_pedido_tanda') }}", {tanda: idtanda, pedido: data}).done(
+                                                    function(datos) {
+                                                        $("#resumen" + idtanda).html(datos);
+                                                        $("#" + data).attr('data-idtanda', "");
+                                                        $("#" + data + " .items tr").each(function() {
+                                                            $(this).attr('class', '');
+                                                        });
+                                                        marcarPosibles();
+                                                    });
+                                        }
+
+                                        function desvincularComanda(ev) {
+                                            var data = ev.dataTransfer.getData("Text");
+                                            ev.target.appendChild(document.getElementById(data));
+                                            $("#opciones" + data).empty();
+                                            var idtanda = $("#" + data).attr('data-idtanda');
+                                            $.post("{{ path('desvincular_pedido_tanda') }}", {tanda: idtanda, pedido: data}).done(
+                                                    function(datos) {
+                                                        $("#resumen" + idtanda).html(datos);
+                                                        $("#" + data).attr('data-idtanda', "");
+                                                        $("#" + data + " .items tr").each(function() {
+                                                            $(this).attr('class', '');
+                                                        });
+                                                        marcarPosibles();
+                                                    });
+
+                                        }
+
+                                        function nuevaTanda() {
+                                            $.post("{{ path('nueva_tanda') }}").done(
+                                                    function(data) {
+                                                        $("#tandas").append(data);
+                                                    });
+                                        }
+
+                                        function actualizarTiempos() {
+                                            var d = new Date();
+                                            $(".tiempo").each(function() {
+                                                var dh = new Date($(this).attr("title"));
+                                                var diff = d.getTime() - dh.getTime();
+                                                var s = Math.round(diff / (1000 * 60));
+                                                $(this).html(s + " minutos");
+                                                var c = "notification tiempo";
+                                                if (colores.length > 0) {
+                                                    c = "notification tiempo minuto" + colores[0];
+                                                    for (var i = 1; i < colores.length; i++) {
+                                                        if (colores[i] <= s) {
+                                                            c = "notification tiempo minuto" + colores[i];
+                                                        }
+                                                    }
+                                                }
+                                                $(this).attr('class', c);
+                                            });
+                                        }
+
+                                        function mostrarRegistrar(id) {
+                                            $.get("{{ path('registrar_elaborados') }}", {idLineaTanda: id}).done(
+                                                    function(data) {
+                                                        $("#dataRegistrar").html(data);
+                                                    });
+                                            $("#registrar").modal("show");
+                                        }
+
+                                        function registrar() {
+                                            var cant = $("#registro").val();
+                                            var idLineaTanda = $("#registro").attr("data-id-lineatanda");
+                                            var idTanda = $("#registro").attr("data-id-tanda");
+                                            $.post("{{ path('registrar_elaborados') }}", {idLineaTanda: idLineaTanda, cantidad: cant}).done(
+                                                    function(data) {
+                                                        $("#resumen" + idTanda).html(data);
+                                                        marcarPosibles();
+                                                    });
+                                            $("#registrar").modal("hide");
+                                        }
+
+                                        function marcarPosibles() {
+                                            $(".resumen").each(function() {
+                                                var idTanda = $(this).attr("data-id-tanda");
+                                                var idResumen = $(this).attr("id");
+                                                var lineas = new Array();
+                                                var i = 0;
+                                                $("#" + idResumen + " tr").each(function() {
+                                                    var linea = $(this).attr("data-linea");
+                                                    var lineaCantidad = parseInt($(this).attr("data-cantidad"));
+                                                    var lineaCantidadElaborada = parseInt($(this).attr("data-cantidad-elaborada"));
+                                                    lineas[i] = new Array(linea, lineaCantidadElaborada);
+                                                    i++;
+                                                });
+                                                var select = ".comanda[data-idtanda*=" + idTanda + "] .items tr";
+                                                $(select).each(function() {
+                                                    var item = $(this).attr("data-item");
+                                                    var itemCantidad = parseInt($(this).attr("data-cantidad"));
+                                                    $(this).removeAttr('class');
+                                                    for (var j = 0; j < lineas.length; j++) {
+                                                        if ((item == lineas[j][0]) && (itemCantidad <= lineas[j][1])) {
+                                                            lineas[j][1] = lineas[j][1] - itemCantidad;
+                                                            $(this).attr('class', 'posible');
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        }
+
+
+                                        function verDetalles(id, ev) {
+                                            ev.preventDefault();
+                                            $.get("{{ path('detalles_pedido') }}", {idPedido: id}).done(
+                                                    function(data) {
+                                                        $("#imprimirDetalles").attr("data-id", id);
+                                                        $("#dataDetalles").html(data);
+                                                        $("#detalles").modal("show");
+                                                        $("#despachar").attr("data-id", id);
+                                                    });
+
+                                        }
+                                        
+                                        function imprimir(ev,element){
+                                            ev.preventDefault();
+                                            var id = ($(element).data("id"));
+                                            window.open("{{path('imprimirPedido')}}?_format=pdf&id="+id, '_blank');
+                                        }
+
+                                        function despachar(element, ev) {
+                                            ev.preventDefault();
+                                            var id = $(element).attr("data-id");
+                                            $.getJSON("{{ path('despachar_pedido') }}", {idPedido: id}).done(
+                                                    function(data) {
+                                                        if (data['respuesta']) {
+                                                            $("#detalles").modal("hide");
+                                                            var idt = $('#' + id).attr("data-idtanda");
+                                                            $.post("{{ path('resumen_tanda') }}", {idTanda: idt}).done(
+                                                                    function(datos) {
+                                                                        $("#resumen" + idt).html(datos);
+                                                                        marcarPosibles();
+                                                                        $('#' + id).remove();
+                                                                    });
+                                                            $('#' + id).toggle('fade', 1500);
+                                                        } else {
+                                                            $("#dataDetalles").append("<p>Nota: No se puede despachar este pedido, registre los items para esta Tanda</p>");
+                                                        }
+                                                    });
+                                        }
+
+                                    </script>    
+{%endblock%}        
+

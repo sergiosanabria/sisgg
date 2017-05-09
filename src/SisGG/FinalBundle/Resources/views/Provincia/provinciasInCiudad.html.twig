@@ -1,0 +1,21 @@
+<div class="control-group" id="provinciasR" name="provinciasR">
+            <label class="control-label">Provincia</label>
+            <div class="controls">
+     {{ form_widget(form.provincia) }} 
+            <a href="#a2" role="button" class="btn" data-toggle="modal">...</a>
+            </div>  
+        </div>
+    
+</div>  
+{% if msj2 %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>{{ msj2 }}</strong> 
+            </div>  
+        {% endif %}
+    {% if error %}
+            <div class="alert alert-error">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>{{ error }}</strong> 
+            </div>  
+        {% endif %}

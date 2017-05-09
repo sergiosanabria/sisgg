@@ -1,0 +1,118 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="pendientesFORM">
+    {%if error %}
+     <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                {{error}}
+            </div>
+        {%endif%}
+        {%if msj %}
+     <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Muy bien!</h4>
+                {{msj}}
+            </div>
+        {%endif%}
+<fieldset id="datosPEN">
+<table class="table table-bordered table-hover" id="pagos">
+    <thead class="header">
+        <th>Haber</th>
+        <th>Debe</th>
+        <th>Saldo</th>
+        <th>Descubierto</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="haberESP" data-value="{{empleado.cuenta.haber | number_format(2,'.', '')}}" >{{empleado.cuenta.haber | number_format(2,'.', '')}}</td>    
+            <td id="debeESP" data-value="{{empleado.cuenta.debe | number_format(2,'.', '')}}">{{empleado.cuenta.debe| number_format(2,'.', '')}}</td>
+            {%set saldo= empleado.cuenta.haber - empleado.cuenta.debe %}
+            <td id="saldoESP" data-value="{{saldo | number_format(2,'.', '')}}">{{saldo | number_format(2,'.', '')}}</td>
+            <td id="neagtivo" style="color: red" data-value="{{empleado.cargo.negativo | number_format(2,'.', '')}}" ><b>{{empleado.cargo.negativo  | number_format(2,'.', '')}}</b></td>    
+        </tr>
+    </tbody>
+</table>
+<div class="row-fluid sortable ui-sortable">
+    <div class="box span12">
+        <div class="box-header">
+            <h2><i class="icon-th"></i><span class="break"></span>Productos</h2>
+        <div class="box-icon">
+            <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+        </div>
+        <div class="box-content">
+            <p>
+                
+                {%if registros | length > 0 %}
+<table class="table table-bordered table-hover" id="pagos">
+                <thead class="header">
+                    <th>Periodo</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Descripcion</th>
+                </thead>
+                {%set total = 0%}
+                {%for i in registros%}
+                {%set total=i.monto + total %}
+                <tr>
+                <td>{{i.inicio | date("d/m/Y")}} - {{i.fin | date("d/m/Y")}}</td>    
+                <td style="text-align: right">{{i.monto}}</td>
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td>{{i.descripcion}}</td>
+                </tr>
+                {%endfor%}
+                <tfoot>
+                    <tr>
+                        <td style="text-align: right"><b>TOTAL</b></td>
+                        <td style="text-align: left"><b>$ {{total | number_format(2, '.')}}</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+{%else%}
+<h3>No se han pagos pendientes.</h3>
+{%endif%}
+
+                
+            
+            </p>
+        </div>
+    </div><!--/span-->
+</div>
+        <div class="form-actions">
+            <button {%if empleado.cantiadDePendientes <=0 %} disabled="disabled"  {%endif%} class="btn btn-primary" type="button" onclick="modalPendiente ('1');" title="Regitra el primer pago del empleado"  >Registrar primer pago</button>
+            <button {%if empleado.cantiadDePendientes <=0 %} disabled="disabled"  {%endif%}  class="btn btn-primary" type="button" onclick="modalPendiente ('2');"  title="Regitra el todos los pagos del empleado"  >Registrar todos los pagos</button>
+            <a type="button"  onclick="cerrarEspecies(this, 'pendientes');" class="btn">Cancelar</a>
+        </div>
+</fieldset>
+</form>
+<div id="verModalPEN" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+      <button type="button" class="close" onclick="cerrarEspecies(this, 'verModalPEN');">×</button>
+    <h3 id="myModalLabel">Registro de pagos</h3>
+  </div>
+  <div class="modal-body">
+      Está seguro que desea registrar el(los) pago(s)?
+  </div>
+        <form id="form" method="post">      
+  <div class="modal-footer">
+      <button class="btn btn-primary" type="button" onclick="enviarPendientes();" >Aceptar</button>
+      <button class="btn" type="button" onclick="cerrarEspecies(this, 'verModalPEN');">Cancelar</button>
+  </div>
+</form>
+</div>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    El pago en especies ha sido correctamente registrado.
+</div>
+{%endif%}

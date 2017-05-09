@@ -1,0 +1,44 @@
+{#{% extends "::base.html.twig" %}
+{%block title%}Perfil de usuario{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('usuarios')}}">Usuarios</a>
+</li></a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Perfil de usuario</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Nuevo usuario</legend>#}
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+        {% if msj %}
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡MUY BIEN!</h4>
+                {{ msj }}
+            </div>
+        {% endif %}
+        <form class="form-horizontal">
+        {{ form_widget(form) }}
+               
+        </form> 
+{#        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+var elemento ='sisgg_finalbundle_usuariotype_';
+
+ </script>
+{%endblock%}#}

@@ -1,0 +1,44 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="etiquetaForm" onsubmit="altaEtiqueta(event);">
+    {%if error %}
+     <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                {{error}}
+            </div>
+        {%endif%}
+<fieldset id="datosEtiqueta">
+
+    {{form_widget(form)}}
+    
+        {#<div class="control-group">
+            <label class="control-label"  for="sisgg_finalbundle_etiquetaagendatype_color">Etiqueta (*)</label>
+            <div class="controls">
+                 <input id="AlterColors" type="text" value="e2ddcf" name="AlterColors"/>
+            </div>
+        </div>#}
+   
+    {{form_rest(form)}}
+
+        <div id="divCuenta" style="display: none"> <input type="hidden" id="cuentaADIC" name="cuentaADIC"> </div>
+        <div class="form-actions">
+            <button class="btn btn-primary"  type="submit">Aceptar</button>
+            <button class="btn" type="button" onclick="cancelarEtiqueta();">Cancelar</button>
+        </div>
+         
+</fieldset>
+</form>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    La etiqueta a sido exitosamente registrada.
+</div>
+{%endif%}

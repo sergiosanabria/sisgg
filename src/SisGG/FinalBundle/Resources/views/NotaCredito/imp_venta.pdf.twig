@@ -1,0 +1,165 @@
+{% extends "::factura.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Factura {%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-size="10" font-type="helvetica" width='100%'>
+    <div>
+                <b font-size="12">Datos del Cliente: </b>
+    </div>
+        <p></p>
+    <table width='100%'>
+    <tr width='100%'>
+        <td width='100%' text-align="left" border.type="none">
+            <div>
+                <b>Apellido y Nombre, Denominación o Razón Social: </b> {{venta.nombre}}
+            </div>
+            <div>
+                <b>IVA: </b> {{venta.condicionIva}}
+            </div>    
+            <div>
+                <b>Cuit: </b> {{venta.cuit}}
+            </div>
+            <div>
+                <b>Domicilio: </b> {%if venta.cliente !=null%}{{venta.cliente.direccion}}{%endif%}
+            </div>    
+        </td>
+        <td border.type="none" style="text-align: left"> </td>
+        
+        </tr>
+    </table>
+    <div breakable='true'>
+                    <p></p>
+                    {%if venta.tipoFactura.discriminarIva%}
+                    <table  font-size="9" >
+                            <tr  background-color="#F8F8F8" >
+                                <td padding='10px' text-align='center'>Cantidad</td>   
+                                <td padding='10px' text-align='center' width='40%'>Descripcion</td>
+                                <td padding='10px' text-align='center'>Precio Unitario</td>
+                                <td padding='10px' text-align='center'>Bonificacion</td>
+                                <td padding='10px' text-align='center'>Total de Linea</td>
+                            </tr> 
+                            {%set subtotal = 0.00%}
+                            {%for lineaVenta in venta.lineasVenta%}
+                                        <tr >
+                                            {%set precioUnitarioSinIva = (lineaVenta.precioUnitario / (lineaVenta.productoVenta.iva.tasa/100+1))|number_format(2)%}
+                                            {%set totalLinea = (lineaVenta.cantidad * (precioUnitarioSinIva  - (precioUnitarioSinIva * lineaVenta.bonificacion /100)))|number_format(2)%}
+                                            <td  padding='10px'>{{lineaVenta.cantidad}}</td>
+                                            <td  padding='10px'>{{lineaVenta.productoVenta.descripcion|trim != '' ? lineaVenta.productoVenta.descripcion : lineaVenta.productoVenta.nombre}} - Gravado con el IVA con alicuota {{lineaVenta.ivaProductoVenta.tasa}}%</td>
+                                            <td  padding='10px' text-align='right'>$ {{precioUnitarioSinIva}}</td>
+                                            <td  padding='10px' text-align='right'>{{lineaVenta.bonificacion|number_format(2)}}</td>
+                                            <td  padding='10px' text-align='right'>$ {{totalLinea}}</td>
+                                            {%set subtotal = subtotal + totalLinea%}
+                                        </tr>    
+                            {%endfor%}
+                            {%for recargo in venta.itemsRecargoVenta%}
+                                        <tr >
+                                            {%set precioUnitarioSinIva = (recargo.totalRecargo / (recargo.recargo.iva.tasa/100+1))|number_format(2)%}
+                                            {%set totalLinea = ((precioUnitarioSinIva ))|number_format(2)%}
+                                            <td  padding='10px'>1.00</td>
+                                            <td  padding='10px'>{{recargo.recargo.descripcion|trim != '' ? recargo.recargo.descripcion : recargo.recargo.nombre}} - Gravado con el IVA con alicuota {{recargo.recargo.iva.tasa}}%</td>
+                                            <td  padding='10px' text-align='right'>$ {{precioUnitarioSinIva}}</td>
+                                            <td  padding='10px' text-align='right'>{{0|number_format(2,'.','')}}</td>
+                                            <td  padding='10px' text-align='right'>$ {{totalLinea|number_format(2,'.','')}}</td>
+                                            {%set subtotal = subtotal + totalLinea%}
+                                        </tr>    
+                            {%endfor%}            
+                            {%set i = 0%}
+                                        <tr>
+                                            <td  colspan="2"></td>
+                                            <td  padding='10px' colspan="2">SubTotal</td>
+                                            <td  padding='10px' text-align='right'>$ {{subtotal|number_format(2,'.','')}}</td>
+                                        </tr>
+                                        {%for descuento in venta.itemsDescuentoVenta%}    
+                                        {%if descuento.totalDescuento > 0.00%}
+                                            <tr>
+                                                <td colspan="2"></td>
+                                                <td  padding='10px' colspan="2">Descuento {{descuento.descuento}}</td>
+                                                <td  padding='10px' text-align='right'>- $ 0.00</td>
+                                            </tr>
+                                        {%endif%}    
+                                        {%endfor%} 
+                                        {%for iva  in ivas%}
+                                            {%if iva['total']>0.00%}
+                                            <tr>
+                                                <td colspan="2"></td>
+                                                <td  padding='10px' colspan="2">IVA {{iva['iva'].tasa}}</td>
+                                                <td  padding='10px' text-align='right'>$ {{iva['total']|number_format(2,'.','')}}</td>
+                                            </tr>
+                                            {%set i = 1%}
+                                            {%endif%}
+                                        {%endfor%} 
+                                           
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td  padding='10px' colspan="2">Total</td>
+                                            <td  padding='10px' text-align='right'>${{venta.total|number_format(2)}}</td>
+                                        </tr>            
+                        </table>
+                        {%else%}
+                         <table  font-size="9" >
+                            <tr  background-color="#F8F8F8" >
+                                <td padding='10px' text-align='center'>Cantidad</td>   
+                                <td padding='10px' text-align='center' width='40%'>Descripcion</td>
+                                <td padding='10px' text-align='center'>Precio Unitario</td>
+                                <td padding='10px' text-align='center'>Bonificacion</td>
+                                <td padding='10px' text-align='center'>Total de Linea</td>
+                            </tr> 
+                            {%set subtotal = 0.00%}
+                            {%for lineaVenta in venta.lineasVenta%}
+                                        <tr >
+                                            {%set precioUnitarioSinIva = (lineaVenta.precioUnitario)|number_format(2)%}
+                                            {%set totalLinea = (lineaVenta.cantidad * (precioUnitarioSinIva  - (precioUnitarioSinIva * lineaVenta.bonificacion /100)))|number_format(2)%}
+                                            <td  padding='10px'>{{lineaVenta.cantidad}}</td>
+                                            <td  padding='10px'>{{lineaVenta.productoVenta.descripcion|trim != '' ? lineaVenta.productoVenta.descripcion : lineaVenta.productoVenta.nombre}} - Gravado con el IVA con alicuota {{lineaVenta.ivaProductoVenta.tasa}}%</td>
+                                            <td  padding='10px' text-align='right'>$ {{precioUnitarioSinIva}}</td>
+                                            <td  padding='10px' text-align='right'>{{lineaVenta.bonificacion|number_format(2)}}</td>
+                                            <td  padding='10px' text-align='right'>$ {{totalLinea}}</td>
+                                            {%set subtotal = subtotal + totalLinea%}
+                                        </tr>    
+                            {%endfor%}
+                            {%for recargo in venta.itemsRecargoVenta%}
+                                        <tr >
+                                            {%set precioUnitarioSinIva = (recargo.totalRecargo)|number_format(2)%}
+                                            {%set totalLinea = ((precioUnitarioSinIva ))|number_format(2)%}
+                                            <td  padding='10px'>1.00</td>
+                                            <td  padding='10px'>{{recargo.recargo.descripcion|trim != '' ? recargo.recargo.descripcion : recargo.recargo.nombre}} - Gravado con el IVA con alicuota {{recargo.recargo.iva.tasa}}%</td>
+                                            <td  padding='10px' text-align='right'>$ {{precioUnitarioSinIva}}</td>
+                                            <td  padding='10px' text-align='right'>{{0|number_format(2,'.','')}}</td>
+                                            <td  padding='10px' text-align='right'>$ {{totalLinea|number_format(2,'.','')}}</td>
+                                            {%set subtotal = subtotal + totalLinea%}
+                                        </tr>    
+                            {%endfor%}            
+                            {%set i = 0%}
+                                        <tr>
+                                            <td  colspan="2"></td>
+                                            <td  padding='10px' colspan="2">SubTotal</td>
+                                            <td  padding='10px' text-align='right'>$ {{subtotal|number_format(2,'.','')}}</td>
+                                        </tr>
+                                        {%for descuento in venta.itemsDescuentoVenta%}    
+                                        {%if descuento.totalDescuento > 0.00%}
+                                            <tr>
+                                                <td colspan="2"></td>
+                                                <td  padding='10px' colspan="2">Descuento {{descuento.descuento}}</td>
+                                                <td  padding='10px' text-align='right'>- $ {{descuento.totalDescuento}}</td>
+                                            </tr>
+                                        {%endif%}    
+                                        {%endfor%}
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td  padding='10px' colspan="2">Total</td>
+                                            <td  padding='10px' text-align='right'>${{venta.total|number_format(2)}}</td>
+                                        </tr>            
+                        </table>  
+                        {%endif%}
+            </div>
+      </div>
+{%endblock%}        

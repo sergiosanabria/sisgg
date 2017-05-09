@@ -1,0 +1,6 @@
+{%for mesa in mesas%}
+    <a class="quick-button-small span2 mesa" onclick="seleccionarMesa({{mesa.id}});">
+        <p id="numero" class="numero">{{mesa.numero}}</p>
+        <span id="estado{{mesa.id}}" class="notification {%if mesa.estado == "Ocupado" %}red{%endif%}" {%if mesa.estado == "Ocupado" %}data-idpedido='{{mesa.pedidoActivo.id}}'{%endif%}>{{mesa.estado}}</span>
+    </a>
+{%endfor%}

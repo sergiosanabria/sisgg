@@ -1,0 +1,36 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Tipos de Documento</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar Tipo de Documento</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Editar Tipo de Documento</legend>
+            <form name="cliente" class="form-horizontal" action="{{ path('editar_tipo_documento') }}?id={{id}}" method="post">
+                <fieldset>
+                        {{form_widget(form)}}    
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="#" onclick="history.back();"  type="button" class="btn">Cancelar</a>
+                </div>    
+            </form>
+        </div>
+    </div><!--/span-->
+</div><!--/row-->
+{% endblock %}
+{%block javascripts%}
+{{parent()}}   
+{%endblock%}
+{% block ajax %}
+{% endblock %}

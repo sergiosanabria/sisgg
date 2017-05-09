@@ -1,0 +1,77 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Datos del pre elaborado {{producto.nombre}}{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="15px" font-size="17" text-decoration="underline">Datos del pre elaborado  {{producto.nombre}}</div>
+<div font-size="11" font-type="helvetica">
+    <table>
+    <tr>
+        <td text-align="left" border.type="none">
+            <div>
+                <b>Nombre: </b> {{producto.nombre}}
+            </div>
+            <div>
+                <b>Descipción: </b> {{producto.descripcion}}
+            </div>
+            <div>
+                <b>Categoria: </b> {{producto.categoria}}
+            </div>
+            <div>
+                <b>Precio de costo: </b> ${{producto.precioCosto}}
+            </div>
+            <div>
+                <b>Cantidad: </b> {{producto.cantidad}}
+            </div>
+            <div>
+                <b>Cantidad mínima: </b> {{producto.cantidadMinima}}
+            </div>
+            <div>
+                <b>Unidad de medida: </b> {{producto.tasa}}
+            </div>
+        </td>
+        <td border.type="none" style="text-align: left"> </td>
+        
+        </tr>
+    </table>
+            {%if producto.ingredientes | length >0%}
+    <h3>Ingredientes</h3>
+                    <table>
+                            <tr background-color="#F8F8F8">
+                                <td><b>Nombre</b></td>
+                                <td><b>Cantidad</b></td>
+                                <td><b>Unidad de medida ing.</b></td>
+                                <td><b>Costo</b></td>
+                            </tr> 
+                   {%for i in producto.ingredientes %}  
+                            <tr>
+                            <td>{{i.productoProduccion}}</td>
+                            <td text-align="center">{{i.cantidad}}</td>
+                            <td>{{i.tasa}}</td>
+                            <td text-align="center">{{i.precioCosto}}</td>
+                           
+                        </tr>
+                        {%endfor%}
+            </table>
+    {%else%}
+    <h3>No contiene ingredientes registrados</h3>
+    {%endif%}
+      </div>
+
+{#enLetras#}
+{#Titulo<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Libro iva compras: {{mes}} de {{año}}</div>#}
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+                        {#font-type="helvetica"#}
+
+        
+
+{%endblock%}

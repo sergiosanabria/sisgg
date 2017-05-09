@@ -1,0 +1,142 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .active{
+            font-weight: bold;
+        }
+        .estado{
+            text-align: center;
+        }
+    </style>        
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Registros de Envios</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid">
+        <div class="box span12">
+            <div class="box-content">
+            {% set activos = 0%}
+            {% set inactivos = 0%}    
+            {% for registroEnvio in registrosEnvio%}
+                {%if registroEnvio.estado=='activo'%}
+                    {% set activos = activos+1%}
+                {% elseif registroEnvio.estado=='inactivo'%}
+                    {% set inactivos = inactivos+1%}
+                {% endif %}
+            {% endfor %}     
+                    <legend>Registro de Envios
+                        <div class="btn-group" style='float:right;'>
+                            <a title="Nuevo registro" href="{{path('nuevo_registro_envio')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+                            <a class="btn"><i class="icon-print"></i></a>
+                        </div>
+                        <small class='filtros'>
+                            <ul class="nav nav-pills" id="myTab1">
+                                <li class='filtro {%if (estado=='activo') or (estado==null)%}active{%endif%}'><a href='{{path('registros_envios')}}' >Activos({{activos}})</a></li>
+                                <li class='filtro {%if estado=='inactivo'%}active{%endif%}'><a href='{{path('registros_envios')}}?estado=inactivo' >Inactivos({{inactivos}})</a></li> 
+                                <li class='filtro {%if estado=='todos'%}active{%endif%}' ><a href='{{path('registros_envios')}}?estado=todos' >Todos({{activos+inactivos}})</a></li>
+                            </ul>
+                        </small>                
+                    </legend>
+                    <table class="table table-striped table-bordered" id="registrosEnvio">
+                        <thead class="header">
+                            <tr>
+                                <th id="fecha">Fecha emisión</th>
+                                <th>Numero</th>
+                                <th>Empleado</th>
+                                <th>Total pedidos</th>
+                                <th id="fecha">Fecha rendición</th>
+                                <th>Total rendido</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                {%if estado==null%}
+                        {%set estado='activo'%}        
+                {% endif %}        
+                {% for registroEnvio in registrosEnvio%}
+                     {%if estado=='todos' or registroEnvio.estado==estado%}   
+                                <tr>
+                                    <td>{{registroEnvio.fecha|date("Y/m/d g:i a")}}</td>
+                                    <td>{{registroEnvio.numeroRegistro}}</td>
+                                    <td>{{registroEnvio.empleado}}</td>
+                                    <td style='text-align:right'>$ {{registroEnvio.totalPedidos|number_format(2,'.','')}}</td>
+                                    <td>{%if registroEnvio.fechaRendicion!=null%}{{registroEnvio.fechaRendicion|date("Y/m/d g:i a")}}{%else%}Aún no rendido{%endif%}</td>
+                                    <td style='text-align:right'>$ {{registroEnvio.totalRendido|number_format(2,'.','')}}</td>
+                                    <td class='estado' style='text-align: center;'>{%if registroEnvio.estado=='activo'%}<span class="label label-success">Activo</span>{%elseif registroEnvio.estado=='inactivo'%}<span class="label label-important">Inactivo</span>{%endif%}</td>
+                            {%if registroEnvio.estado=='activo'%}
+                                    <td>
+                                        {%if registroEnvio.fechaRendicion==null%}
+                                            <a class='rendir' href='#' rel="tooltip" title="Rendir Envio" data-registroenvio='{{registroEnvio.id}}' data-id='{{registroEnvio.id}}'><i class="fa-icon-money"></i></a>
+                                            <a rel="tooltip" title="Editar" href="{{path('modificar_registro_envio')}}?id={{registroEnvio.id}}"><i class="icon-edit"></i></a>
+                                            <a class='borrar' href='#' rel="tooltip" title="Pasar a Inactivo" data-registroenvio='{{registroEnvio.id}}' data-id='{{registroEnvio.id}}'><i class="icon-remove"></i></a>
+                                        {%endif%}
+                                        <a class='imp' href='#' rel="tooltip" title="Imprimir" data-registroenvio='{{registroEnvio.id}}' data-id='{{registroEnvio.id}}'><i class="icon-print"></i></a>
+                                        
+                                    </td>
+                            {%else%}
+                                    <td>
+                                    </td>
+                            {% endif %}
+                                </tr>
+                     {% endif %}       
+                {% endfor %}       
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!--/span-->
+            </div><!--/row-->
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+            <div class="modal hide fade" id="eliminarCliente">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Atención!!!</h3>
+                </div>
+                <div id="dataEliminar" class="modal-body">
+                    ¿Esta seguro que desea eliminar el registro <span id='registroEnvio' style='font: bold cursive;'></span> a estado Inactivo?
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                    <a class="btn btn-primary" id='confirmarBorrado'>Confirmar</a>
+                </div>
+            </div>
+{%endblock%}       
+{%block javascripts%}
+{{parent()}}    
+            <script type="text/javascript">
+                $().ready(function() {
+                    $("#fecha").click();
+                    $('.imp').each(function() {
+                        $(this).click(function(ev) {
+                            ev.preventDefault();
+                            location.href = "{{path('imprimir_registro_envio')}}?id=" + $(this).data('id') + "&_format=pdf";
+                        });
+                    });
+                    $('.borrar').each(function() {
+                        $(this).click(function(ev) {
+                            ev.preventDefault();
+                            $('#dataEliminar #registroEnvio').html($(this).data('registroenvio'));
+                            $('#borrar').attr('href', '{{path('borrar_registro_envio')}}?id=' + $(this).data('id'));
+                            $('#eliminarCliente').modal('show');
+                        });
+                    });
+                    $(".rendir").click(function() {
+                        var id = $(this).data('registroenvio');
+                        location.href = "{{path('rendir_registro_envio')}}?id="+id;
+                    });
+                    $("#confirmarBorrado").click(function() {
+                        var id = $('#dataEliminar #registroEnvio').html();
+                        location.href = "{{path('borrar_registro_envio')}}?id="+id+"&estado={{estado}}";
+                    });
+                })
+                </script>    
+{%endblock%}

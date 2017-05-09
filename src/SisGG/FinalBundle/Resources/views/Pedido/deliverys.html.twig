@@ -1,0 +1,295 @@
+{% extends "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .Listo{
+            border-color: #5AAD34;
+            background-color: #78CD51;
+        }
+
+        .Nuevo,.Iniciado,.Actualizado{
+            border-color: #2FABE9;
+            background-color: #67C2EF;
+        }
+
+        .transformarMesas>.mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 50px;
+            margin: 5px;
+        }
+
+        .mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 50px;
+            margin: 5px;
+        }
+
+        .row-fluid [class*="span"]:first-child .mesa, .row-fluid [class*="span"]:first-child .producto  {
+            margin:10px;
+        }
+
+        .tab-pane:first-child{
+            margin:10px;
+        }
+
+
+        .sector{
+            width: 99%;
+            height: 30px;
+        }
+        .sectores{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .mesas{
+            border: 1px solid #ddd;
+            height: 100px;
+            max-height: 100px;
+            overflow-y: auto;
+            overflow-x: no-display;
+        }
+
+        .producto{
+            background-color: #005580;
+            width: 200px;
+            height: 100px;
+            margin: 20px;
+        }
+        .categorias{
+            border: 1px solid #ddd;
+            height: 120px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .productos{
+            border: 1px solid #ddd;
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .numero{
+            font-size: xx-large;
+            color: white;
+        }
+        .item,.total{
+            font-style: oblique;
+            font-weight: bold;
+        }
+        .descripcion{
+            font-style: oblique;
+        }
+
+        posisionable{
+            position: relative;
+            top: 32px;
+            left:32px;
+        }
+
+        .btn-group{
+            position:inherit;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Pedidos</a> <span class="divider">/</span>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <form class='form-horizontal'>
+                <div class="box-content">
+                {%set mostrador=0%}
+                {%set delivery=0%}
+                {%for pedido in pedidos%}
+                    {%if pedido.isMostrador%}
+                        {%set mostrador=mostrador+1%}
+                    {%endif%}
+                    {%if pedido.isDelivery%}
+                        {%set delivery=delivery+1%}
+                    {%endif%}                    
+                {%endfor%}    
+                        <legend>Envio de pedidos <div class="pull-right btn-group">
+                                <btn id='nuevoPedido' title="Nuevo Pedido" onclick='nuevoPedido();' class="btn"><i class="fa-icon-plus-sign"></i></btn>
+                                <btn class="btn"><i class="icon-print"></i></btn>
+                            </div><small>
+                                <ul class="nav nav-pills" id="myTab1">
+                                    <li><a id='tabDelivery' href="#profile" data-href='{{path('nuevo_pedido_delivery')}}'>Pedidos Delivery({{delivery}})</a></li>
+                                    <li><a id='tabMaps' href="#maps" data-href='{{path('nuevo_pedido_delivery')}}'>Mostrar en GMaps</a></li>
+                                </ul>
+                            </small>
+                        </legend>
+
+                        <div class="tab-content">           
+                            <div class="tab-pane" id="profile">
+                                <div class='span12' style='margin:0px;'>
+                                    <div class='span6' style='margin:0px;'>
+                                        <table class="table table-striped table-bordered" id="tableDelivery">
+                                            <thead>
+                                                <tr>
+                                                    <th><input type='checkbox' id='check_all'  /></th>
+                                                    <th>N°</th>
+                                                    <th>Apellido y Nombre</th>
+                                                    <th>Dirección</th>
+                                                    <th>Estado</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id='deliverys'>
+                                {%set n=1%}
+                                {%for pedido in pedidos%}
+                                        {%if pedido.isDelivery%}
+                                            {%if pedido.estado == 'listo' or pedido.estado == 'Listo' or pedido.estado == 'facturado' or pedido.estado == 'Facturado'%}
+                                                    <tr style='cursor:pointer;' onclick="seleccionarPedidoDelivery({{pedido.id}}, '{{pedido.solicitante}}', '{{pedido.direccion.ciudad.provincia|capitalize}},{{pedido.direccion.ciudad|capitalize}},{{pedido.direccion.calle|capitalize}} {{pedido.direccion.numero}}',{{n}})">
+                                                        <td><input type='checkbox' class='check' id="{{pedido.id}}_check"  data-direccion= "{{pedido.direccion.ciudad.provincia|capitalize}},{{pedido.direccion.ciudad|capitalize}},{{pedido.direccion.calle|capitalize}} {{pedido.direccion.numero}}" /></td>
+                                                        <td>{{n}}</td>
+                                                        <td>{{pedido.solicitante}}</td>
+                                                        <td>{{pedido.direccion}}</td>
+                                                        <td>{{pedido.estado}}</td>
+                                                        <td>${{pedido.precio}}</td>
+                                                    </tr>
+                                        {%set n=n+1%}                     
+                                            {%endif%}
+                                        {%endif%}
+                                {%endfor%}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class='span6' style='margin:0px;'>
+                                            <div class='control-group'>
+                                                <label class='control-label'>Total </label>
+                                                <div class='controls controls-row'>    
+                                                    <input id='total' class='span9' type='text' disabled='disabled'/>
+                                                </div>
+                                            </div>
+                                            <div class='control-group'>
+                                                <label class='control-label'>Encargado de envio </label>
+                                                <div class='controls controls-row'>    
+                                                    <input id='total' class='span9' type='text' disabled='disabled'/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='span12' style='margin-left:0px;'></div>
+
+                                </div>
+
+                                <div class="tab-pane" id="maps">  
+                                    <div id="map_canvas" class="span12 thumbnail" style="margin-left: 0px; height: 500px;">
+
+                                    </div>
+                                </div>    
+                            </div>
+                    </form>  
+                </div>  
+            </div>
+        </div>
+        <hr>
+{% endblock %}
+{%block modal%}
+{{parent()}}
+        <div class="modal hide fade" id="cancelar">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Atención</h3>
+            </div>
+            <div id="dataCancelar" class="modal-body">
+                <p>¿Está seguro que desea cancelar este pedido?</p>
+
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">No</a>
+                <a href="#" class="btn btn-primary" id="cancelarPedido" >Si</a>
+            </div>
+        </div>
+
+        <form id='formularioCambio'>    
+            <div class="modal hide fade" id="transformar">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Pasar a ...</h3>
+                </div>
+                <div id="dataTransformar" class="modal-body">
+
+                </div>data-
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" id='envia'r'>Aceptar</button>
+                </div>        
+            </div>
+        </form>        
+
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+        <script type="text/javascript">
+                                    var map = null;
+                                    var geocoder = null;
+
+                                    function nuevoPedido() {
+                                        $('#myTab1 > li.active a').each(function() {
+                                            if ($(this).data('href')) {
+                                                location.href = $(this).data('href');
+                                            }
+                                        });
+                                    }
+
+                                    function initialize() {
+                                        if (GBrowserIsCompatible()) {
+                                            map = new GMap2(document.getElementById("map_canvas"));
+                                            map.setCenter(new GLatLng(37.4419, -122.1419), 20);
+                                            geocoder = new GClientGeocoder();
+                                        }
+                                    }
+
+                                    function showAddress(address) {
+                                        if (geocoder) {
+                                            geocoder.getLatLng(
+                                                    address,
+                                                    function(point) {
+                                                        if (!point) {
+                                                            alert(address + " not found");
+                                                        } else {
+                                                            map.setCenter(point, 13);
+                                                            var marker = new GMarker(point);
+                                                            map.addOverlay(marker);
+                                                        }
+                                                    }
+                                            );
+                                        }
+                                    }
+
+                                    $().ready(function() {
+                                        $('a[href="#maps"]').on('shown', function(e) {
+                                            initialize();
+                                            map.clearOverlays();
+                                            $(".check:checked").each(function() {
+                                                showAddress($(this).data('direccion'));
+                                            });
+                                        });
+                                        $('#myTab1 a').click(function(e) {
+                                            e.preventDefault();
+                                            $("#nuevoPedido").hide();
+                                            $(this).tab('show');
+                                        });
+                                        $('#myTab1 a:first').click();
+                                        $('#tableDelivery tbody tr:first').click();
+                                        $('#tabDelivery').click(function() {
+                                            $('#tableDelivery tbody tr:first').click();
+                                        });
+
+                                    });
+
+            </script>
+            <script src="//maps.google.com/maps?file=api&amp;v=2.x&amp;key=AIzaSyCvLMnt-1oYab5-pqm6xK-659JFbyen2nk" type="text/javascript">
+
+                </script>
+{%endblock%}

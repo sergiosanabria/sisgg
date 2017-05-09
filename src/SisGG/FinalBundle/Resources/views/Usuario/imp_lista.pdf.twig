@@ -1,0 +1,40 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Usuarios{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Usuarios</div>
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+        <table  font-type="helvetica" font-size="10">
+            <tr background-color="#FAFAFA" >
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Apellido y nombre</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>E-mail</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Nombre de usuario</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Rol</b></td>
+                <td height="25px"  style=" text-align: center;vertical-align: middle;"><b>Empleado</b></td>
+            </tr>
+                  
+
+              {% for i in items%}
+            <tr>
+                <td padding="2.5px">{{i.apellido}}, {{i.nombre}}</td>
+                <td padding="2.5px">{{i.email}}</td>
+                <td padding="2.5px">{{i.username}}</td>
+                <td padding="2.5px">{{i.role}}</td>
+                <td padding="2.5px" text-align="center" >{%if i.isEmpleado%} SI {%else%} NO {%endif%}</td>
+            </tr>   
+            {% endfor %}
+           
+        </table>
+
+{%endblock%}

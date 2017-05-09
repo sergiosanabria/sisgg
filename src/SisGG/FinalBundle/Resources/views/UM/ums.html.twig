@@ -1,0 +1,139 @@
+{% extends "::base.html.twig" %}
+{%block title%}Unidades de medida{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Unidades de medida</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<legend>Unidades de medida</legend>
+        {% if error %}
+            <div class="alert alert-error">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>{{ error }}</strong> 
+            </div>  
+        {% endif %}
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+<div class="pull-right btn-group">
+    <a title="Nueva unidad de medida" href="{{path('nuevaUM')}}" class="btn"><i class="fa-icon-plus-sign"></i></a>
+    <a title="Ver lista de productos para producción" href="{{path('pps')}}" class="btn"><i class="fa-icon-list"></i></a>
+    <a class="btn"><i class="icon-print"></i></a>
+</div>
+ <div><br><br></div>
+    <div class="accordion" id="acordion2">
+         {% for um in ums%} 
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" title="Click para ver/ocultar las tasas" data-toggle="collapse" data-parent="#acordion2" href="#{{um.id}}">{{um.nombre}}: {{um.descripcion}}</a>
+                <div class="btn-group">
+                    <button class="ex" title="Nueva tasa" onclick="redir(1,'{{um.id}}')" title="Nueva tasa"><i class="fa-icon-plus-sign"></i></button>
+                    <button  onclick="redir(2,'{{um.id}}')" title="Editar unidad de medida"><i class="fa-icon-edit"></i></button>
+                    <button href="#" title="Eliminar unidad de medida"  onclick="eliminarUM('{{um.id}}','{{um.nombre}}')"><i class="fa-icon-trash"></i></button>
+                </div>
+            </div>
+            <div id="{{um.id}}" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <table class="table table-hover" data-spy="scroll">
+                        <thead class="header">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Abreviatura</th>
+                                <th>Unidades</th>
+                                <th style="text-align: center">Pivote</th>
+                                <th style="text-align: center">Acciones</th>
+                            </tr> 
+                        </thead>
+                   {%for t in um.tasas%}
+                        <tr data-placement="top" data-original-title="Descripción:" data-content="{{t.descripcion}}" id="{{um.id}}{{t.id}}" onmouseout="cerrarPop(this)" onmouseover="mostrarPop(this)">
+                            <td>{{t.nombre}}</td>
+                            <td>{{t.abrev}}</td>
+                            <td>{{t.valor}}</td>
+                            <td style="text-align: center;width: fit-content" >{% if t.pivote %}<i class="fa-icon-ok"> {% endif %}{% if not t.pivote %}<i class="fa-icon-remove"> {% endif %}</td>
+                            <td style="text-align: center;width: fit-content" >
+                                <a href="{{ path('editarTasa', { 'id': t.id }) }}" title="Editar"><i class="fa-icon-edit"></i></a>
+                                {% if not t.pivote %}<a href="#" title="Eliminar"  onclick="eliminarTasa('{{t.id}}','{{t.nombre}}')"><i class="fa-icon-trash"></i></a>{% endif %}
+                             </td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    
+                </div>
+            </div>
+         </div>
+            {%endfor%} 
+    </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block modal %}
+ <div id="eliminarTasa" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar tasa</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Esta seguro que desea eliminar la tasa <strong id="txttasa">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminar" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+<div id="eliminarUM" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar unidad de medida</h3>
+  </div>
+  <div class="modal-body">
+    <p>¿Esta seguro que desea eliminar la unidad de medida <strong id="txtum">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarUM" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+<script type="text/javascript">
+    function eliminarTasa(id, txt){
+        var url = "{{path('eliminarTasa', { 'id': '__id__' })}}".replace(/__id__/g, id);
+        var par= document.getElementById('txttasa');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminar').attr('href',url);
+        $('#eliminarTasa').modal('toggle');
+    }
+    function eliminarUM(id, txt){
+        var url = "{{path('eliminarUM', { 'id': '__id__' })}}".replace(/__id__/g, id);
+        var par= document.getElementById('txtum');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarUM').attr('href',url);
+        $('#eliminarUM').modal('toggle');
+    }
+
+    function redir(op,id){
+        if (op==2)
+            document.location= "{{path('editarUM', { 'id': '__id__' })}}".replace(/__id__/g, id);
+        if (op==1)
+            document.location= "{{path('nuevaTasa', { 'id': '__id__' })}}".replace(/__id__/g, id);
+    }
+    </script>
+{% endblock%}

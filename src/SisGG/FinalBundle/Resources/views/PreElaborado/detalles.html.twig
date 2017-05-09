@@ -1,0 +1,67 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+<div class="row-fluid sortable">
+ <legend>Producto pre-elaborado</legend>  
+            <form class="form-horizontal">
+                <div class="pull-right btn-group">
+                    <a class="btn" target="_blank" title="Imprimir los datos" onclick="impDetallesPE('{{form.vars.data.id}}', this)"><i class="icon-print"></i></a>
+                </div>
+                {{form_widget(form)}}
+            </form>
+<div class="accordion" id="acordion2">
+        {#<div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" title="Ver ingredientes"data-parent="#acordion2" href="#{{pe.id}}">{{pe.nombre}}: {{pe.descripcion}}</a>
+                <div class="btn-group">
+                    <button class="ex" onclick="redir(1,'{{pe.id}}')" title="Nueva tasa"><i class="icon icon-plus"></i></button>
+                    <button onclick="redir(2,'{{pe.id}}')" title="Editar"><i class="icon icon-edit"></i></button>
+                    <button href="#" title="Eliminar"  onclick=""><i class="icon icon-trash"></i></button>
+                </div>
+            </div>
+            <div id="{{pe.id}}" class="accordion-body collapse">
+                <div class="accordion-inner">#}
+        <h3>Ingredientes</h3>
+                    <table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+                        <thead class="header">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Costo</th>
+                                <th>Obligatorio</th>
+                                <th style="text-align: center">Acciones</th>
+                            </tr> 
+                        </thead>
+                   {%for i in ingredientes%}
+                        
+                            <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this, 1);">{{i.productoProduccion}}</a></td>
+                            <td>{{i.cantidad}} {{i.tasa}}</td>
+                            <td>{{i.precioCosto}}</td>
+                            <td style="text-align: center;">{%if i.obligatorio%}<i class="fa-icon-ok"></i>{%else%}<i class="fa-icon-remove"></i>{%endif%}</td>
+                            <td style="text-align: center;width: fit-content" >
+                                <a href="{{ path('editarIngrediente', { 'id': i.id }) }}" target="_blank" title="Editar"><i class="fa-icon-edit"></i></a>                                
+                                <a href="#" title="Eliminar"  onclick="eliminarModalIng({{i.id}}, '{{i.productoProduccion}}')"><i class="fa-icon-trash"></i></a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    
+          {#      </div>
+            </div>
+         </div>
+    </div>#}
+
+</div>
+ {%block modal%}
+<div id="eliminarModalIng" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar el ingrediente <strong id="txtElimIng">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminarIng" class="btn btn-primary">Aceptar</a>
+  </div>
+</div> 
+{%endblock%}

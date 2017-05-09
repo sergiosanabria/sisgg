@@ -1,0 +1,22 @@
+<label>Registro de {{lineaTanda}}:</label>
+<form class='form-horizontal'>
+<div class="control-group">
+    <label class="control-label">Cantidad Necesaria</label> 
+    <div class="controls">
+        <input type="text" readonly="readonly" value="{{lineaTanda.cantidad}}"/>
+    </div>
+</div>
+<div class="control-group">
+    <label class="control-label">Cantidad Elaborada</label> 
+    <div class="controls">
+        <input type="text"readonly="readonly" value="{%if lineaTanda.cantidadElaborados == null%}0{%else%}{{lineaTanda.cantidadElaborados}}{%endif%}"/>
+    </div>
+</div>
+{%set cant = lineaTanda.cantidad - lineaTanda.cantidadElaborados%}
+<div class="control-group">
+    <label class="control-label">Cantidad a Registrar</label> 
+    <div class="controls">
+        <input id="registro" data-id-lineatanda="{{lineaTanda.id}}" data-id-tanda="{{lineaTanda.tanda.id}}" type="number" min="0" value="{{cant}}"/>
+    </div>
+</div>
+</form>        

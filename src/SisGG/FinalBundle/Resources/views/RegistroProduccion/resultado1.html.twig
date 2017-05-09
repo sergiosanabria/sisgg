@@ -1,0 +1,60 @@
+
+<table class="table table-hover table-bordered table-condensed" id="ings">
+                <thead class="header">
+                    <tr>
+                        <th style="text-align: center">#</th>
+                        <th style="text-align: center">Nombre</th>
+                        <th style="text-align: center">Cantidad por ingrediente</th>
+                        <th style="text-align: center">Tasa del ingrediente</th>
+                        <th style="text-align: center">Tasa del producto (Stock)</th>
+                        <th style="text-align: center" title="Cantidad disponible expresadas según la tasa en la que se alamcena el producto">Cantidad disponible TP</th>
+                        <th style="text-align: center" title="Cantidad necesaria expresadas según la tasa en la que se alamcena el producto">Cantidad necesaria TP</th>
+                        <th style="text-align: center" title="Cantidad restante expresadas según la tasa en la que se alamcena el producto">Cantidad restante TP</th>
+                        <th style="text-align: center" title="Cantidad disponible expresadas según la tasa correspondiente al ingrediente asignado">Cantidad disponible TI</th>
+                        <th style="text-align: center" title="Cantidad necesaria expresadas según la tasa correspondiente al ingrediente asignado">Cantidad necesaria TI</th>
+                        <th style="text-align: center" title="Cantidad restante expresadas según la tasa correspondiente al ingrediente asignado">Cantidad restante TI</th>
+                        <th style="text-align: center">Costo</th>
+                    </tr>
+                </thead>   
+                <tbody>{%set j=0%}
+                     {%set flag=false%}
+                        {%set total=0%}
+                    {%for i in ing%}
+                     <tr id="{{i.id}}">
+                         <td><input type="checkbox" checked="true" onchange="sumarCosto(this);" id="chk{{j}}" {%if i.obligatorio%} oblig="true" title="Ingrediente obligatorio" {%else%} oblig="false"{%endif%} value="1" name="chk{{j}}"></td>
+                        <td>{{i.productoProduccion}}</td>
+                        <td  style="text-align: right;width: fit-content" class="center">{{i.cantidad}}</td>
+                         <td>{{i.tasa}}</td> 
+                         <td>{{i.productoProduccion.tasa}}</td>
+                        <td style="text-align: right;width: fit-content" class="center"> {%set cd=i.productoProduccion.cantidad%} {{cd |number_format(3,".","")}} {{i.productoProduccion.tasa.abrev}}</td>
+                        <td style="text-align: right;width: fit-content" class="center">{% set cn= cantidad * i.coeficiente *i.cantidad%} {{cn |number_format(3,".","")}} {{i.productoProduccion.tasa.abrev}}</td>
+                        <td style="text-align: right;width: fit-content" class="center">{% if cd - cn < 0 %} <span style="color: red;"> {{(cd - cn )|number_format(3,".","")}} {{i.productoProduccion.tasa.abrev}}</span> 
+                                            {%set flag=true%}
+                                                    {%else%}
+                                    {{(cd - cn )|number_format(3,".","")}} {{i.productoProduccion.tasa.abrev}}
+                                        {%endif%} 
+                                 </td>
+                        <td style="text-align: right;width: fit-content" class="center"> {{(cd * ( i.productoProduccion.tasa.valor/i.tasa.valor) )| number_format(3,'.','') }} {{i.tasa.abrev}}</td>
+                        <td style="text-align: right;width: fit-content" class="center">{{(cn * ( i.productoProduccion.tasa.valor/i.tasa.valor) )| number_format(3,'.','')}} {{i.tasa.abrev}}</td>
+                        <td style="text-align: right;width: fit-content" class="center">{% if ((cd - cn )* ( i.productoProduccion.tasa.valor/i.tasa.valor) ) < 0 %} <span style="color: red;"> 
+                                {%set flag=true%}
+                            {{((cd - cn )* ( i.productoProduccion.tasa.valor/i.tasa.valor)) | number_format(3,'.','') }}  {{i.tasa.abrev}}</span> 
+                                          {%else%}                                    
+                {{((cd - cn )* ( i.productoProduccion.tasa.valor/i.tasa.valor)) | number_format(3,'.','') }} {{i.tasa.abrev}}
+                                        {%endif%} 
+                                 </td>
+                          {% set total = (total + (cn * i.productoProduccion.precioCosto)) | number_format(2,'.','')  %}       
+                         <td> {{( cn * i.productoProduccion.precioCosto) | number_format(2,'.','')}}</td>        
+                    </tr>
+                    {%set j=j+1%}
+                    {%endfor%}
+                </tbody>
+             </table>
+
+    <div class="pull-right">Costo total <div class="input-prepend input-append">
+                <span class="add-on">$</span>
+                <input class="" value="{{total}}" type="text" autocomplete="off" onkeypress="return isNumberKey(this,event);" 
+                       id="total" readonly="readonly"></div> 
+          </div>
+    <div><br></div>
+<input type="hidden" id="flag" value="{%if flag %}1{%else%}0{%endif%}">

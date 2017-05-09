@@ -1,0 +1,37 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+{%endblock%}   
+{%block titulo_reporte%}Nota de pedido N°{{np.id}}{%endblock%}
+{%block contenido%}
+{{parent()}}
+<div font-size="11" font-type="helvetica">
+            <div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Nota de pedido N°{{np.id}}</div>
+            <b>Proveedor : </b> {{np.proveedor}}   <br></br> 
+            <b>Fecha : </b> {{np.fecha |  date("d/m/Y")}}    
+                         
+                    {%if np.item | length > 0%}
+                    <h2>Productos</h2>
+                            <table>
+                                <tr background-color="#FAFAFA" >
+                                    <td style=" text-align: left;vertical-align: middle;"><b>Producto</b></td>
+                                    <td style=" text-align: left;vertical-align: middle;"><b>Cantidad</b></td>
+                                    <td style=" text-align: left;vertical-align: middle;"><b>Tasa</b></td>                                   
+                                </tr>
+                                {%for i in np.item%}
+                                <tr>
+                                    <td>{{i.producto}}</td>
+                                    <td>{{i.cantidad}}</td>
+                                    <td>{{i.tasa}}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                   {%else%}
+                    <h3>No tiene productos registrados</h3>
+                    {%endif%}
+</div>
+{%endblock%}                 

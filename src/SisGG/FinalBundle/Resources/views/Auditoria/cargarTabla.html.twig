@@ -1,0 +1,31 @@
+<table class="table table-striped table-bordered" id="example">
+    <thead class="header">
+        <tr>
+            <th title="Mostrar datos"></th>
+            <th id="primeraCol">#</th>
+            <th>Entidad</th>
+            <th>Accion realizada</th>
+            <th>Fecha y hora</th>
+            <th>Usuario</th>
+            <th style="display: none" >Datos</th>
+        </tr>
+    </thead>
+    <tbody>
+    {%set j=1%}        
+       {%for entrie in entries%}
+            <tr id="{{entrie.id}}">
+                <td><a href="javascript:void(0);" title='Mostrar Datos' onclick="detalles('{{entrie.id}}',this);"><i class="icon icon-chevron-right"></i></a></td>
+                <td>{{entrie.id}}</td>
+                <td>{{entrie.objectClass|split('\\')[3]}}</td>
+                <td>{{entrie.action|trans}}</td>
+                <td>{{entrie.loggedat|date("d/m/Y H:i")}}</td>
+                <td><a href="#" onclick="usuario('{{entrie.username}}');">{{entrie.username}}</a></td>
+                <td style="display: none;" class="datos"> {%for key in entrie.data|keys%}
+                    <span class="span2">{{key|title}}: 
+                {%if entrie.data[key].timestamp is defined%} {{entrie.data[key]|date("d/m/Y g:ia")}}{%else%}{%for en in entrie.data[key]%} {{en}}{%else%} {{entrie.data[key]}}{%endfor%}{%endif%}</span>
+                {%endfor%} </td> 
+            </tr>
+            {%set j=j+1%}
+        {%endfor%}        
+        </tbody>
+    </table>  

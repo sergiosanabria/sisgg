@@ -1,0 +1,302 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Notas de Credito</a>
+</li>
+{%endblock%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .Cobrado{
+            border-color: #5AAD34;
+            background-color: #78CD51;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(101, 54%, 71%)), color-stop(100%, hsl(101, 55%, 56%)));
+            background-image: -webkit-linear-gradient(top, hsl(101, 54%, 71%), hsl(101, 55%, 56%));
+            background-image: -moz-linear-gradient(top, hsl(101, 54%, 71%), hsl(101, 55%, 56%));
+            background-image: -ms-linear-gradient(top, hsl(101, 54%, 71%), hsl(101, 55%, 56%));
+            background-image: -o-linear-gradient(top, hsl(101, 54%, 71%), hsl(101, 55%, 56%));
+            background-image: linear-gradient(top, hsl(101, 54%, 71%), hsl(101, 55%, 56%));
+        }
+        .Parcialmente{
+            border-color: #2FABE9;
+            background-color: #67C2EF;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(200, 80%, 82%)), color-stop(100%, hsl(200, 81%, 67%)));
+            background-image: -webkit-linear-gradient(top, hsl(200, 80%, 82%), hsl(200, 81%, 67%));
+            background-image: -moz-linear-gradient(top, hsl(200, 80%, 82%), hsl(200, 81%, 67%));
+            background-image: -ms-linear-gradient(top, hsl(200, 80%, 82%), hsl(200, 81%, 67%));
+            background-image: -o-linear-gradient(top, hsl(200, 80%, 82%), hsl(200, 81%, 67%));
+            background-image: linear-gradient(top, hsl(200, 80%, 82%), hsl(200, 81%, 67%));
+        }
+        .Sin{
+            border-color: #F4A506;
+            background-color: #FABB3D;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(40, 95%, 76%)), color-stop(100%, hsl(40, 95%, 61%)));
+            background-image: -webkit-linear-gradient(top, hsl(40, 95%, 76%), hsl(40, 95%, 61%));
+            background-image: -moz-linear-gradient(top, hsl(40, 95%, 76%), hsl(40, 95%, 61%));
+            background-image: -ms-linear-gradient(top, hsl(40, 95%, 76%), hsl(40, 95%, 61%));
+            background-image: -o-linear-gradient(top, hsl(40, 95%, 76%), hsl(40, 95%, 61%));
+            background-image: linear-gradient(top, hsl(40, 95%, 76%), hsl(40, 95%, 61%));
+        }
+        .Anulado{
+            border-color: #FA5833;
+            background-color: #FA603D;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(11, 95%, 76%)), color-stop(100%, hsl(11, 95%, 61%)));
+            background-image: -webkit-linear-gradient(top, hsl(11, 95%, 76%), hsl(11, 95%, 61%));
+            background-image: -moz-linear-gradient(top, hsl(11, 95%, 76%), hsl(11, 95%, 61%));
+            background-image: -ms-linear-gradient(top, hsl(11, 95%, 76%), hsl(11, 95%, 61%));
+            background-image: -o-linear-gradient(top, hsl(11, 95%, 76%), hsl(11, 95%, 61%));
+            background-image: linear-gradient(top, hsl(11, 95%, 76%), hsl(11, 95%, 61%));
+        }
+    </style>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid">
+        <div class="box span12">
+            <div class="box-content">
+                <legend>Notas de Credito
+                    <div class="pull-right btn-group">
+                        <a class="btn" onclick='imprimirTabla(this)'><i class="icon-print"></i></a>
+                    </div>
+                </legend>
+                <div class="accordion" style='display:none;' id="acordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#acordion" href="#collapseOne">
+                                Buscar por fechas
+                            </a>
+                        </div>
+                        <div id="collapseOne" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                                <div class="tabbable tabs-left">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a href="#1B" data-toggle="tab">Buscar 1</a>
+                                        </li>
+                                        <li>
+                                            <a href="#2B" data-toggle="tab">Buscar 2</a>
+                                        </li>
+                                        <li>
+                                            <a href="#3B" data-toggle="tab">Buscar 3</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active"  id="1B">
+                                            Por los últimos 
+                                            <div class="input-append">
+                                                <input class="" type="number" autocomplete="off" min="0" onkeypress="return isNumberKey(this, event);" id="1BTiempo"  placeholder="##">
+                                                <select id="1BCombo">
+                                                    <option value="1">Días</option>
+                                                    <option value="2">Semanas</option>
+                                                    <option value="3">Meses</option>
+                                                    <option value="4">Años</option>
+                                                </select>
+                                                <button type="button" class="btn btn-primary" onclick="buscar1()">Buscar  <i class="fa-icon-search"></i></button>    
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="2B"> 
+                                            Desde
+                                            <input type="text" id="2BFecha1"  value="{{'now'| date('d/m/Y')}}" class="datepicker">
+                                            Hasta
+                                            <div class="input-append">
+                                                <input type="text" id="2BFecha2" value="{{'now'| date('d/m/Y')}}"  class="datepicker" >
+
+                                                <button type="button" class="btn btn-primary" onclick="buscar2()">Buscar  <i class="fa-icon-search"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane"  id="3B">
+                                            <div class="input-append">
+                                                <select id="3BCombo">
+                                                    <option value="0" title="Busca por la fecha exacta">Fecha exacta</option>
+                                                    <option value="1" title="Busca todos hasta la fecha establecida">Hasta</option>
+                                                    <option value="2" title="Busca todos desde la fecha establecida, hasta el dia de hoy">Desde</option>
+                                                </select>
+
+                                                <input type="text" id="3BFecha1"  value="{{'now'| date('d/m/Y')}}" class="datepicker">
+                                                <button type="button" class="btn btn-primary" onclick="buscar3()">Buscar  <i class="fa-icon-search"></i></button>
+                                            </div>
+                                            <br>
+                                            <div class="input-append">
+                                                <select id="4BCombo">
+                                                    <option value="0" title="Busca solo por años">Buscar sólo por años</option>
+                                                    <option value="1">Enero</option><option value="2">Febrero</option>
+                                                    <option value="3">Marzo</option><option value="4">Abril</option>
+                                                    <option value="5">Mayo</option><option value="6">Junio</option>
+                                                    <option value="7">Julio</option><option value="8">Agosto</option>
+                                                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                                </select>
+                                                <input class=""  value="{{'now'| date('Y')}}" type="number" autocomplete="off"  min="0" onkeypress="return isNumberKey(this, event);" id="4BAño"  placeholder="Ej. 2013">
+                                                <button type="button" class="btn btn-primary" onclick="buscar4()">Buscar  <i class="fa-icon-search"></i></button>
+                                            </div>     
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+                <div id='tabla'>
+                    <table class="table table-striped table-bordered" id="example">
+                        <thead class="header">
+                            <tr>
+                                <th>N°</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>Factura</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                {% for notaCredito in notasCredito%}
+                                <tr data-id='{{notaCredito.id}}'>
+                                    <td>{{notaCredito.numeroNotaCredito}}</td>
+                                    <td style='text-align: center;'>{{notaCredito.factura.tipoFactura.nomenclatura}}</td>
+                                    <td>{{notaCredito.nombre}}</td>
+                                    <td>{{notaCredito.factura}}</td>
+                                    <td>{{notaCredito.fecha|date('d/m/Y g:i a')}}</td>
+                                    <td>
+                                        <a rel="tooltip" title="Detalles" href="{{path('detalles_nota_credito')}}?id={{notaCredito.id}}"><i class="icon-th-list"></i></a>
+                                        <a rel="tooltip" title="Imprimir" href="{{path('impVenta')}}?id={{notaCredito.id}}&_format=pdf"><i class="icon-print"></i></a>
+                                    </td>                
+                                </tr>   
+                {% endfor %}       
+                            </tbody>
+                        </table>
+                    </div>     
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+{% endblock %}
+{%block javascripts%} 
+    {{parent()}}
+        <script type="text/javascript">
+
+                            function buscar1() {
+                                var tiempo = $('#1BTiempo').val();
+                                var clase = $("#1BCombo").val();
+                                if ($.isNumeric(tiempo) && tiempo >= 0) {
+                                    $('#tabla').load('{{path('buscarVentas')}}', {'tipo': '0', 'tiempo': tiempo, 'clase': clase}, function() {
+                                        mostrarTabla();
+                                    });
+                                }
+                            }
+
+                            function buscar2() {
+                                var fecha1 = $('#2BFecha1').val();
+                                var fecha2 = $('#2BFecha2').val();
+                                if (isDate(fecha1) && isDate(fecha2)) {
+                                    $('#tabla').load('{{path('buscarVentas')}}', {'tipo': '1', 'fecha1': fecha1, 'fecha2': fecha2}, function() {
+                                        mostrarTabla();
+                                    });
+                                }
+                            }
+
+                            function buscar3() {
+                                var fecha1 = $('#3BFecha1').val();
+                                var clase = $("#3BCombo").val();
+                                if (isDate(fecha1)) {
+                                    $('#tabla').load('{{path('buscarVentas')}}', {'tipo': '2', 'fecha1': fecha1, 'clase': clase}, function() {
+                                        mostrarTabla();
+                                    });
+                                }
+                            }
+
+                            function buscar4() {
+                                var año = $('#4BAño').val();
+                                var mes = $("#4BCombo").val();
+                                if ($.isNumeric(año) && año > 0) {
+                                    $('#tabla').load('{{path('buscarVentas')}}', {'tipo': '3', 'año': año, 'mes': mes}, function() {
+                                        mostrarTabla();
+                                    });
+                                }
+                            }
+
+                            function imprimirTabla(ele) {
+                                var filas = new Array();
+                                var i = 0;
+                                $('tbody tr').each(function() {
+                                    filas[i] = $(this).data('id');
+                                    i = i + 1;
+                                });
+                                var url = "{{path('impListaVentas', { 'ids': '__ids__' , '_format':'pdf'})}}".replace(/__ids__/g, filas);
+                                url = url.replace('amp;', '');
+                                url = url + '&info=' + $('#example_info').text();
+                                $(ele).attr('href', url);
+
+                            }
+
+                            $().ready(function() {
+                                $('.anular').each(function() {
+                                    $(this).click(function(ev) {
+
+                                    });
+                                });
+                            })
+
+                            function mostrarTabla() {
+                                $('.table.table-striped.table-bordered').dataTable({
+                                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                                    "sPaginationType": "bootstrap",
+                                    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+                                    "oLanguage": {
+                                        "sLengthMenu": "_MENU_ Registros por página",
+                                        "sSearch": "Buscar:",
+                                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                        "sZeroRecords": "Ningun registro encontrado",
+                                        "oPaginate": {
+                                            "sPrevious": "Anterior",
+                                            "sNext": "Siguiente"
+                                        }
+                                    }
+                                });
+                            }
+
+            </script>
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+            <div class="modal hide fade" id="anularFactura">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Atención!!!</h3>
+                </div>
+                <div id="dataEliminar" class="modal-body"><div id="facturacomplemento"></div>
+                    ¿Esta seguro que desea anular la  <span id='factura' style='font: bold cursive;'></span>?
+                    
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                    <a class="btn btn-primary" id='borrar'>Confirmar</a>
+                </div>
+            </div>
+{%endblock%}        
+{%block ajax%}
+            <label><a href="{{path('nuevo_tipo_cobro')}}"><i class="icon icon-plus-sign"></i>Nuevo Tipo Documento</a></label><br>
+            <table class="table table-striped table-bordered" id="example">
+                <thead class="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Abreviatura</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for tipoCobro in tiposCobro%}
+                        <tr>
+                            <td>{{tipoCobro.nombre}}</td>
+                            <td>{{tipoCobro.abreviatura}}</td>
+                            <td>
+                                <a rel="tooltip" title="Editar" href="{{path('editar_tipo_cobro')}}?id={{tipoCobro.id}}"><i class="icon-edit"></i></a>
+                            </td>                
+                        </tr>   
+                {% endfor %}       
+                    </tbody>
+                </table>
+{%endblock%}    

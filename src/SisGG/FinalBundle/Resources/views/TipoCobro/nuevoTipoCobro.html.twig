@@ -1,0 +1,146 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%block title%}Nuevo tipo de cobro/pago{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('tipos_cobro')}}">Formas de Cobro/Pago</a> <span class="divider">/</span>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Nueva Forma de Cobro/Pago</legend>
+            <form class="form-horizontal" action="{{ path('nuevo_tipo_cobro') }}" method="post">
+                <fieldset>
+                        <legend> Datos de la Forma de Cobro/Pago </legend>
+                            <div class='span5'>
+                                {{form_row(form.nombre)}}
+                                {{form_row(form.descripcion)}}
+                            </div>
+                            <div class='span6'>
+                                {{form_row(form.montoMinimo)}}
+                                {{form_row(form.montoMaximo)}}
+                                {{form_row(form.liquido)}}
+                                {{form_row(form.darCambio)}}
+                            </div>
+                        <legend> Campos Adicionales </legend>
+                        <table id="tableItemsPedido" class="table simple-table">
+                            <thead>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Patron</th>
+                            <th>Ejemplo</th>
+                            <th>Requerido</th>
+                            <th>Acciones</th>
+                            </thead>
+                            {{form_widget(form.campos)}}
+                        </table>    
+                        {{form_rest(form)}}
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a href="{{path('tipos_cobro')}}" class="btn">Cancel</a>
+                </div>    
+            </form>
+        </div>
+    </div><!--/span-->
+</div><!--/row-->
+{% endblock %}
+{%block modal%}
+{{parent()}}
+<div class="modal hide fade" id="ayuda">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Patron</h3>
+    </div>
+    <div class="modal-body">
+        <p>El patrón del campo es un patrón utilizado para la validacion del campo de tipo cadena.</p>
+        <p>Ejemplos</p>
+        <label>Cinco letras: [a-zA-Z]{5}</label><input placeholder="Introduce 5 letras" value="aBcDe" class="span4" type="text" pattern="[a-zA-Z]{5}"></input>
+        <label>Ocho numeros: [0-9]{8}</label><input placeholder="Introduce 8 numeros" value="12345678" class="span4" type="text" pattern="[0-9]{8}"></input>
+        <label>Cuatro numeros, guión y Ocho numeros: [0-9]{4}-[0-9]{8}</label><input value="1234-12345678" class="span4" placeholder="Introduce 4 numeros, un guion y 8 numeros class="span4" type="text" pattern="[0-9]{4}-[0-9]{8}"></input>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+    </div>
+</div>
+{%endblock%}    
+{%block javascripts%}
+{{parent()}}   
+<script type="text/javascript">
+    $().ready(function() {
+        $("#tipocobrotype_nombre").keyup(function (ev){
+            $("#tipocobrotype_descripcion").val($("#tipocobrotype_nombre").val());
+        });
+        $('.patron').each(function(){
+            $(this).after("<a title='Ayuda' class='btn' title='Ayuda'  role='button' href='#ayuda' data-toogle='modal'><i class='icon icon-share-alt'></i></a>");
+            var id = $(this).attr('id');
+            $("#" + id.replace('patron', 'ejemplo')).attr('pattern', $(this).val());
+            $("#" + id.replace('patron', 'ejemplo')).attr('title', "El campo debe coincidir con: " + $(this).val());
+            });
+        $('.patron').change(function() {
+            var id = $(this).attr('id');
+            $("#" + id.replace('patron', 'ejemplo')).attr('pattern', $(this).val());
+            $("#" + id.replace('patron', 'ejemplo')).attr('title', "El campo debe coincidir con: " + $(this).val());
+        });
+        $('.tipo_dato').each(function(){
+            var tipo = $(this).val();
+            if (tipo === 'text') {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).removeAttr('disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).removeAttr('disabled');
+            } else {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'patron')).val('');
+                $("#" + id.replace('tipoDato', 'ejemplo')).val('');
+            }
+        });
+        $('.tipo_dato').change(function() {
+            var tipo = $(this).val();
+            if (tipo === 'text') {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).removeAttr('disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).removeAttr('disabled');
+            } else {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'patron')).val('');
+                $("#" + id.replace('tipoDato', 'ejemplo')).val('');
+            }
+        });
+    });
+
+    function inicializarFila(index) {
+        $('#tipocobrotype_campos_' + index + '_patron').after("<a href='#ayuda' title='Ayuda' role='button' class='btn' data-toggle='modal'><i class='icon icon-share-alt'></i></a>");
+        $('.patron').change(function() {
+            var id = $(this).attr('id');
+            $(this).val($(this).val().trim());
+            $("#" + id.replace('patron', 'ejemplo')).attr('pattern', $(this).val());
+            $("#" + id.replace('patron', 'ejemplo')).attr('title', "El campo debe coincidir con: " + $(this).val());
+        });
+        $('.tipo_dato').change(function() {
+            var tipo = $(this).val();
+            if (tipo === 'text') {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).removeAttr('disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).removeAttr('disabled');
+            } else {
+                var id = $(this).attr('id');
+                $("#" + id.replace('tipoDato', 'patron')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'ejemplo')).attr('disabled', 'disabled');
+                $("#" + id.replace('tipoDato', 'patron')).val('');
+                $("#" + id.replace('tipoDato', 'ejemplo')).val('');
+            }
+        });
+    }
+    </script>    
+{%endblock%}
+{% block ajax %}
+{% endblock %}

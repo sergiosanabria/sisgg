@@ -1,0 +1,173 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar categoria productos para producción {{nombre}}{%endblock%}
+
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('categoriasPP')}}">Categorias productos para producción</a> <span class="divider">/</span>
+<li>
+    <a href="#">Editar categoria  productos para producción {{nombre}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+                <legend>Editar categoria  productos para producción {{nombre}} (Producto pre-elaborado y materia prima)</legend>
+{% if error %}
+    <div class="alert alert-error">
+    <button type='button' class='close' data-dismiss='alert'>×</button>
+    <strong>{{ error }}</strong> 
+    </div>  
+{% endif %}
+   
+<form name="f1" action="{{ path('modificarCategoriaPP',{'id':id}) }}" class="form-horizontal" method="post">   
+     {{ form_row(form.nombre) }}
+     {{ form_row(form.descripcion) }}
+     {{ form_widget(form.padre) }} 
+    <div class="control-group">
+        <label class="control-label"> Categoria contenedora</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="text" id="padreCat"  disabled="disabled" placeholder="Categoria padre...">
+                <button type="button" title="Actualizar arbol de categorias" class="btn" onclick="actualizarArbol(); cargarCPP()" ><i  class="icon-refresh"></i> </button>
+            </div>
+            <input type="checkbox" id="chkBox" onchange="padreNull(this)" checked="true" value="option1"> Colocar categoria en el primer nivel
+        </div>
+    </div>
+   
+    {{ form_rest(form) }} 
+    <div class="control-group">
+        <div class="controls">
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                    Ver/Ocultar lista de categorias <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="input-append">
+                        <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()"><i class="icon-search" title="Buscar"></i></button>
+                    </div>                  
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a> | 
+                        <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" target="_blank">Nueva categoria <i class="icon-plus"></i></a>
+                    </p>
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>
+    </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href={{path('categoriasPP')}} type="button" class="btn">Cancelar</a>
+    </div>
+        </div>
+    </div>
+</div>
+</form>
+<input type="hidden" value="{{padre}}" id="idPadre">
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+<script type="text/javascript">
+            
+$(document).ready(function  (){ 
+        var combo=document.getElementById('sisgg_finalbundle_categoriaproductoproducciontype_padre');
+        var padre=document.getElementById('idPadre').value  ;
+        if (padre=='0'){
+            document.getElementById('chkBox').checked=true;
+            document.getElementById('padreCat').value="Al primer nivel";
+            combo.disabled="disabled";
+        }else{
+            document.getElementById('padreCat').value=combo.options[combo.selectedIndex].text;
+        }         
+        actualizarArbol();
+        $('#sisgg_finalbundle_categoriaproductoproducciontype_padre').hide();
+         });
+    
+    function actualizarArbol(){
+        $('.dtree').remove();
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasP')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+            if (json[i].add==1){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder_add.gif');
+            }
+            else{
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'0','/SisGG/web/tree/img/folder_noadd.gif');
+             }
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPP1')}}",{n:txtNodo},function (json){
+        d.openTo(json, true);
+        var txt = new String(json);
+        txt='sd'+txt;
+        var nombre=document.getElementById(txt).text;
+        var desc=document.getElementById(txt).title;
+        document.getElementById('nombreCat').value=nombre;
+        document.getElementById('descCat').value=desc;
+                
+        });
+        
+                
+    }
+              
+    function verCategoria (nodo,target){
+        var nombre = document.getElementById(nodo).text;
+        var target = document.getElementById(nodo).target;
+        if (document.getElementById('chkBox').checked==false){
+            
+        if (target=='1'){
+            var combo=document.getElementById('sisgg_finalbundle_categoriaproductoproducciontype_padre');       
+            for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                   document.getElementById('padreCat').value=nombre;
+                }
+            }
+        }else{
+            msjWC('La categoria no puede contener otras categorias, puesto que contiene productos.')
+        }
+        }else{
+            msjIC('Si desea agregar a una categoria, debe deshabilitar la opción "Colocar categoria en el primer nivel".')
+            document.getElementById('padreCat').value="Al primer nivel";
+        }
+        
+    }
+    
+    function padreNull(chk){
+        var combo=document.getElementById('sisgg_finalbundle_categoriaproductoproducciontype_padre');       
+        if (chk.checked==true){
+            document.getElementById('padreCat').value="Al primer nivel";
+           combo.disabled="disabled";
+          }else{
+              combo.disabled="";
+              document.getElementById('padreCat').value=combo.options[combo.selectedIndex].text;
+        }
+        
+    }
+    function cargarCPP(){
+         if (document.getElementById('chkBox').checked==false){
+        $('#sisgg_finalbundle_categoriaproductoproducciontype_padre').load("{{ path('cargarCategoriaPP')}}", function() { 
+            var combo=document.getElementById('sisgg_finalbundle_categoriaproductoproducciontype_padre');
+            document.getElementById('padreCat').value= combo.options[0].text;
+            }); }else{
+        msjIC('Para actualizar la lista de categorias debe deshabilitar la opción "Colocar categoria en el primer nivel".')
+        }
+        }
+    </script>
+{% endblock%}

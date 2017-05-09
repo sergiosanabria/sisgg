@@ -1,0 +1,42 @@
+
+<table class="table table-condensed">
+            <tr class="cabecera">
+                <td><b>Fecha</b></td>
+                <td style="text-align: center">Tipo</td>
+                <td>Número</td>
+                 <td>Proveedor</td>
+                <td>CUIT</td>
+                <td>Neto</td>
+                {%for i in tasas%}
+                    {%if i.gravado%}
+                    <td>IVA gravado {{i.tasa}} %</td>
+                    {%else%}
+                    <td>IVA no gravado {{i.tasa}} %</td>
+                   {%endif%} 
+                {%endfor%}
+                <td>Acrecentamiento</td>
+                <td>Total</td>
+            </tr>
+                {%set j=0%}
+            {% for i in items%}
+            <tr id="{{i.id}}" {%if j % 2 == 0 %} style="background-color : gray;" {%endif%} >
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td style="text-align: center;width: fit-content">{{i.tipo}}</td>
+                <td>{{i.venta.serie}} - {{i.venta.numero}}</td>
+                <td>{{i.razonSocial}}</td> 
+                <td>{{i.cuit}}</td> 
+                <td>{{i.Neto}}</td> 
+                 {%for item in i.item%}
+                    <td>{{item.total}}</td>
+                {%endfor%}
+                    {%if (i.item|length < tasas|length) %}
+                {% for i in range(0,0) %}
+                        <td>0.00</td>
+                {% endfor %}  
+                    {%endif%}
+                <td>{{i.acrecent}}</td>
+                <td>{{i.total}}</td>  
+                {%set j=j+1%} 
+            </tr>
+            {% endfor %}
+        </table>

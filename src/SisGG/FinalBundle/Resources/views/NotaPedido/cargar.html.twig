@@ -1,0 +1,13 @@
+{% for p in ps%}
+<option  value="{{p.id}}" {%if p.id==pr%}selected="selected"{%endif%} 
+         {%if p.isMantenimiento%}
+         title="Mantenimiento"
+    {%elseif p.isMateriaPrima%}
+       title="Materia Prima"
+    {%elseif p.isMercaderia%}
+        title="Mercaderia"
+    {%elseif p.isPlato%}
+    title="Plato"
+    
+     {%endif%}>{{p.nombre}}</option>
+{% endfor %}

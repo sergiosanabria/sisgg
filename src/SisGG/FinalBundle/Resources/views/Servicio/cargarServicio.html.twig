@@ -1,0 +1,8 @@
+Seleccione un servicio para registrar la su factura
+<select id="comboServicios" class="span3">
+{%for i in servicios%}
+        <option value="{{i.id}}">
+            {{i.ne}}
+        </option>
+{%endfor%}
+</select>

@@ -1,0 +1,47 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Lista de facturas de servicio{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Lista de facturas de servicio</div>
+                      {#Titulo con H1  <h1></h1>#}
+                      {#Alguna descripcion con H3 <h3></h3>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+        <table  font-type="helvetica" font-size="9">
+            <tr background-color="#FAFAFA" >
+                <td height="25px" padding="2.5px" style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+                <td height="25px" padding="2.5px" style=" text-align: center;vertical-align: middle;"><b>Número</b></td>
+                <td height="25px" padding="2.5px" style=" text-align: center;vertical-align: middle;"><b>Servicio</b></td>
+                <td height="25px" padding="2.5px" style=" text-align: center;vertical-align: middle;"><b>Periodo</b></td>
+                <td height="25px" padding="2.5px" style=" text-align: center;vertical-align: middle;"><b>Total</b></td>
+            </tr>
+                  
+                {%set total=0%}
+              {% for i in items%}
+            <tr>
+                <td padding="2.5px">{{i.fechaFactura | date('d/m/Y')}}</td>
+                <td padding="2.5px">{{i.serie}} - {{i.numero}}</td>
+                <td padding="2.5px">{{i.servicio.nombre}} ({{i.servicio.nombreEmpresa}})</td>
+                <td padding="2.5px">{{i.periodo}}</td>
+                {%set total=total + i.total%}
+                <td padding="2.5px" text-align="center" >$ {{i.total}}</td>
+            </tr>   
+            {% endfor %}
+           <tr background-color="#FAFAFA">
+                <td padding="2.5px"></td>
+                <td padding="2.5px"></td>
+                <td padding="2.5px"></td>
+                <td padding="2.5px"><b>TOTAL</b></td>
+                <td padding="2.5px" text-align="center" ><b>$ {{total}}</b></td>
+            </tr>   
+        </table>
+
+{%endblock%}

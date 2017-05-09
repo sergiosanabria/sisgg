@@ -1,0 +1,490 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .Listo{
+            border-color: #5AAD34;
+            background-color: #78CD51;
+        }
+
+        .Nuevo,.Iniciado,.Actualizado{
+            border-color: #2FABE9;
+            background-color: #67C2EF;
+        }
+
+        .transformarMesas>.mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 50px;
+            margin: 5px;
+        }
+
+        .mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            background-size: 100% 100%;
+            width: 15%;
+            height: 100px;
+            margin: 5px;
+        }
+
+        .row-fluid [class*="span"]:first-child .mesa, .row-fluid [class*="span"]:first-child .producto  {
+            margin:10px;
+        }
+
+        .sector{
+            width: 99%;
+            height: 30px;
+        }
+        .sectores{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .mesas{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: no-display;
+        }
+
+        .producto{
+            background-color: #005580;
+            width: 200px;
+            height: 100px;
+            margin: 20px;
+        }
+        .categorias{
+            border: 1px solid #ddd;
+            height: 120px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .productos{
+            border: 1px solid #ddd;
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .numero{
+            font-size: xx-large;
+            color: white;
+        }
+        .item,.total{
+            font-style: oblique;
+            font-weight: bold;
+        }
+        .descripcion{
+            font-style: oblique;
+        }
+
+        posisionable{
+            position: relative;
+            top: 32px;
+            left:32px;
+        }
+
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Pedidos</a>
+    </li>
+    <li>
+        <a href="#">Detalles</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <form class="form-horizontal" method="post">
+                    <fieldset id="formulario">
+
+                        <legend>Pedido {{pedido.id}} ({{pedido.solicitante}})
+                            <small>
+                                <ul class="nav nav-pills" id="tabDetalles{{pedido.tipo|capitalize}}">
+                                    <li><a href="#generalDetalles{{pedido.tipo|capitalize}}">General</a></li>
+                                    <li><a href="#historialDetalles{{pedido.tipo|capitalize}}">Cancelados</a></li>
+                                </ul> 
+                            </small>
+                        </legend>
+                        <div class='tab-content'>
+                            <div class='tab-pane' id='generalDetalles{{pedido.tipo|capitalize}}' style='margin:0px;'>
+                                <table id="tablaResumen{{pedido.tipo|capitalize}}" style='margin:0px;' class="table table-hover table-condensed">
+                                    <thead>
+                                        <tr class='span12'><th>Items del Pedido</th><th></th><tr>
+                                    </thead>
+                                    <tbody id="items{{pedido.tipo|capitalize}}">
+           {%set suma = 0.00%}
+           {%for item in pedido.itemPedido%}
+           {%if item.estado != "cancelado" and item.estado != 'Cancelado'%}
+           {%set total = (item.cantidad * (item.productoVenta.precioVenta) - (item.descuento * item.productoVenta.precioVenta / 100))|number_format(2,'.','')%}
+           {%set suma = total + suma%}
+                                            <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                                                <td>
+                                                    <div class="media">
+                                                        <div  href="#" style='margin:2px;float: left;max-width: 65px;'>
+                                                            <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                                    {{item.cantidad}} x $ {{((item.productoVenta.precioVenta) - (item.descuento * item.productoVenta.precioVenta / 100))|number_format(2,'.','')}}
+                                                            <span class='totalt' style='float:right'>$ {{total|number_format(2,'.','')}}</span>
+                                                            <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+            {%endif%}
+            {%endfor%}
+                                        </tbody>
+                                        <tfoot>
+                    {%set recargos = 0.00%}    
+                    {%set i = 0%}
+                    {%for item in pedido.tipoPedido.recargosActivos%}
+                                    {%set recargoTotal = 0.00%}
+                                    {%if item.tipoPorcentaje%}
+                                            {%set recargoTotal = (suma * item.porcentaje /100)%}
+                                                <tr id = '{{i}}_itemRecargo' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%else%}
+                                            {%set recargoTotal = item.importe%}
+                                                <tr id = '{{i}}_itemRecargo' class ='Importe' data-importe='{{recargoTotal|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%endif%}
+                                    {%set recargos = recargos + recargoTotal|number_format(2,'.','')%}
+                                    {%set i = i +1%}
+                    {%endfor%}
+                                                <tr><td>Subtotal<span id ="suma" data-total="{{pedido.subtotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{pedido.subtotal|number_format(2,'.','')}}</span></td></tr>
+                    {%set descuentos = 0.00%}    
+                    {%set i = 0%}
+                        {%if pedido.cliente != null%}       
+                               {%for item in pedido.cliente.descuentosActivos%}
+                                               {%set descuentoTotal = 0.00%}
+                                               {%if item.tipoPorcentaje%}
+                                                       {%set descuentoTotal = (pedido.subtotal * item.porcentaje /100)%}
+                                                <tr id = '{{i}}_itemDescuento' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%else%}
+                                                       {%set descuentoTotal = item.importe%}
+                                                <tr id = '{{i}}_itemDescuento' class ='Importe' data-importe='{{descuentoTotal|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%endif%}
+                                               {%set descuentos = descuentos + descuentoTotal|number_format(2,'.','')%}
+                                               {%set i = i +1%}
+                               {%endfor%}
+                        {%endif%}         
+                   {%set total = pedido.precio%}
+                                                <tr><td>Total <span id ="total" data-total="" class="total" style='float:right'>$ {{total|number_format(2,'.','')}}</span></td></tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane" id="historialDetalles{{pedido.tipo|capitalize}}">
+                                        <table id="tablaResumenCancelados{{pedido.tipo|capitalize}}" class="table table-hover table-condensed">
+                                            <thead>
+                                                <tr class='span12'><th>Items del Pedido</th><th></th><tr>
+                                            </thead>
+                                            <tbody id="items_cancelados{{pedido.tipo|capitalize}}">
+           {%set suma = 0.00%}
+           {%for item in pedido.itemPedido%}
+           {%if item.estado == "cancelado" or item.estado == 'Cancelado'%}
+           {%set total = item.cantidad * item.productoVenta.precioVenta%}
+           {%set suma = total + suma%}
+                                                    <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                                                        <td>
+                                                            <div class="media">
+                                                                <div  href="#" style='margin:2px;float: left;max-width: 65px;'>
+                                                                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                                                </div>
+                                                                <div class="media-body">
+                                                                    <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                            {{item.cantidad}} x $ {{item.productoVenta.precioVenta}}
+                                                                    <span class='totalt' style='float:right'>$ {{total}}</span>
+                                                                    <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+            {%endif%}
+            {%endfor%}
+                                                </tbody>
+                                                <tfoot><tr><td></td></tr></tfoot>
+                                            </table>
+                                        </div> 
+                                    </div>    
+                        
+                        <div id='acciones' class='form-actions'>
+                                    <a class='btn' onclick='cancelar({{pedido.id}});'>Cancelar</a>
+                                    <a class='btn' href="#" onclick="transformar('{{pedido.id}}', event);">Pasar a ...</a>
+                                    <a class='btn' href="{{path('editar_pedido_mostrador')}}?id={{pedido.id}}">Editar</a>
+                                    {%if pedido.estado == 'Listo'%}
+                                        <a class='btn' href="{{path('facturar')}}?id={{pedido.id}}">Registrar venta</a>  
+                                    {%endif%}
+                        </div>            
+                                </fieldset> 
+                            </form>
+
+                        </div>
+                    </div><!--/span-->
+                </div><!--/row-->
+                <hr>
+{% endblock %}
+{%block modal%}
+        {{parent()}}
+                <div class="modal hide fade" id="cambioMesa">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Atencion</h3>
+                    </div>
+                    <div id="dataCambioMesa" class="modal-body">
+                        Selecccione la mesa a la que desea mover este pedido.
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                        <a href="#" class="btn btn-primary" onclick='elegirMesa(event);'>Aceptar</a>
+                    </div>
+                </div>
+                <div class="modal hide fade" id="cancelar">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Atención</h3>
+                    </div>
+                    <div id="dataCancelar" class="modal-body">
+                        <p>¿Está seguro que desea cancelar este pedido?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+                    </div>
+                </div>
+
+                <div class="modal hide fade" id="detalles">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Detalles</h3>
+                    </div>
+                    <div id="dataDetalles" class="modal-body">
+                        <p>¿Está seguro que desea cancelar este pedido?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+                    </div>
+                </div>
+
+                <form id='formularioCambio'> 
+                    <div class="modal hide fade" id="transformar">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h3>Pasar a ...</h3>
+                        </div>
+
+                        <div id="dataTransformar" class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+                            <button type="submit" class="btn btn-primary" id='enviar'>Aceptar</button>
+                        </div>
+
+                    </div>
+                </form>        
+
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+                <script type='text/javascript'>
+                    $().ready(function() {
+                                    $('#tabDetallesMostrador a').click(function(e) {
+                                                e.preventDefault();
+                                                $(this).tab('show');
+                                            });
+                                            if ($("#items_canceladosMostrador tr").length < 1) {
+                                                $("#items_canceladosMostrador").html("<td id='items_cancelados_empty' style='height:64px'>No hay items Cancelados</td>");
+                                            }
+                                            $('#tabDetallesMostrador a:first').click();
+                    
+                                });
+                    
+                     function cancelar(pedido) {
+                                    $.get("{{path('cancelar_pedido')}}", {id: pedido}).done(function(data) {
+                                        $("#cancelar").html(data);
+                                        $("#cancelar").modal("show");
+                                        $("#cancelarPedido").click(function() {
+                                            $.post("{{path('cancelar_pedido')}}", {id: pedido}).done(function(data) {
+                                                document.location.href = "{{path('pedidos')}}";
+                                            });
+                                        });
+                                    });
+                                }
+                                
+                    function transformar(id, ev) {
+                                    ev.preventDefault();
+                                    $('#dataTransformar').load('{{path('transformar_pedido')}}?id=' + id, function(response, status, xhr) {
+                                        if (status == "error") {
+                                            var msg = "Sorry but there was an error: ";
+                                            alert(msg + xhr.status + " " + xhr.statusText);
+                                        }
+                                        $("#transformar").modal("show");
+                                        $(".tipo").change(function() {
+                                            recargar(id);
+                                        });
+                                        $('#myTab a').click(function(e) {
+                                            e.preventDefault();
+                                            $(this).tab('show');
+                                        });
+                                        $('#myTab a:first').tab('show');
+                                        $('#enviar').data('id', id);
+                                    });
+                                }
+
+                                function recargar(id) {
+                                    $.post('{{path('transformar_pedido')}}?id=' + id, $("#formularioTransformar").serialize(), function(data) {
+                                        $('#dataTransformar').html(data);
+                                        $('#pedidotype .help-inline').remove();
+                                        $(".tipo").change(function() {
+                                            recargar(id);
+                                        });
+                                        $('#myTab a').click(function(e) {
+                                            e.preventDefault();
+                                            $(this).tab('show');
+                                        });
+                                        $('#myTab a:first').tab('show');
+                                        $('#enviar').data('id', id);
+                                    });
+                                }
+
+                                function seleccionarMesaTransformar(id, ev) {
+                                    ev.preventDefault();
+                                    $("#pedidotype_mesa").val(id);
+                                }            
+                                
+                    </script>    
+{%endblock%}                
+{%block ajax%}
+                    <legend>Pedido <span class='numeroPedido'></span>
+                        <small>
+                            <ul class="nav nav-pills" id="tabDetalles{{pedido.tipo|capitalize}}">
+                                <li><a href="#generalDetalles{{pedido.tipo|capitalize}}">General</a></li>
+                                <li><a href="#historialDetalles{{pedido.tipo|capitalize}}">Cancelados</a></li>
+                            </ul> 
+                        </small>
+                    </legend>
+                    <div class='tab-content'>
+                        <div class='tab-pane' id='generalDetalles{{pedido.tipo|capitalize}}' style='margin:0px;'>
+                            <table id="tablaResumen{{pedido.tipo|capitalize}}" class="table table-hover table-condensed">
+                                <thead>
+                                    <tr><th>Items del Pedido</th><th></th><tr>
+                                </thead>
+                                <tbody id="items{{pedido.tipo|capitalize}}">
+           {%set suma = 0.00%}
+           {%for item in pedido.itemPedido%}
+           {%if item.estado != "cancelado" and item.estado != 'Cancelado'%}
+           {%set total = (item.cantidad * (item.productoVenta.precioVenta) - (item.descuento * item.productoVenta.precioVenta / 100))|number_format(2,'.','')%}
+           {%set suma = total + suma%}
+                                        <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                                            <td>
+                                                <div class="media">
+                                                    <div  href="#" style='margin:2px;float: left;max-width: 65px;'>
+                                                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                                    {{item.cantidad}} x $ {{((item.productoVenta.precioVenta) - (item.descuento * item.productoVenta.precioVenta / 100))|number_format(2,'.','')}}
+                                                        <span class='totalt' style='float:right'>$ {{total|number_format(2,'.','')}}</span>
+                                                        <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+            {%endif%}
+            {%endfor%}
+                                    </tbody>
+                                    <tfoot>
+                    {%set recargos = 0.00%}    
+                    {%set i = 0%}
+                    {%for item in pedido.tipoPedido.recargosActivos%}
+                                    {%set recargoTotal = 0.00%}
+                                    {%if item.tipoPorcentaje%}
+                                            {%set recargoTotal = (suma * item.porcentaje /100)%}
+                                            <tr id = '{{i}}_itemRecargo' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%else%}
+                                            {%set recargoTotal = item.importe%}
+                                            <tr id = '{{i}}_itemRecargo' class ='Importe' data-importe='{{recargoTotal|number_format(2,'.','')}}' data-bonificacion='{{item.bonificacionImporte|number_format(2,'.','')}}'><td>Recargo por {{item}}<span id ="{{i}}_itemRecargo_total" data-total="{{recargoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{recargoTotal|number_format(2,'.','')}}</span></td></tr>
+                                    {%endif%}
+                                    {%set recargos = recargos + recargoTotal|number_format(2,'.','')%}
+                                    {%set i = i +1%}
+                    {%endfor%}
+                                            <tr><td>Subtotal<span id ="suma" data-total="{{pedido.subtotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{pedido.subtotal|number_format(2,'.','')}}</span></td></tr>
+                    {%set descuentos = 0.00%}    
+                    {%set i = 0%}
+                        {%if pedido.cliente != null%}       
+                               {%for item in pedido.cliente.descuentosActivos%}
+                                               {%set descuentoTotal = 0.00%}
+                                               {%if item.tipoPorcentaje%}
+                                                       {%set descuentoTotal = (pedido.subtotal * item.porcentaje /100)%}
+                                            <tr id = '{{i}}_itemDescuento' class ='Porcentual' data-porcentaje='{{item.porcentaje|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%else%}
+                                                       {%set descuentoTotal = item.importe%}
+                                            <tr id = '{{i}}_itemDescuento' class ='Importe' data-importe='{{descuentoTotal|number_format(2,'.','')}}' data-minimo='{{item.minimo|number_format(2,'.','')}}' data-minimo='{{item.maximo|number_format(2,'.','')}}'><td>Descuento por {{item}}<span id ="{{i}}_itemDescuento_total" data-total="{{descuentoTotal|number_format(2,'.','')}}" class="total" style='float:right'>$ {{descuentoTotal|number_format(2,'.','')}}</span></td></tr>
+                                               {%endif%}
+                                               {%set descuentos = descuentos + descuentoTotal|number_format(2,'.','')%}
+                                               {%set i = i +1%}
+                               {%endfor%}
+                        {%endif%}         
+                   {%set total = pedido.precio%}
+                                            <tr><td>Total <span id ="total" data-total="" class="total" style='float:right'>$ {{total|number_format(2,'.','')}}</span></td></tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div class="tab-pane" id="historialDetalles{{pedido.tipo|capitalize}}">
+                                    <table id="tablaResumenCancelados{{pedido.tipo|capitalize}}" class="table table-hover table-condensed">
+                                        <thead>
+                                            <tr><th>Items del Pedido</th><th></th><tr>
+                                        </thead>
+                                        <tbody id="items_cancelados{{pedido.tipo|capitalize}}">
+           {%set suma = 0.00%}
+           {%for item in pedido.itemPedido%}
+           {%if item.estado == "cancelado" or item.estado == 'Cancelado'%}
+           {%set total = item.cantidad * item.productoVenta.precioVenta%}
+           {%set suma = total + suma%}
+                                                <tr id = "{{item.id}}_item" data-precioVenta="{{item.productoVenta.precioVenta}}">
+                                                    <td>
+                                                        <div class="media">
+                                                            <div  href="#" style='margin:2px;float: left;max-width: 65px;'>
+                                                                <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" {%if item.productoVenta.foto != null%}{%set path='uploads/imagenes/'~ item.productoVenta.foto.path%} {{path}} src="{{asset(path)}}"{%endif%}>
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <h4 class="media-heading">{{item.productoVenta}}({%for ingrediente in item.ingredientes%}{{ingrediente.exclusion}} {%endfor%})</h4>
+                            {{item.cantidad}} x $ {{item.productoVenta.precioVenta}}
+                                                                <span class='totalt' style='float:right'>$ {{total}}</span>
+                                                                <br><span class='label {{item.estado|capitalize}}'>{{item.estado|capitalize}}</span>                           
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+            {%endif%}
+            {%endfor%}
+                                            </tbody>
+                                            <tfoot><tr><td></td></tr></tfoot>
+                                        </table>
+                                    </div> 
+                                </div>    
+                                <a class='btn' onclick='cancelar({{pedido.id}});'>Cancelar</a>
+                                <a class='btn' href="#" onclick="transformar('{{pedido.id}}', event);">Pasar a ...</a>
+                                {%if pedido.isMostrador%}<a class='btn' href="{{path('editar_pedido_mostrador')}}?id={{pedido.id}}">Editar</a>{%endif%}
+                                {%if pedido.isDelivery%}<a class='btn' href="{{path('editar_pedido_delivery')}}?id={{pedido.id}}">Editar</a>{%endif%}
+                                {%if pedido.estado == 'Listo'%}
+                                <a class='btn' href="{{path('facturar')}}?id={{pedido.id}}">Registrar venta</a>  
+                                {%endif%}   
+{%endblock%}    
+
+
+
+
+
+
+
+
+

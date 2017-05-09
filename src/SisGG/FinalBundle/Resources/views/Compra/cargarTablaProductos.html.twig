@@ -1,0 +1,37 @@
+<table cellpadding="0"  cellspacing="0" border="0" class="table table-striped table-bordered"  id="example" >
+          <thead class="header">
+                <tr>
+                    <th>Nombre</th>                   
+                    <th>Cantidad</th>
+                    <th>Tasa</th>
+                    <th>Precio de costo</th>
+                    <th>Categoria</th>
+                    <th>Proveedor</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for pe in pps%}
+            
+            <tr {% if pe.isSuperaMin is defined %}
+                    {% if pe.isSuperaMin ==1 %}
+                         class="red"  
+                    {% endif %}
+                    {%set cant = pe.cantidadMinima / 3 + pe.cantidadMinima%}
+                    {% if cant <= pe.cantidadMinima%}
+                         class="yellow"  
+                    {% endif %}
+            {% endif %}  >
+
+                <td>{{pe.nombre}}</td>
+                <td title="Cantidad mínima {%if pe.isMantenimiento == false%}{{pe.cantidadMinima}}{%endif%}">{%if pe.isMantenimiento == false%}{{pe.cantidad}}{%endif%}</td>
+                <td>{{pe.tasa}}</td>
+                <td>$  {{pe.precioCosto}}</td>
+                <td>{%if pe.isMantenimiento == false%}{{pe.categoria}}{%endif%}</td>
+                <td>{{pe.proveedor}}</td>
+                
+                <td style="text-align: center;width: fit-content" >
+                    <button type="button" title="Seleeciona el producto"  onclick="seleccionarProducto('{{pe.id}}');"><i class="icon icon-ok"></i></button>                   
+                </td>
+            </tr>
+            {% endfor %}
+        </table> 

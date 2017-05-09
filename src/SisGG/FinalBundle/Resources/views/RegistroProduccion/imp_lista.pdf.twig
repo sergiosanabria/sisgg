@@ -1,0 +1,50 @@
+{% extends "::imprimir.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}
+-landscape{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Registro de producción{%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-type="helvetica" font-size="10">
+<div text-align="center" padding-bottom="10px" font-size="17" text-decoration="underline">Registro de producción</div>
+{#Separador <div padding-top="15px" padding-bottom="15px" ></div>#}
+<div text-align="left" padding-bottom="15px">Consulta: {{info}}</div>
+
+        <table font-size="9">
+            <tr background-color="#FAFAFA" >
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Fecha</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Producto</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Tipo</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Descripción</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Cantidad</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>UM</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>Costo total</b></td>
+            </tr>
+            {%set total=0%}
+               {% for i in items%}
+            <tr>
+                <td padding="2px" style="text-align: center;vertical-align: middle;" width="110px">{{i.fecha | date('d/m/Y H:i')}}</td>
+                <td padding="2px" style=" text-align: left;vertical-align: middle;">{{i.producto}}</td>
+                <td padding="2px" width="75px" style=" text-align: center;vertical-align: middle;">{%if i.tipo==1%}Producción{%else%}Pérdida{%endif%}</td> 
+                <td padding="2px"  style=" text-align: left;vertical-align: middle;">{{i.descripcion}}</td>
+                <td padding="2px" width="73px" style=" text-align: right;vertical-align: middle;">{{i.cantidad}}</td> 
+                <td padding="2px" style=" text-align: left;vertical-align: middle;" >{{i.tasa}}</td>
+                <td padding="2px" style=" text-align: right;vertical-align: middle;" width="100px">${{i.costo| number_format(2,'.', '')}}</td>
+                 {%set total= total+i.costo%}   
+            </tr>   
+            {% endfor %}
+             <tr background-color="#FAFAFA" >
+                
+                <td padding="2px" style=" text-align: right;vertical-align: middle;" colspan="6"><b>TOTAL</b></td>
+                <td padding="2px" style=" text-align: center;vertical-align: middle;"><b>${{total| number_format(2,'.', '')}}</b></td>
+            </tr>
+        </table>
+</div>
+{%endblock%}

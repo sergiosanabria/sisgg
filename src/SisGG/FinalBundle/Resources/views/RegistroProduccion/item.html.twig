@@ -1,0 +1,23 @@
+<div class="pull-right btn-group">
+                    <a class="btn" target="_blank" title="Imprimir los datos" onclick="impDetalles('{{id}}', this);"><i class="icon-print"></i></a>
+                </div> 
+<table class="table table-hover table-bordered table-condensed" data-spy="scroll">
+    <thead class="header">
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+             <th>Tasa</th>
+            <th>Costo</th>
+            <th>Utilizado</th>
+        </tr> 
+    </thead>
+{%for i in items%}
+    <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.producto.id}}','{{i.producto}}', this, 1);">{{i.producto}}</a></td>
+    <td style="text-align: right">{{i.cantidad}}</td>
+    <td>{{i.tasa}}</td>
+        <td  style="text-align: right">{{i.costo}}</td>
+        <td style="text-align: center;width: fit-content" >{% if i.utilizado %}<i class="icon icon-ok"> {% else %}<i class="icon icon-remove"> {% endif %}</td>
+    </tr>
+    {%endfor%}
+</table>
+

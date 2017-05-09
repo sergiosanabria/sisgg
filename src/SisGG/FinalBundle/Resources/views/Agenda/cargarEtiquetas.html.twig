@@ -1,0 +1,25 @@
+{%if tipo ==1%} 
+<table class="table table-bordered" id="etiquetas">
+        <thead class="header">
+            <th>Nombre</th>
+            <th style="width: 20px;">Color</th>
+            <th style="text-align: center">Acciones</th>
+        </thead>
+        <tbody>
+            {%for i in etiquetas%}
+            <tr>
+                <td  id="haber">{{i.etiqueta}}</td>    
+                <td style="width: 10px;" bgcolor="#{{i.color}}" id="saldo" ></td>
+                <td style="text-align: center;width: fit-content" >
+                    <a href="#" onclick="editarEtiqueta('{{i.id}}');"  title="Editar etiqueta {{i.etiqueta}}"><i class="fa-icon-edit"></i></a> 
+                        <a href="#" onclick="mostrarModalEliminarEtiqueta('{{i.id}}', '{{i.etiqueta}}');"  title="Eliminar etiqueta {{i.etiqueta}}"><i class="fa-icon-remove"></i></a>        
+                </td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+   {%else%}
+    {%for i in etiquetas%}
+<option value="{{i.id}}">{{i}}</option>
+    {%endfor%}
+ {%endif%}

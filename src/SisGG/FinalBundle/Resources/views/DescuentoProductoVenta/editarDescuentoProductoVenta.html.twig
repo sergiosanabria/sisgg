@@ -1,0 +1,53 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Clientes</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar Descuento</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Editar descuento <small>Complete el formulario con los datos solicitados.</small></legend>
+            <form name="cliente" class="form-horizontal" action="{{ path('editar_descuento_producto_venta') }}?id={{id}}" method="post">
+                <fieldset id="formNuevoCliente">
+                    <div class="span6 pull-left">
+                            {{form_row(form.nombre,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.descripcion,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.porcentaje,{'attr':{'class':'span9 porcentaje','style':'text-align:right;'} })}}
+                        </div>
+                        <div class="span6 pull-left">
+                            {{form_row(form.productoVenta,{'attr':{'class':'span9'} })}}
+                            {{form_row(form.categoriaProductoVenta,{'attr':{'class':'span9'} })}}
+                        </div>
+                        {{form_rest(form)}}
+                            </fieldset>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                <a onclick='history.back()'  class="btn">Cancelar</a>
+                            </div>    
+                        </form>
+                    </div>
+                </div><!--/span-->
+            </div><!--/row-->
+{% endblock %}
+{%block modal%}
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+            <script type="text/javascript">
+                       $().ready(function(){
+                            $(".porcentaje").attr('type','number');
+                            $(".porcentaje").attr('min','1');
+                            $(".porcentaje").attr('max','100');
+                            $(".porcentaje").attr('step','.01');
+                       })                 
+                </script>    
+{%endblock%}

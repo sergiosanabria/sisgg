@@ -1,0 +1,65 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+
+<form class="form-horizontal" id="f">
+    
+<fieldset id="datosCANC">
+    <h3>Datos personales</h3>
+                    <tr>
+                        <td style="text-align: right"><b></b></td>
+                        <td style="text-align: left">    <a href="#" class="thumbnail span4 pull-right"><img id="imagen" data-src="holder.js/180x160" {%if empleado.foto is defined and empleado.foto is not null%}   {%if empleado.foto.path!=null%} src="{{asset('uploads/imagenes/')}}{{empleado.foto.path}}" {%else%} {%if empleado.sexo%} src="{{asset('images/usuariom.jpg')}}" {%else%} src="{{asset('images/usuariof.jpg')}}"  {%endif%} {%endif%}{%else%} {%if empleado.sexo%} src="{{asset('images/usuariom.jpg')}}" {%else%} src="{{asset('images/usuariof.jpg')}}"  {%endif%}{%endif%} /></a>  
+                    </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right"><b>DNI: </b></td>
+                        <td style="text-align: left">{{empleado.dni}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Apellido y nombres: </b></td>
+                        <td style="text-align: left">{{empleado.apellido}}, {{empleado.nombre}}</td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Sexo: </b></td>
+                        <td style="text-align: left">{{empleado.tipoSexo}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Fecha de nacimiento: </b></td>
+                        <td style="text-align: left">  {{(empleado.fechaNac |  date("d/m/Y"))}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Edad: </b></td>
+                        <td style="text-align: left"> {{empleado.edad}} años </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>E-mail: </b></td>
+                        <td style="text-align: left">{{ empleado.email}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Direccion: </b></td>
+                        <td style="text-align: left">{{ empleado.direccion}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Telefonos  : </b></td>
+                        <td style="text-align: left">{%set ite=0%}{%for i in empleado.telefonos%}{%set ite=ite+1%} ({{i.nacional}}){{i.caracteristica}}-{{i.numero}} {%if ite>1%} | {%endif%} {%endfor%} </td>
+                    </tr><br>
+<h3>Datos del trabajo</h3>                    
+                    <tr>
+                        <td style="text-align: right"><b>Cargo: </b></td>
+                        <td style="text-align: left">{{ empleado.cargo.nombre}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Sueldo: </b></td>
+                        <td style="text-align: left">{{ empleado.cargo.monto}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Descuento: </b></td>
+                        <td style="text-align: left">{{ empleado.cargo.desc}} </td>
+                    </tr><br>
+                    <tr>
+                        <td style="text-align: right"><b>Saldo: </b></td>
+                        <td style="text-align: left">{{ empleado.cuenta.saldo}} </td>
+                    </tr><br>
+                    
+
+    </fieldset>     
+</form>
+            

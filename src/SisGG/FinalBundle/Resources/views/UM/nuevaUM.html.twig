@@ -1,0 +1,70 @@
+{% extends "::base.html.twig" %}
+{%block title%}Nueva Unidad de Medida{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('ums')}}">Unidades de medida</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nueva Unidad de Medida</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+<form action="{{ path('altaUM') }}" class="form-horizontal" method="post">
+    <legend>Nueva Unidad de Medida</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    <fieldset>{{ form_widget(form) }}</fieldset>
+    <legend>Tasa principal</legend>
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label">Nombre (*)</label>
+            <div class="controls">
+                <input type="text" id="tasa" name="nombre" required="true">
+            </div>
+    </div>
+    <div class="control-group">
+            <label class="control-label">Abreviatura (*)</label>
+            <div class="controls">
+                <input type="text" id="tasa" name="abrev" required="true">
+            </div>
+    </div>
+    <div class="control-group">
+            <label class="control-label">Descripción</label>
+            <div class="controls">
+                <textarea type="text" id="tasa" name="desc" rows="5"></textarea>
+            </div>
+    </div> 
+ </fieldset>
+     <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('ums')}}" type="button" class="btn">Cancelar</a>
+    </div>     
+</form>
+        </div>
+    </div>
+</div> 
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+            
+            
+$(document).ready(function  (){ 
+ 
+         });
+ 
+    
+    </script>
+{% endblock%}

@@ -1,0 +1,24 @@
+{#{{menor}}
+<select>
+{% for c in array%}
+<option>{{c}}</option>
+{% endfor %}</select>#}
+
+<table class="table table-hover table-bordered table-condensed" id="ings">
+                <thead class="header">
+                    <tr>
+                        <th style="text-align: center">Cantidad a producir</th>
+                        <th style="text-align: center">Cantidad a {{array[1]}}</th>
+                    </tr>
+                </thead>   
+                <tbody>{% for c in array%}
+                    <tr>
+                        <td style="text-align: right;width: fit-content" class="center">{{c}} </td>
+                        <td style="text-align: right;width: fit-content" class="center">{{c}} </td>
+                    </tr>
+                    
+                    {%endfor%}
+                </tbody>
+             </table>
+
+    

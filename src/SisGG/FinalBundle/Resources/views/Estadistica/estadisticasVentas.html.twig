@@ -1,0 +1,132 @@
+<legend>Ventas</legend>
+<div class="span9" style='margin-left: 0px;'>
+    <div class="box-content">
+        <div id="sincos"  class="center" style="height:500px;" ></div>
+        <p id="hoverdata">Posisción del Mouse (<span id="x">0</span>, <span id="y">0</span>). <span id="clickdata"></span></p>
+    </div>
+</div>
+<div class='span3'>
+        <h2>Parametros de Visualización</h2>
+        <label for='pasos'>Pasos:</label>
+        <div>
+            <select id='pasos' class='span12'>
+                <option value=1> Horas </option>
+                <option value=2> Dias </option>
+                <option value=3> Meses </option>
+                <option value=4> Años </option>
+            </select>
+        </div>
+        <label for='graficar'>Graficar:</label>
+        <div>
+            <select id='graficar' class='span12'>
+                <option value=1> Productos Vendidos </option>
+                <option value=2> Recaudación por Ventas </option>
+            </select>
+        </div>
+        <hr>
+        <label for='tipoProducto'>Productos</label>
+        <div>
+            <select id='tipoProductos' class='span12'>
+                <option value=1> Todos </option>
+                <option value=2> Categoria Especifica </option>
+                <option value=3> Productos Específicos </option>
+            </select>
+        </div>
+        <div id='productosSeleccionados' style='display: none;'>
+        <label for='productos'>Especificación productos:</label>
+        <div>
+            <select id='productos' class='span12' data-rel="chosen" multiple=true>
+                {%for producto in productosVenta%}
+                    <option value={{producto.id}}> {{producto}} </option>
+                {%endfor%}
+            </select>
+        </div>
+        </div>
+        <div id='categoriasSeleccionados' style='display: none;'>
+        <label for='categorias'>Especificación categorias:</label>
+        <div>
+            <select id='categorias' class='span12'>
+                {%for categoria in categorias%}
+                    <option value={{categoria.id}}> {{categoria}} </option>
+                {%endfor%}
+            </select>
+        </div>
+        </div>
+        <hr>
+        <label for='periodoSeleccionado'>Periodo</label>
+        <div>
+            <select id='periodoSeleccionado' class='span12'>
+                <option value=1> Por Fechas </option>
+                <option value=2> Por Meses </option>
+                <option value=3> Por Temporadas </option>
+                <option value=4> Por Años </option>
+            </select>
+        <div id='seleccionarDia'>
+            <label>Desde</label>
+            <input id='diaDesde' type='text' class='datepicker span12' value='{{ "now"|date("d/m/Y") }}'>
+            <label>Hasta</label>
+            <input id='diaHasta' type='text' class='datepicker span12' value='{{ "now"|date("d/m/Y") }}'>
+        </div>
+        <div id='seleccionarMensual' style='display:none;'>
+                <label>Desde</label>
+                <select id='mesDesde'class='span8'>
+                    <option value='1'>Enero</option>
+                    <option value='2'>Febrero</option>
+                    <option value='3'>Marzo</option>
+                    <option value='4'>Abril</option>
+                    <option value='5'>Mayo</option>
+                    <option value='6'>Junio</option>
+                    <option value='7'>Julio</option>
+                    <option value='8'>Agosto</option>
+                    <option value='9'>Septiembre</option>
+                    <option value='10'>Octubre</option>
+                    <option value='11'>Noviembre</option>
+                    <option value='12'>Diciembre</option>
+                </select>
+                <input type='number' id='añoMesDesde' value='{{ "now"|date("Y") }}' class='span4'>
+                <label>Hasta</label>
+                <select id='mesHasta'class='span8'>
+                    <option value='1'>Enero</option>
+                    <option value='2'>Febrero</option>
+                    <option value='3'>Marzo</option>
+                    <option value='4'>Abril</option>
+                    <option value='5'>Mayo</option>
+                    <option value='6'>Junio</option>
+                    <option value='7'>Julio</option>
+                    <option value='8'>Agosto</option>
+                    <option value='9'>Septiembre</option>
+                    <option value='10'>Octubre</option>
+                    <option value='11'>Noviembre</option>
+                    <option value='12'>Diciembre</option>
+                </select>
+                <input type='number' id='añoMesHasta' value='{{ "now"|date("Y") }}' class='span4'>
+            </div>    
+        </div>
+        <div id='seleccionarTemporada' style='display:none;'>
+            <label>Desde</label>
+            <select id='temporadaDesde' class='span8'>
+                <option value='1'>Verano</option>
+                <option value='2'>Otoño</option>
+                <option value='3'>Invierno</option>
+                <option value='4'>Primavera</option>
+            </select>    
+            <input type='number' id='añoTemporadaDesde' value='{{ "now"|date("Y") }}' class='span4'>
+            <label>Hasta</label>
+            <select id='temporadaHasta' class='span8'>
+                <option value='1'>Verano</option>
+                <option value='2'>Otoño</option>
+                <option value='3'>Invierno</option>
+                <option value='4'>Primavera</option>
+            </select>
+            <input type='number' id='añoTemporadaHasta' value='{{ "now"|date("Y") }}' class='span4'>
+        </div>
+        <div id='seleccionarAnual' style='display:none;'>
+            <label>Desde</label>
+            <input type='number' id='añoAnualDesde' value='{{ "now"|date("Y") }}' class='span12'>
+            <label>Hasta</label>
+            <input type='number' id='añoAnualHasta' value='{{ "now"|date("Y") }}' class='span12'>
+        </div>
+        <hr>
+        <a href='#' class='btn btn-primary' onclick='actualizar(event)'>Actualizar</a>
+        </div>
+</div> 

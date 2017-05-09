@@ -1,0 +1,57 @@
+{% extends "::base.html.twig" %}
+{%block title%}Nueva tasa para la UM {{umPadre}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('ums')}}">Unidades de medida</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Nueva tasa</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form action="{{ path('altaTasa') }}" method="post" class="form-horizontal">
+    <legend>Nueva tasa para la unidad de medida {{umPadre}}</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    {{ form_widget(form)}}
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('ums')}}" type="button" class="btn">Cancelar</a>
+    </div>        
+</form>
+        </div>
+    </div>
+</div> 
+{%endblock%}
+
+{% block javascripts %}
+{{parent()}}
+
+<script type="text/javascript">
+    $(document).ready(function  (){ 
+                var padre='{{umPadre}}';
+                var combo=document.getElementById('sisgg_finalbundle_tasatype_um');
+                for (var i=0;i<combo.length;i++) {           
+                        if (combo.options[i].text==padre){
+                            combo.selectedIndex=i;
+                            $('#sisgg_finalbundle_tasatype_um').hide();
+                        }
+                    }
+                   var div =combo.parentNode;                  
+                   $(div).append('<input type="text" disabled="true" value="{{umPadre}}" id="umPadre">');
+              
+            });
+    
+    </script>
+{% endblock%}

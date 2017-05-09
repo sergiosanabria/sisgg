@@ -1,0 +1,18 @@
+<div class="box-header" data-original-title="">
+                                                        <h2>Resúmen</h2>
+                                                        <div class="box-icon">
+                                                        </div>
+                                                    </div>
+                                                    <div class="itemsresumen">        
+                                                        <table class="table table-bordered table-hover">
+                                                            <tbody>
+                                                                {%for linea in tanda.lineasTanda%}
+                                                                    <tr onclick="mostrarRegistrar({{linea.id}});" style='cursor:pointer;' data-linea="{{linea}}" data-cantidad={{linea.cantidad}} data-cantidad-elaborada={%if linea.cantidadElaborados == null%}0{%else%}{{linea.cantidadElaborados}}{%endif%}>
+                                                                        <td><h3>{{linea}}</h3>
+                                                                        {%if linea.cantidadElaborados == null%}0{%else%}{{linea.cantidadElaborados}}{%endif%} elaborados de {{linea.cantidad}}<br>
+                                                                        </td>
+                                                                        </tr>
+                                                                {%endfor%}
+                                                                        </tbody>    
+                                                                    </table>        
+                                                                </div> 

@@ -1,0 +1,8 @@
+Al parecer la solicitud excede lo que se puede elaborar.<br>
+No se dispone de suficiente cantidad de lo siguiente:
+{% set i = 0 %}
+{%for ing in ingredientes%}
+    {% set i = i+1 %}
+    <br>{{i}} - {{ing.productoProduccion}} ({{ing.obligatoriedad}})
+{%endfor%}
+

@@ -1,0 +1,92 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Cuenta Corriente</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Detalles cobro</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Detalles de cobro
+                <div class="btn-group" style='float:right;'>
+                    <a href="{{path('imp_recibo')}}?id={{unRecibo.id}}&_format=pdf" title="Imprimir" class='btn'><i class='fa-icon-print'></i></a>
+                </div>
+            </legend>
+            <form class="form-horizontal" method="post">
+                <fieldset id="formNuevoCondicionIva">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="general">
+                            <div class="span6">
+                                <div class='control-group'>
+                                    <label class='control-label'>Fecha y hora de Emisión</label>
+                                    <div class='controls'>
+                                        <input class='span9' type='text' disabled="disabled" value='{{unRecibo.fecha|date('d/m/Y g:i a')}}'/>
+                                    </div>    
+                                </div>
+                                <div class='control-group'>
+                                    <label class='control-label'>Número de Recibo</label>
+                                    <div class='controls'>
+                                        <input class='span9' type='text' disabled="disabled" value='{{unRecibo.numero}}'/>
+                                    </div>    
+                                </div>
+                                <div class='control-group'>
+                                    <label class='control-label'>Cliente</label>
+                                    <div class='controls'>
+                                        <input class='span9' type='text' disabled="disabled" value='{{unRecibo.cliente}}'/>
+                                    </div>    
+                                </div>
+                                <div class='control-group'>
+                                    <label class='control-label'>Total entregado</label>
+                                    <div class='controls'>
+                                        <input class='span9' style='text-align: right' type='text' disabled="disabled" value='{{unRecibo.total|number_format(2,'.','')}}'/>
+                                    </div>    
+                                </div>    
+                            </div>
+                        </div>
+                        </div>    
+                        </div>       
+                    </fieldset>
+                </form>
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+    <hr>
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+    <script type="text/javascript">
+            $().ready(function() {
+                $("#myTab a").each(function() {
+                    $(this).tab("show");
+                });
+                $("#myTab a:first").each(function() {
+                    $(this).tab("show");
+                });
+            });
+            </script>    
+{%endblock%}
+{%block modal%}
+{{parent()}}
+        <div class="modal hide fade" id="busqueda">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Buscar...</h3>
+            </div>
+            <div id="dataBusqueda" class="modal-body">
+                <p>Here settings can be configured...</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+            </div>
+        </div>
+{% endblock %}
+{% block ajax %}
+{% endblock %}

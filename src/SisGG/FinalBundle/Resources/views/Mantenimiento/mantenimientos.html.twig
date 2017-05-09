@@ -1,0 +1,180 @@
+{% extends "::base.html.twig" %}
+{%block title%}Productos mantenimiento{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Productos mantenimiento</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Productos mantenimiento {%if estado == 1%}inactivos{%endif%}</legend>
+        
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        <div class="pull-right btn-group">
+            {%if app.user.role.obtenerPermiso('mantenimiento_nuevo')%}
+                <a title="Nuevo producto mantenimiento" href="{{path('nuevoMantenimiento')}}" class="btn"><i class="icon-plus-sign"></i></a>
+            {% endif %}
+            {%if app.user.role.obtenerPermiso('producto_imprimir')%}
+                <a class="btn" onclick="imprimirTabla(this);" title="Imprimir productos buscados" target="_blank"><i class="icon-print"></i></a>
+            {% endif %}
+        </div>
+            {%if estado!=1%}
+            <ul class="nav nav-pills">
+              <li class="active"><a href="{{path('mantenimientos', {'estado':1})}}">Inactivos ({{cantidad}})</a></li>
+            </ul>
+            {%elseif estado ==1%}
+            <ul class="nav nav-pills">
+                <li class="active"><a href="{{path('mantenimientos')}}"><i class="fa-icon-arrow-left"></i>Volver a activos</a></li>
+            </ul>
+            {%endif%}
+            
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr >
+                    <th>Nombre</th>                   
+                    <th>Precio de costo</th>
+                    <th>Tasa</th>
+                    <th>Proveedor</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for mp in registros%}
+             <tr id="{{mp.id}}">
+
+                <td>{{mp.nombre}}</td>
+                <td>{{mp.precioCosto}}</td>
+                <td title="{{mp.tasa}}">{{mp.tasa}}</td>
+                <td>{{mp.proveedor}}</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if estado == 1%}
+                       {%if app.user.role.obtenerPermiso('producto_activar')%} 
+                        <a href="#" onclick="activarProducto('{{mp.id}}', this);" activado="0" title="Activar producto {{mp.nombre}}"><i id="icono{{mp.id}}"  class="fa-icon-ok-circle"></i></a>
+                        {%endif%}
+                    {%else%}
+                        <a href="#" onclick="detallesModal('{{mp.id}}');" title="Ver detalles {{mp.nombre}}"><i class="fa-icon-list-alt"></i></a>
+                        
+                        {%if app.user.role.obtenerPermiso('mantenimiento_editar')%}
+                        <a href="{{ path('editarMantenimiento', { 'id': mp.id }) }}" title="Editar {{mp.nombre}}"><i class="fa-icon-edit"></i></a>
+                        {%endif%}
+                        {%if app.user.role.obtenerPermiso('mantenimiento_borrar')%}
+                        <a href="#" title="Eliminar {{mp.nombre}}"  onclick="eliminarModal('{{mp.id}}', '{{mp.nombre}}');"><i class="fa-icon-trash"></i></a>
+                        {%endif%}
+                    {%endif%}
+                </td>
+                </div>
+            </tr>   
+            {% endfor %}
+        </table> 
+        </div>
+    </div>
+</div>
+ 
+{% endblock %}
+{% block modal %}
+<div id="eliminarModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar productos mantenimiento</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar producto mantenimiento <strong id="txtElim">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <a id="btnEliminar" class="btn btn-primary">Aceptar</a>
+  </div>
+</div>
+        <div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Detalles</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detalles">
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+function eliminarModal(id,txt){
+        
+        var url = "{{path('eliminarMantenimiento', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElim');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminar').attr('href',url);
+        $('#eliminarModal').modal('toggle');
+    }
+    function detallesModal(id){
+        var url = "{{path('mantenimientos')}}";
+        $('#detalles').load(url,{'id':id});
+        $('#verModal').modal('toggle');
+    }
+    
+    function impDetallesMante(id, ele){
+        var url = "{{path('impDetallesMante', {'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+        url= url.replace('amp;', '');
+        $(ele).attr('href',url);
+    }
+    
+    function activarProducto(id, ele){
+        if ($(ele).attr('activado')=="1"){
+            msjAC('El producto ya se ha sido activado');
+            return true;
+        }
+        $.getJSON("{{path('activarProducto')}}", {'id':id},function (json){
+           if (json.rta=='ok'){
+               $('#icono'+id).removeClass(' fa-icon-ok-circle').addClass('fa-icon-ok-sign');
+               msjAC('El producto <strong>'+json.nombre+'</strong> se ha <strong>activado</strong>.');
+               $(ele).attr('activado', "1");
+               $(ele).attr('title', "Producto activado");
+           }else{
+               msjEC('El producto <strong>NO</strong>  ha sido activado.');
+            }
+        });
+    }
+     function imprimirTabla(ele){
+      var tabla = document.getElementById('example');
+      var rows = tabla.getElementsByTagName('tr');
+      var filas= new Array(rows.length);
+      for (var i = 1; i<rows.length ;i++){
+        filas[i-1]=rows[i].id;
+      }
+
+      var url = "{{path('impListaProducto', { 'ids': '__ids__' ,'tipo':'4','texto':'Productos de mantenimiento', '_format':'pdf'})}}".replace(/__ids__/g,filas);
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      url= url.replace('amp;', '');
+      var info =document.getElementById("example_info").innerHTML;
+      url= url+'&info='+info;
+      $(ele).attr('href',url);
+
+  } 
+   
+    </script>
+{% endblock%}

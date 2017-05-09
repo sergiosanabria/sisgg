@@ -1,0 +1,156 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:sector.html.twig" %}{%endif%}
+{%block css%}
+{{parent()}}
+<style type="text/css">
+        .Listo{
+            border-color: #5AAD34;
+            background-color: #78CD51;
+        }
+
+        .Nuevo,.Iniciado,.Actualizado{
+            border-color: #2FABE9;
+            background-color: #67C2EF;
+        }
+
+        .transformarMesas>.mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            width: 15%;
+            height: 50px;
+            margin: 5px;
+        }
+
+        .mesa{
+            background: url("{{asset('img/mesa.jpg')}}") transparent;
+            background-size: 100% 100%;
+            width: 15%;
+            height: 100px;
+            margin: 5px;
+        }
+
+        .row-fluid [class*="span"]:first-child .mesa, .row-fluid [class*="span"]:first-child .producto  {
+            margin:10px;
+        }
+
+        .sector{
+            width: 99%;
+            height: 30px;
+        }
+        .sectores{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .mesas{
+            border: 1px solid #ddd;
+            height: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: no-display;
+        }
+
+        .producto{
+            background-color: #005580;
+            width: 200px;
+            height: 100px;
+            margin: 20px;
+        }
+        .categorias{
+            border: 1px solid #ddd;
+            height: 120px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .productos{
+            border: 1px solid #ddd;
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .numero{
+            font-size: xx-large;
+            color: white;
+        }
+        .item,.total{
+            font-style: oblique;
+            font-weight: bold;
+        }
+        .descripcion{
+            font-style: oblique;
+        }
+
+        posisionable{
+            position: relative;
+            top: 32px;
+            left:32px;
+        }
+    </style>
+{%endblock%}
+{%block ruta%}
+    <li>
+        <a href="#">Inicio</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Sectores</a> <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="#">Nuevo Sector</a>
+    </li>
+{%endblock%}
+{% block content %}
+    <div class="row-fluid sortable">
+        <div class="box span12">
+            <div class="box-content">
+                <legend>Nuevo Sector</legend>
+                <form class="form-horizontal" action="{{ path('nuevo_sector') }}" method="post" {{ form_enctype(form) }}>
+                    <fieldset id="formNuevoSector">
+                        <div class='span12'>
+                            <div class='span6'>
+                                    {{form_row(form.nombre,{'attr':{'class':'span9'} })}}
+                                    <div class="control-group">
+                                        <label class="control-label">Cantidad de Mesas</label>
+                                        <div class="controls"><input id='numeroMesas' class='span9' type="number" value="{%if form.mesas|length != 0%}{{form.mesas|length}}{%else%}10{%endif%}" onchange="mesas(this);" onkeypress="return isNumberKey(this, event);"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {{form_row(form.mesas)}}
+                        {{form_rest(form)}}
+                        </fieldset>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <a href="#" onclick='history.back();' class="btn">Cancelar</a>
+                        </div>    
+                    </form>
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+        <script type="text/javascript">
+                                            $().ready(function() {
+                                                $("#numeroMesas").change();
+                                            });
+
+                                            function mesas(a) {
+                                                // Get the data-prototype explained earlier
+                                                var collectionHolder = $(".sector");
+                                                collectionHolder.empty();
+                                                var prototype = collectionHolder.data('prototype');
+                                                // get the new index
+                                                // Replace '$$name$$' in the prototype's HTML to
+                                                // instead be a number based on how many items we have
+                                                for (var i = 1; i <= a.value; i++) {
+                                                    var newForm = prototype.replace(/__name__/g, i);
+                                                    var $newFormLi = collectionHolder.append(newForm);
+                                                    collectionHolder.data('index', i);
+                                                }
+                                                // increase the index with one for the next item
+                                                // Display the form in the page in an li, before the "Add a tag" link li
+                                                //var $newFormLi = collectionHolder.append(newForm);
+                                            }
+            </script>    
+{%endblock%}
+{% block ajax %}
+{% endblock %}

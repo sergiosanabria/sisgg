@@ -1,0 +1,275 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar producto pre-elaborado {{nombrePE}}{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pps')}}">Productos para la producción</a><span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pes')}}">Productos pre-elaborados</a><span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar producto pre-elaborado {{nombrePE}}</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form action="{{ path('modificarPE', {'id':id}) }}" class="form-horizontal" method="post"> 
+                
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Datos</a></li>
+    <li><a href="#tab2" data-toggle="tab">Ingredientes</a></li>
+  </ul>
+  <div class="tab-content">
+     <div class="tab-pane active" id="tab1">
+      
+    <legend>Editar producto pre-elaborado {{nombrePE}}</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+<fieldset>
+<div class="span6">     
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.descripcion) }}
+    {{ form_row(form.precioCosto) }}
+    {{ form_row(form.conIng) }}
+    {{ form_row(form.cantidad) }}
+    {{ form_row(form.cantidadMinima) }}
+</div>        
+<div class="span6">         
+    <div class={%if tasa%}"control-group warning"{%else%}"control-group"{%endif%}>
+        <label class="control-label">Unidad de medida</label>
+        <div class="controls">
+        <select id="um" onchange="cargarTasa(this)" name="um"></select>
+        {%if not tasa%}
+        <div class="btn-group">
+            <button type="button" class="btn" onclick="cargarUM()" title="Actualizar lista de UM"><i  class="icon-refresh"></i></button>
+            <a class="btn" href="{{path('ums')}}" title="Nueva Unidad de medida" target="_blank">...</a>
+        </div>
+        {%endif%}
+        {%if tasa%} {% if tipo==1%}<span class="help-inline">Las tasas deben pertenecer sólo a esta UM, ya que el producto se encuentra asignado como ingrediente con esta UM.</span>{%endif%}
+                    {% if tipo==2%}<span class="help-inline">Las tasas deben pertenecer sólo a esta UM, ya que el producto contiene ingredientes.</span>{%endif%}
+        {%endif%}
+        </div>
+    </div>
+    
+    {{ form_row(form.tasa) }}
+    {{ form_row(form.categoria) }}
+     {# <input type="text" id="cat" disabled="true"> <i onclick="actualizarArbol(); cargarCPP()" title="Actualizar arbol de categorias" class="icon-refresh"></i> <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" target="_blank">...</a>#}
+  <div class="control-group">
+        <div class="controls">
+    <div class="accordion" id="accordion2">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                     Ver/Ocultar  lista de categorias <i class="icon-circle-arrow-up"></i> 
+                </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="input-append">
+                        <input type="text" id="idNodo" onkeypress="buscarCategoria ()" autocomplete="off" class="" placeholder="Buscar Categoria">
+                    <button type="button" class="btn" onclick="buscarCategoria ()"><i class="icon-search" title="Buscar"></i></button>
+                    </div>                  
+                <div class="accordion-inner">
+                    <p><a  href="javascript: d.openAll();">Abrir todos <i class="icon-folder-open"></i></a> | 
+                        <a href="javascript: d.closeAll();">Cerrar todos <i class="icon-folder-close"></i> </a> | 
+                        <a href="{{path('nuevaCategoriaPP')}}" title="Nueva categoria" target="_blank">Nueva categoria <i class="icon-plus"></i></a>
+                    </p>
+                    <div id="tree"></div>
+                </div>
+            </div>
+    </div>
+    </div>
+    </div>
+        </div>
+    {{ form_rest(form) }}
+           
+    </div>
+     <div class="tab-pane" id="tab2">
+        <p>
+        <legend>Ingredientes de {{nombrePE}}</legend>
+          {#<div class="pull-right btn-group">
+              <a title="Nuevo ingrediente" href="{{path('nuevoIngrediente', {'id':id})}}" target="_blank"class="btn"><i class="fa-icon-plus-sign"></i></a>
+              <a title="Actualizar tabla de ingredientes" href="#" onclick="actualizarTabla('{{id}}')" class="btn"><i class="icon-refresh"></i></a>
+            <a class="btn" onclick="window.print()"><i class="icon-print"></i></a>
+        </div>#}
+        <div  id="tabla">
+        <table class="table table-hover table-bordered table-condensed" >        
+                        <thead class="header">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Tasa ing.</th>
+                                <th>Costo</th>
+                                <th style="text-align: center">Acciones</th>
+                            </tr> 
+                        </thead>
+                   {%for i in ingredientes%}
+                        <tr id="{{i.id}}">
+                            <td title="Click para ver datos del producto"><a href="#" abierto="0"  onclick="mostrarPopProducto('{{i.productoProduccion.id}}','{{i.productoProduccion}}', this);">{{i.productoProduccion}}</a></td>
+                            <td>{{i.cantidad}}</td>
+                            <td>{{i.tasa}}</td>
+                            <td>{{i.precioCosto}}</td>
+                           
+                        </tr>
+                        {%endfor%}
+                    </table></div></p>
+    </div>
+  </div>
+</div>
+</fieldset>    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('pes')}}" type="button" class="btn">Cancelar</a>
+    </div>
+                </form>
+</div>
+    </div>
+    </div>
+{%endblock%}
+ {%block modal%}
+<div id="eliminarModalIng" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Eliminar ingrediente</h3>
+  </div>
+  <div class="modal-body">
+      <p>¿Esta seguro que desea eliminar el ingrediente <strong id="txtElimIng">fff</strong>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+    <button type="button" onclick="eliminar()" id="btnEliminarIng"  value="" class="btn btn-primary">Aceptar</button>
+  </div>
+</div> 
+{%endblock%}
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov='';         
+            
+$(document).ready(function  (){ 
+             var divCat = document.getElementById('sisgg_finalbundle_preelaboradotype_categoria').parentNode;
+            $(divCat).append('<div class="btn-group"><button type="button"  onclick="cargarCPP()" title="Actualizar arbol de categorias" class="btn"><i class="icon-refresh"></i></button> <a href="{{path('nuevaCategoriaPP')}}" class="btn" title="Nueva categoria" target="_blank">...</a></div>');                
+            cargarUM();
+            actualizarArbol();
+            var comboTasa = document.getElementById('sisgg_finalbundle_preelaboradotype_tasa');
+            var nombreTasa=comboTasa.options[comboTasa.selectedIndex].text;
+            seleccionarUM(nombreTasa);
+            {%if tasa%}  
+                document.getElementById('um').disabled="disabled";
+            {%endif%}
+         });
+    
+    function actualizarArbol(){
+        $('.dtree').remove();
+        d = new dTree('d');
+        d.add(0, -1, 'Categorias','#','Todas las categorias');
+        $.getJSON("{{path ('enviarCategoriasPP')}}",function (json){
+            
+        for (var i=0;i<json.length;i++){
+            if (json[i].add==1){
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'1','/SisGG/web/tree/img/folder_add.gif');
+            }
+            else{
+                d.add(json[i].id, json[i].padre, json[i].nombre,'#',json[i].desc,'0','/SisGG/web/tree/img/folder_noadd.gif');
+             }
+            }
+       $('<p>'+d+ '</p>').appendTo('#tree');
+        });
+           
+    }
+    function buscarCategoria (){
+        var txtNodo=document.getElementById('idNodo').value;
+        $.getJSON("{{path ('buscarCategoriaPP1')}}",{n:txtNodo},function (json){
+        d.openTo(json.id, true);
+        var combo=document.getElementById('sisgg_finalbundle_preelaboradotype_categoria'); 
+        var nombre=json.n;
+        for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    document.getElementById('cat').value=nombre;
+                }
+            }    
+        });
+        
+                
+    }
+              
+    function verCategoria (nodo,target){
+        
+        var nombre = document.getElementById(nodo).text;
+        var target = document.getElementById(nodo).target;
+        if (target=='1'){
+            var combo=document.getElementById('sisgg_finalbundle_preelaboradotype_categoria');       
+            for (var i=0;i<combo.length;i++) {           
+                if (combo.options[i].text==nombre){
+                    combo.selectedIndex=i;
+                    document.getElementById('cat').value=nombre;
+                }
+            }
+        }else{
+            msjIC('La categoria no puede contener productos, puesto que contiene otras categorias.')
+        }
+    }
+    
+   
+    function cargarUM(){
+        $('#um').load("{{ path('cargarUM')}}", function() {             
+            }); 
+    }
+    function cargarTasa(combo){
+        var name=combo.options[combo.selectedIndex].value;
+        $('#sisgg_finalbundle_preelaboradotype_tasa').load("{{ path('cargarTasa')}}",{'name':name}, function() {             
+            }); 
+    }
+    function cargarCPP(){
+        $('#sisgg_finalbundle_preelaboradotype_categoria').load("{{ path('cargarCategoriaPP')}}", function() {
+            actualizarArbol();
+            }); 
+    }
+   
+   function seleccionarUM(tasa){
+       $.getJSON("{{path ('buscarUMdeTasa')}}",{name:tasa},function (json){
+           seleccionarTasa(tasa);
+            var combo=document.getElementById('um');
+            for (var i=0;i<combo.length;i++){
+                if (combo.options[i].text==json.name){
+                    combo.options[i].selected="selected";
+                }
+            }
+            //cargarTasa(combo);
+        });       
+    }
+    function seleccionarTasa(tasa){
+        var comboTasa=document.getElementById('sisgg_finalbundle_preelaboradotype_tasa');
+        $(comboTasa).load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    function eliminarModalIng(id,txt){          
+        var par= document.getElementById('txtElimIng');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarIng').val(id);
+        $('#eliminarModalIng').modal('toggle');
+    }
+        function eliminar(){
+             $('#'+($('#btnEliminarIng').val()).toString()).remove(); 
+              $('#eliminarModalIng').modal('hide'); 
+                jQuery.post("{{path('eliminarIngrediente')}}", {'id':$('#btnEliminarIng').val(), 'tipo':'2'}, function(r) {
+            });
+    }
+    function actualizarTabla(id){
+        $('#tabla').load("{{ path('actTabIng')}}",{'id':id}, function() {             
+            }); 
+    }
+    </script>
+{% endblock%}

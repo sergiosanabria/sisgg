@@ -1,0 +1,63 @@
+{% extends "::base.html.twig" %}
+{%block title%}Pagos pendientes{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Pagos pendientes</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Pagos pendientes</legend>
+  {#      {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}#}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+            <a  href="#" onclick="nuevaCompraEmpresa()" title="Nueva registro de compra"class="btn"><i class="icon-plus-sign"></i></a>
+            <a title="Ver lista de notas de pedidos" href="{{path('notas')}}" class="btn"><i class="icon-list-alt"></i></a>
+            <a class="btn"><i class="icon-print"></i></a>
+        </div>
+        <div><br> <br></div>
+
+{%if registros | length > 0 %}
+<table class="table table-bordered table-hover" id="pagos">
+                <thead class="header">
+                    <th>Periodo</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Descripcion</th>
+                </thead>
+                {%set total = 0%}
+                {%for i in registros%}
+                {%set total=i.monto + total %}
+                <tr>
+                <td>{{i.inicio | date("d/m/Y")}} - {{i.fin | date("d/m/Y")}}</td>    
+                <td>{{i.monto}}</td>
+                <td>{{i.fecha | date("d/m/Y")}}</td>
+                <td>{{i.descripcion}}</td>
+                </tr>
+                {%endfor%}
+            </table>
+{%else%}
+<h3>No se han pagos pendientes.</h3>
+{%endif%}
+
+        </div>
+    </div>
+</div>        
+{%endblock%}

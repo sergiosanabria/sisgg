@@ -1,0 +1,46 @@
+parameters:
+    gestor_solicitudes.class:     SisGG\FinalBundle\Model\GestorSolicitudes
+    gestor_mensajes.class:        SisGG\FinalBundle\Model\GestorMensajes
+    gestor_pedidos.class:        SisGG\FinalBundle\Model\GestorPedidos
+    gestor_autenticacion.class:        SisGG\FinalBundle\Autenticacion\GestorAutenticacion
+    gestor_cajas.class:        SisGG\FinalBundle\Model\GestorCajas
+    gestor_cuenta_corriente.class:        SisGG\FinalBundle\Model\GestorCuentasCorriente
+    gestor_clientes.class:        SisGG\FinalBundle\Model\GestorClientes
+    gestor_ventas.class:        SisGG\FinalBundle\Model\GestorVentas
+    gestor_cocinas.class:        SisGG\FinalBundle\Model\GestorCocinas
+    gestor_redirecciones.class:        SisGG\FinalBundle\Model\GestorRedirecciones
+services:
+    gestor_clientes:
+        class:      "%gestor_clientes.class%"
+        arguments:  [@doctrine.orm.entity_manager]
+    gestor_redirecciones:
+        class:      "%gestor_redirecciones.class%"
+        arguments:  [@doctrine.orm.entity_manager]     
+    gestor_cocinas:
+        class:      "%gestor_cocinas.class%"
+        arguments:  [@doctrine.orm.entity_manager]    
+    gestor_solicitudes:
+        class:      "%gestor_solicitudes.class%"
+        arguments:  [@doctrine.orm.entity_manager]    
+    gestor_mensajes:
+        class:      "%gestor_mensajes.class%"
+        arguments:  [@doctrine.orm.entity_manager]
+    gestor_autenticacion:
+        class:      "%gestor_autenticacion.class%"
+        arguments:  [@doctrine.orm.entity_manager]
+    gestor_cuenta_corriente:
+        class:      "%gestor_cuenta_corriente.class%"
+        arguments:  [@doctrine.orm.entity_manager,@gestor_mensajes,@gestor_cajas]  
+    gestor_cajas:
+        class:      "%gestor_cajas.class%"
+        arguments:  [@doctrine.orm.entity_manager,@gestor_mensajes]      
+    gestor_ventas:
+        class:      "%gestor_ventas.class%"
+        arguments:  [@doctrine.orm.entity_manager,@gestor_mensajes,@gestor_cajas,@gestor_cuenta_corriente]
+    gestor_pedidos:
+        class:      "%gestor_pedidos.class%"
+        arguments:  [@doctrine.orm.entity_manager , @gestor_solicitudes, @gestor_mensajes]
+    sisgg_final_bundle.color_type_extension:    
+        class:      SisGG\FinalBundle\Form\Extension\ColorTypeExtension
+        tags:
+            - { name: form.type_extension, alias: color }

@@ -1,0 +1,1761 @@
+login:
+    pattern: /login
+    defaults: {_controller: SisGGFinalBundle:Security:login}
+login_check:
+    pattern: /login_check
+logout:
+    pattern: /logout    
+pagina_principal:
+    pattern: /
+    defaults: {_controller: SisGGFinalBundle:Default:index}
+#Rol
+rol_nuevo:
+    pattern: /nuevorol
+    defaults: {_controller: SisGGFinalBundle:Security:rolNuevo}
+editar_rol:
+    pattern: /editarRol
+    defaults: {_controller: SisGGFinalBundle:Security:editarRol}
+eliminarRol:
+    pattern: /eliminarRol
+    defaults: {_controller: SisGGFinalBundle:Security:eliminarRol}  
+activarRol:
+    pattern: /activarRol
+    defaults: {_controller: SisGGFinalBundle:Security:activarRol}      
+gestion_roles:
+    pattern: /gestionRoles
+    defaults: {_controller: SisGGFinalBundle:Security:gestionRoles} 
+        
+index:
+    pattern: /
+    defaults: {_controller: SisGGFinalBundle:Empresa:index}
+usuarioNuevo:
+    pattern: /usuarioNuevo
+    defaults: {_controller: SisGGFinalBundle:Security:usuarioNuevo}
+usuarios:
+    pattern: /usuarios
+    defaults: {_controller: SisGGFinalBundle:Security:usuarios} 
+editarUsuario:
+    pattern: /editarUsuario
+    defaults: {_controller: SisGGFinalBundle:Security:editarUsuario}    
+eliminarUsuario:
+    pattern: /eliminarUsuario
+    defaults: {_controller: SisGGFinalBundle:Security:eliminarUsuario} 
+perfilUsuario:
+    pattern: /perfilUsuario
+    defaults: {_controller: SisGGFinalBundle:Security:perfilUsuario}     
+cambiarContrasenia:
+    pattern: /cambiarContrasenia
+    defaults: {_controller: SisGGFinalBundle:Security:cambiarContrasenia}     
+impListaUsuario:
+    pattern: /impListaUsuario
+    defaults: {_controller: SisGGFinalBundle:Security:impListaUsuario}     
+recuperarContrasenia:
+    pattern: /recuperarContrasenia
+    defaults: {_controller: SisGGFinalBundle:Security:recuperarContrasenia}
+    requirements:
+          _method:  POST
+activarUsuario:
+    pattern: /activarUsuario
+    defaults: {_controller: SisGGFinalBundle:Security:activarUsuario}       
+rol_nuevo:
+    pattern: /nuevorol
+    defaults: {_controller: SisGGFinalBundle:Security:rolNuevo}   
+auditorias:
+  pattern: /auditorias
+  defaults: {_controller: SisGGFinalBundle:Auditoria:auditorias}
+buscarAuditorias:
+  pattern: /buscarAuditorias
+  defaults: {_controller: SisGGFinalBundle:Auditoria:buscarAuditorias}  
+archivoAuditoria:
+  pattern: /archivoAuditoria
+  defaults: {_controller: SisGGFinalBundle:Auditoria:archivoAuditoria}
+descargarAuditoria:
+  pattern: /descargarAuditoria
+  defaults: {_controller: SisGGFinalBundle:Auditoria:descargarAuditoria}  
+elegirCarpetaAuditoria:
+  pattern: /elegirCarpetaAuditoria
+  defaults: {_controller: SisGGFinalBundle:Auditoria:elegirCarpetaAuditoria} 
+impListaAuditoria:
+  pattern: /impListaAuditoria
+  defaults: {_controller: SisGGFinalBundle:Auditoria:impListaAuditoria}   
+
+backup:
+    pattern: /backup
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:backup}
+descargarBackup:
+    pattern: /descargarBackup
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:descargarBackup}    
+backups:
+    pattern: /backups
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:backups}  
+elegirCarpetaBackup:
+    pattern: /elegirCarpetaBackup
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:elegirCarpetaBackup}    
+fileChooser:
+    pattern: /fileChooser
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:fileChooser}    
+    
+impListaBackup:
+    pattern: /impListaBackup
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:impListaBackup}
+#Sectores:
+sectores:
+    pattern: /sectores
+    defaults: {_controller: SisGGFinalBundle:Sector:sectores}
+nuevo_sector:
+    pattern: /nuevoSector
+    defaults: {_controller: SisGGFinalBundle:Sector:nuevoSector}
+actualizar_sector:
+    pattern: /actuarlizarSector
+    defaults: {_controller: SisGGFinalBundle:Sector:actualizarSector}
+borrar_sector:
+    pattern: /actuarlizarSector
+    defaults: {_controller: SisGGFinalBundle:Sector:borrarSector}
+activar_sector:
+    pattern: /activarSector
+    defaults: {_controller: SisGGFinalBundle:Sector:activarSector}    
+sectores_mesas:
+    pattern: /sectoresMesas
+    defaults: {_controller: SisGGFinalBundle:Sector:sectoresMesas}
+detalles_mesa:
+    pattern: /detallesMesa
+    defaults: {_controller: SisGGFinalBundle:Sector:detallesMesa}    
+liberar_mesa:
+    pattern: /liberarMesa
+    defaults: {_controller: SisGGFinalBundle:Sector:liberarMesa}    
+#Provincias
+provincias:
+    pattern: /provincias
+    defaults: {_controller: SisGGFinalBundle:Provincia:provincias}
+nueva_provincia:
+    pattern: /nuevaProvincia
+    defaults: {_controller: SisGGFinalBundle:Provincia:nuevaProvincia}
+editar_provincia:
+    pattern: /editarProvincia
+    defaults: {_controller: SisGGFinalBundle:Provincia:editarProvincia}
+borrar_provincia:
+    pattern: /borrarProvincia
+    defaults: {_controller: SisGGFinalBundle:Provincia:borrarProvincia}
+activar_provincia:
+    pattern: /activarProvincia
+    defaults: {_controller: SisGGFinalBundle:Provincia:activarProvincia} 
+pordefecto_provincia:
+    pattern: /pordefectoProvincia
+    defaults: {_controller: SisGGFinalBundle:Provincia:pordefectoProvincia} 
+pordefecto_ciudad:
+    pattern: /pordefectoCiudad
+    defaults: {_controller: SisGGFinalBundle:Ciudad:pordefectoCiudad}     
+
+provCombo:
+      pattern: /provCombo
+      defaults: {_controller: SisGGFinalBundle:Provincia:provCombo}
+#Ciudad:
+nuevaCiudad:
+      pattern: /nuevaCiudad
+      defaults: {_controller: SisGGFinalBundle:Ciudad:nuevaCiudad}
+      requirements:
+          _method:  GET
+          
+altaCiudad:
+      pattern: /nuevaCiudad
+      defaults: {_controller: SisGGFinalBundle:Ciudad:altaCiudad}
+      requirements:
+          _method:  POST
+
+editarCiudad:
+      pattern: /editarCiudad
+      defaults: {_controller: SisGGFinalBundle:Ciudad:editarCiudad}
+      requirements:
+          _method:  GET
+
+modificarCiudad:
+      pattern: /editarCiudad
+      defaults: {_controller: SisGGFinalBundle:Ciudad:modificarCiudad}
+      requirements:
+          _method:  POST          
+          
+eliminarCiudad:
+      pattern: /eliminarCiudad
+      defaults: {_controller: SisGGFinalBundle:Ciudad:eliminarCiudad}          
+
+ciudades:
+      pattern: /ciudades
+      defaults: {_controller: SisGGFinalBundle:Ciudad:ciudades}
+      
+ciudadesprovincia:
+      pattern: /ciudadesprovincia
+      defaults: {_controller: SisGGFinalBundle:Ciudad:ciudadesprovincia}   
+altaPinC:
+      pattern: /altaPinC
+      defaults: {_controller: SisGGFinalBundle:Provincia:altaProvinciaEnCiudad} 
+altaCiuErr:
+      pattern: /altaCiuErr
+      defaults: {_controller: SisGGFinalBundle:Ciudad:altaCiudadCombo} 
+
+#Localidades
+localidades:
+    pattern: /localidades
+    defaults: {_controller: SisGGFinalBundle:Localidad:localidades}
+nueva_localidad:
+    pattern: /nuevaLocalidad
+    defaults: {_controller: SisGGFinalBundle:Localidad:nuevaLocalidad}
+editar_localidad:
+    pattern: /editarLocalidad
+    defaults: {_controller: SisGGFinalBundle:Localidad:editarLocalidad}
+eliminar_localidad:
+    pattern: /eliminarLocalidad
+    defaults: {_controller: SisGGFinalBundle:Localidad:eliminarLocalidad}
+#Tipo Documento:
+tipos_documento:
+    pattern: /tiposDocumento
+    defaults: {_controller: SisGGFinalBundle:TipoDocumento:tiposDocumento}
+nuevo_tipo_documento:
+    pattern: /nuevoTipoDocumento
+    defaults: {_controller: SisGGFinalBundle:TipoDocumento:nuevoTipoDocumento}
+editar_tipo_documento:
+    pattern: /editarTipoDocumento
+    defaults: {_controller: SisGGFinalBundle:TipoDocumento:editarTipoDocumento}
+borrar_tipo_documento:
+    pattern: /borrarTipoDocumento
+    defaults: {_controller: SisGGFinalBundle:TipoDocumento:borrarTipoDocumento}
+activar_tipo_documento:
+    pattern: /activarTipoDocumento
+    defaults: {_controller: SisGGFinalBundle:TipoDocumento:activarTipoDocumento}     
+# Cliente:
+clientes:
+    pattern: /clientes
+    defaults: {_controller: SisGGFinalBundle:Cliente:clientes}
+cliente:
+    pattern: /cliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:cliente}    
+nuevo_cliente:
+    pattern: /nuevoCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:nuevoCliente}    
+editar_cliente:
+    pattern: /editarCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:editarCliente}    
+borrar_cliente:
+    pattern: /borrarCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:borrarCliente} 
+activar_cliente:
+    pattern: /activarCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:activarCliente}
+pordefecto_cliente:
+    pattern: /pordefectoCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:pordefectoCliente}   
+detalles_cliente:
+    pattern: /detallesCliente
+    defaults: {_controller: SisGGFinalBundle:Cliente:detalles}   
+# GrupoCliente:
+grupos_clientes:
+    pattern: /gruposClientes
+    defaults: {_controller: SisGGFinalBundle:GrupoCliente:gruposClientes}    
+nuevo_grupo_cliente:
+    pattern: /nuevoGrupoCliente
+    defaults: {_controller: SisGGFinalBundle:GrupoCliente:nuevoGrupoCliente}    
+editar_grupo_cliente:
+    pattern: /editarGrupoCliente
+    defaults: {_controller: SisGGFinalBundle:GrupoCliente:editarGrupoCliente}    
+borrar_grupo_cliente:
+    pattern: /borrarGrupoCliente
+    defaults: {_controller: SisGGFinalBundle:GrupoCliente:borrarGrupoCliente} 
+activar_grupo_cliente:
+    pattern: /activarGrupoCliente
+    defaults: {_controller: SisGGFinalBundle:GrupoCliente:activarGrupoCliente} 
+# DescuentoCliente:
+descuentos_clientes:
+    pattern: /descuentosClientes
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:descuentosClientes}  
+descuentos_cliente:
+    pattern: /descuentosCliente
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:descuentosCliente}      
+nuevo_descuento_cliente:
+    pattern: /nuevoDescuentoCliente
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:nuevoDescuentoCliente}    
+editar_descuento_cliente:
+    pattern: /editarDescuentoCliente
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:editarDescuentoCliente}    
+borrar_descuento_cliente:
+    pattern: /borrarDescuentoCliente
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:borrarDescuentoCliente} 
+activar_descuento_cliente:
+    pattern: /activarDescuentoCliente
+    defaults: {_controller: SisGGFinalBundle:DescuentoCliente:activarDescuentoCliente} 
+# DescuentoProductoVenta:
+descuentos_producto_ventas:
+    pattern: /descuentosProductoVentas
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:descuentosProductoVentas}  
+descuentos_producto_venta:
+    pattern: /descuentosProductoVenta
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:descuentosProductoVenta}      
+nuevo_descuento_producto_venta:
+    pattern: /nuevoDescuentoProductoVenta
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:nuevoDescuentoProductoVenta}    
+editar_descuento_producto_venta:
+    pattern: /editarDescuentoProductoVenta
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:editarDescuentoProductoVenta}    
+borrar_descuento_producto_venta:
+    pattern: /borrarDescuentoProductoVenta
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:borrarDescuentoProductoVenta} 
+activar_descuento_producto_venta:
+    pattern: /activarDescuentoProductoVenta
+    defaults: {_controller: SisGGFinalBundle:DescuentoProductoVenta:activarDescuentoProductoVenta}     
+# Recargo:
+recargos:
+    pattern: /recargos
+    defaults: {_controller: SisGGFinalBundle:Recargo:recargos}    
+nuevo_recargo:
+    pattern: /nuevoRecargo
+    defaults: {_controller: SisGGFinalBundle:Recargo:nuevoRecargo}    
+editar_recargo:
+    pattern: /editarRecargo
+    defaults: {_controller: SisGGFinalBundle:Recargo:editarRecargo}    
+borrar_recargo:
+    pattern: /borrarRecargo
+    defaults: {_controller: SisGGFinalBundle:Recargo:borrarRecargo} 
+activar_recargo:
+    pattern: /activarRecargo
+    defaults: {_controller: SisGGFinalBundle:Recargo:activarRecargo}     
+    
+#Pedido
+pedidos:
+    pattern: /pedidos
+    defaults: {_controller: SisGGFinalBundle:Pedido:pedidos}
+detalles_pedido:   
+    pattern: /detallesPedido
+    defaults: {_controller: SisGGFinalBundle:Pedido:detallesPedido}
+ver_pedidos_mesa:
+    pattern: /pedidosMesa
+    defaults: {_controller: SisGGFinalBundle:Pedido:pedidosMesa}
+nuevo_pedido_delivery:
+    pattern: /nuevoPedidoDelivery
+    defaults: {_controller: SisGGFinalBundle:Pedido:nuevoPedidoDelivery}
+editar_pedido_delivery:
+    pattern: /editarPedidoDelivery
+    defaults: {_controller: SisGGFinalBundle:Pedido:editarPedidoDelivery}
+nuevo_pedido_mostrador:
+    pattern: /nuevoPedidoMostrador
+    defaults: {_controller: SisGGFinalBundle:Pedido:nuevoPedidoMostrador}
+editar_pedido_mostrador:
+    pattern: /editarPedidoMostrador
+    defaults: {_controller: SisGGFinalBundle:Pedido:editarPedidoMostrador}
+nuevo_pedido_mesa:
+    pattern: /nuevoPedidoMesa
+    defaults: {_controller: SisGGFinalBundle:Pedido:nuevoPedidoMesa}
+editar_pedido_mesa:
+    pattern: /editarPedidoMesa
+    defaults: {_controller: SisGGFinalBundle:Pedido:editarPedidoMesa}
+mesas:
+    pattern: /mesas
+    defaults : {_controller: SisGGFinalBundle:Pedido:mesas}
+pedido_productos:
+    pattern: /productosPedido
+    defaults : {_controller: SisGGFinalBundle:Pedido:productos}
+pedido_productos_by_tag:
+    pattern: /productosPedidoTag
+    defaults : {_controller: SisGGFinalBundle:Pedido:productosByTag}    
+pedido_categorias:
+    pattern: /categoriasPedido
+    defaults : {_controller: SisGGFinalBundle:Pedido:categorias}
+cancelar_pedido:
+    pattern: /cancelarPedido
+    defaults : {_controller: SisGGFinalBundle:Pedido:cancelar}
+tasas_producto:
+    pattern: /tasasProducto
+    defaults : {_controller: SisGGFinalBundle:Pedido:tasasProducto}
+verificar_disponibilidad:
+    pattern: /verificarDisponibilidad
+    defaults: {_controller: SisGGFinalBundle:Pedido:verificarDisponibilidad}
+comprobar_disponibilidad:
+    pattern: /comprobarDisponibilidad
+    defaults: {_controller: SisGGFinalBundle:Pedido:comprobarDisponibilidad}
+detalles_pedido_mostrdordelivery:
+    pattern: /detallesPedidoMostradorDelivery
+    defaults: {_controller: SisGGFinalBundle:Pedido:detallesPedidoMostradorDelivery}
+cambiar_pedido_mesa:
+    pattern: /cambiarPedidoMesa
+    defaults: {_controller: SisGGFinalBundle:Pedido:cambiarPedidoMesa}
+transformar_pedido:
+    pattern: /transformarPedido
+    defaults: {_controller: SisGGFinalBundle:Pedido:transformarPedido}
+cambiar_pedido:
+    pattern: /cambiarPedido
+    defaults: {_controller: SisGGFinalBundle:Pedido:cambiarPedido} 
+deliverys:
+    pattern:  /deliverys
+    defaults: {_controller: SisGGFinalBundle:Pedido:deliverys}
+imprimirPedido:
+    pattern:  /imprimirPedido
+    defaults: {_controller: SisGGFinalBundle:Pedido:imprimirPedido}
+    
+#RegistroEnvio
+registros_envios:
+    pattern:  /registrosEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:registrosEnvio}
+
+nuevo_registro_envio:
+    pattern:  /nuevoRegistroEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:nuevoRegistroEnvio}
+    
+modificar_registro_envio:
+    pattern:  /modificarRegistroEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:modificarRegistroEnvio}
+    
+borrar_registro_envio:
+    pattern:  /borrarRegistrosEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:borrarRegistroEnvio}
+
+imprimir_registro_envio:
+    pattern:  /imprimirRegistrosEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:imprimirRegistroEnvio}
+
+rendir_registro_envio:
+    pattern:  /rendirRegistrosEnvio
+    defaults: {_controller: SisGGFinalBundle:RegistroEnvio:rendirRegistroEnvio}    
+    
+    
+#Solicitudes
+enviar_solicitud_mostrador:
+    pattern: /enviarSolicitudMostrador
+    defaults: {_controller: SisGGFinalBundle:Solicitud:enviarSolicitudMostrador}
+enviar_solicitud_delivery:
+    pattern: /enviarSolicitudDelivery
+    defaults: {_controller: SisGGFinalBundle:Solicitud:enviarSolicitudDelivery}
+enviar_solicitud_mesa:
+    pattern: /enviarSolicitudMesa
+    defaults: {_controller: SisGGFinalBundle:Solicitud:enviarSolicitudMesa}
+ver_solicitudes_pendientes:
+    pattern: /verSolicitudes
+    defaults: {_controller: SisGGFinalBundle:Solicitud:verSolicitudes}
+obtener_respuesta_solicitud:
+    pattern: /obtenerRespuesta
+    defaults: {_controller: SisGGFinalBundle:Solicitud:obenterRespuesta}
+responder_solicitud:
+    pattern: /responderSolicitud
+    defaults: {_controller: SisGGFinalBundle:Solicitud:responderSolicitud}
+#Elaboracion de Pedidos
+cocina_configurar:
+    pattern:  /configurarCocina
+    defaults: {_controller: SisGGFinalBundle:Elaboracion:configurarCocina}
+
+elaboracion_pedidos:
+    pattern: /elaboracion
+    defaults : {_controller: SisGGFinalBundle:Elaboracion:elaboracion}
+elaboracion_nuevas_comandas:
+    pattern: /nuevasComandas
+    defaults : {_controller: SisGGFinalBundle:Elaboracion:nuevasComandas}
+tandas:
+    pattern: /tandas
+    defaults : {_controller: SisGGFinalBundle:Tanda:tandas}
+resumen_tanda:
+    pattern: /resumenTanda
+    defaults : {_controller: SisGGFinalBundle:Tanda:resumen}
+nueva_tanda:
+    pattern: /nuevaTanda
+    defaults : {_controller: SisGGFinalBundle:Tanda:nuevaTanda} 
+vincular_pedido_tanda:
+    pattern: /vincularPedidoTanda
+    defaults : {_controller: SisGGFinalBundle:Tanda:vincularPedido} 
+desvincular_pedido_tanda:
+    pattern: /desvincularPedidoTanda
+    defaults : {_controller: SisGGFinalBundle:Tanda:desvincularPedido}     
+registrar_elaborados:
+    pattern: /registrarElaborados
+    defaults : {_controller: SisGGFinalBundle:Elaboracion:registrarElaborados}
+despachar_pedido:
+    pattern: /despacharPedido
+    defaults : {_controller: SisGGFinalBundle:Elaboracion:despacharPedido}
+#ProductoVenta
+productoVenta:
+      pattern: /productoVenta
+      defaults: {_controller: SisGGFinalBundle:Producto:obtenerProductoVenta} 
+
+#Ingrediente
+ingredientes_productoVenta:
+      pattern: /ingredientesProductoVenta
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:ingredientes} 
+cancelar:
+      pattern: /cancelar
+      defaults: {_controller: SisGGFinalBundle:Pedido:cancelar} 
+#PuntoVenta
+puntos_venta:
+      pattern: /puntosVenta
+      defaults: {_controller: SisGGFinalBundle:PuntoVenta:puntosVenta}
+nuevo_punto_venta:
+      pattern: /nuevoPuntoVenta
+      defaults: {_controller: SisGGFinalBundle:PuntoVenta:nuevoPuntoVenta}
+editar_punto_venta:
+      pattern: /editarPuntoVenta
+      defaults: {_controller: SisGGFinalBundle:PuntoVenta:editarPuntoVenta}
+borrar_punto_venta:
+      pattern: /borrarPuntoVenta
+      defaults: {_controller: SisGGFinalBundle:PuntoVenta:borrarPuntoVenta}
+#Caja
+editar_caja:
+    pattern: /editarCaja
+    defaults: {_controller: SisGGFinalBundle:Caja:editarCaja}
+apertura_caja:
+    pattern: /aperturaCaja
+    defaults: {_controller: SisGGFinalBundle:Caja:aperturaCaja}
+cierre_caja:
+    pattern: /cierreCaja
+    defaults: {_controller: SisGGFinalBundle:Caja:cierreCaja}
+caja:
+    pattern: /caja
+    defaults: {_controller: SisGGFinalBundle:Caja:caja}
+    
+imprimir_arqueo:
+    pattern: /arqueoCaja
+    defaults: {_controller: SisGGFinalBundle:Caja:arqueoCaja}      
+#Venta
+ventas:
+    pattern: /ventas
+    defaults: {_controller: SisGGFinalBundle:Venta:ventas}
+facturar:
+    pattern: /registrarVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:facturar}
+actualizar_facturar:
+    pattern: /actualizarVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:actualizarfacturar}    
+anular_venta:
+    pattern: /anularVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:anularVenta}    
+nueva_venta:
+    pattern: /nuevaVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:nuevaVenta}
+cliente_venta:
+    pattern: /clienteVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:cliente}
+productoVenta_venta:
+    pattern: /productoVentaVenta
+    defaults: {_controller: SisGGFinalBundle:Venta:productoVenta}    
+buscarVentas:
+      pattern: /buscarVentas
+      defaults: {_controller: SisGGFinalBundle:Venta:buscarVentas}  
+impListaVentas:
+      pattern: /impListaVentas
+      defaults: {_controller: SisGGFinalBundle:Venta:impListaVentas} 
+numero_factura:
+      pattern: /numeroFactura
+      defaults: {_controller: SisGGFinalBundle:Venta:numeroFactura}
+detalles_venta:
+      pattern: /detallesVenta
+      defaults: {_controller: SisGGFinalBundle:Venta:detallesVenta}
+impVenta:
+      pattern: /impVenta
+      defaults: {_controller: SisGGFinalBundle:Venta:impVenta}  
+#NotaDeCredito
+notas_credito:
+    pattern: /notasCredito
+    defaults: {_controller: SisGGFinalBundle:NotaCredito:notasCredito}
+detalles_nota_credito:
+      pattern: /detallesNotaCredito
+      defaults: {_controller: SisGGFinalBundle:NotaCredito:detallesNotaCredito}    
+      
+#TarjetaCredito:
+tarjetas_credito:
+    pattern: /tarjetasCredito
+    defaults: {_controller: SisGGFinalBundle:TarjetaCredito:tarjetas}
+nueva_tarjeta_credito:
+    pattern: /nuevaTarjetaCredito
+    defaults: {_controller: SisGGFinalBundle:TarjetaCredito:nuevaTarjetaCredito}
+editar_tarjeta_credito:
+    pattern: /editarTarjetaCredito
+    defaults: {_controller: SisGGFinalBundle:TarjetaCredito:editarTarjetaCredito}
+#TarjetaDebito:
+tarjetas_debito:
+    pattern: /tarjetasDebito
+    defaults: {_controller: SisGGFinalBundle:TarjetaDebito:tarjetas}
+nueva_tarjeta_debito:
+    pattern: /nuevaTarjetaDebito
+    defaults: {_controller: SisGGFinalBundle:TarjetaDebito:nuevaTarjetaDebito}
+editar_tarjeta_debito:
+    pattern: /editarTarjetaDebito
+    defaults: {_controller: SisGGFinalBundle:TarjetaDebito:editarTarjetaDebito}
+#Cobro:
+tipos_cobro:
+    pattern: /tiposCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:tiposCobro}
+nuevo_tipo_cobro:
+    pattern: /nuevoTipoCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:nuevoTipoCobro}
+editar_tipo_cobro:
+    pattern: /editarTipoCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:editarTipoCobro}   
+cambiar_cobro:
+    pattern: /cambiarCobro
+    defaults: {_controller: SisGGFinalBundle:Cobro:cambiarCobro}   
+tipo_cobro:
+    pattern: /tipoCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:tipoCobro} 
+activarTipoCobro:
+    pattern: /activarTipoCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:activarTipoCobro}
+eliminarTipoCobro:
+    pattern: /eliminarTipoCobro
+    defaults: {_controller: SisGGFinalBundle:TipoCobro:eliminarTipoCobro}      
+#Empresa:
+empresa:  
+    pattern: /empresa
+    defaults: {_controller: SisGGFinalBundle:Empresa:empresa}
+     #EMPRESA
+editarEmpresa:
+      pattern: /editarEmpresa
+      defaults: {_controller: SisGGFinalBundle:Empresa:editarEmpresa} 
+modificarEmpresa:
+      pattern: /modificarEmpresa
+      defaults: {_controller: SisGGFinalBundle:Empresa:modificarEmpresa}
+      requirements:   
+        _method:  POST
+        
+parametros:
+      pattern: /parametros
+      defaults: {_controller: SisGGFinalBundle:Empresa:parametros}
+#Concepto:
+conceptos:
+    pattern: /conceptos
+    defaults: {_controller: SisGGFinalBundle:Concepto:conceptos}
+conceptos_entrada_salida:
+    pattern: /conceptosEntradaSalida
+    defaults: {_controller: SisGGFinalBundle:Concepto:conceptosEntradaSalida}
+concepto:
+    pattern: /concepto
+    defaults: {_controller: SisGGFinalBundle:Concepto:concepto}    
+nuevo_concepto:
+    pattern: /nuevoConcepto
+    defaults: {_controller: SisGGFinalBundle:Concepto:nuevoConcepto}
+editar_concepto:
+    pattern: /editarConcepto
+    defaults: {_controller: SisGGFinalBundle:Concepto:editarConcepto}
+borrar_concepto:
+    pattern: /borrarConcepto
+    defaults: {_controller: SisGGFinalBundle:Concepto:borrarConcepto}
+activar_concepto:
+    pattern: /activarConcepto
+    defaults: {_controller: SisGGFinalBundle:Concepto:activarConcepto}     
+#Operacion:
+operaciones:
+    pattern: /operaciones
+    defaults: {_controller: SisGGFinalBundle:Operacion:operaciones}
+operacion:
+    pattern: /operacion
+    defaults: {_controller: SisGGFinalBundle:Operacion:operacion}    
+nuevo_operacion:
+    pattern: /nuevoOperacion
+    defaults: {_controller: SisGGFinalBundle:Operacion:nuevoOperacion}
+editar_operacion:
+    pattern: /editarOperacion
+    defaults: {_controller: SisGGFinalBundle:Operacion:editarOperacion}
+borrar_operacion:
+    pattern: /borrarOperacion
+    defaults: {_controller: SisGGFinalBundle:Operacion:borrarOperacion}
+activar_operacion:
+    pattern: /activarOperacion
+    defaults: {_controller: SisGGFinalBundle:Operacion:activarOperacion} 
+#CondicionIva:
+condiciones_iva:
+    pattern: /condicionesIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:condicionesIva}
+condicionIva:
+    pattern: /condicionIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:condicionIva}    
+nuevo_condicion_iva:
+    pattern: /nuevoCondicionIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:nuevoCondicionIva}
+editar_condicion_iva:
+    pattern: /editarCondicionIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:editarCondicionIva}
+borrar_condicion_iva:
+    pattern: /borrarCondicionIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:borrarCondicionIva}
+activar_condicion_iva:
+    pattern: /activarCondicionIva
+    defaults: {_controller: SisGGFinalBundle:CondicionIva:activarCondicionIva}
+#CuentaCorriente:
+cuentas_corrientes:
+    pattern: /cuentasCorrientes
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:cuentasCorrientes}
+cuenta_corriente:
+    pattern: /cuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:cuentaCorriente}    
+nuevo_cuenta_corriente:
+    pattern: /nuevoCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:nuevoCuentaCorriente}
+editar_cuenta_corriente:
+    pattern: /editarCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:editarCuentaCorriente}
+detalle_cuenta_corriente:
+    pattern: /detalleCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:detalleCuentaCorriente}    
+borrar_cuenta_corriente:
+    pattern: /borrarCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:borrarCuentaCorriente}
+activar_cuenta_corriente:
+    pattern: /activarCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:activarCuentaCorriente}
+registrar_cobro_cuenta_corriente:
+    pattern: /registrarCobroCuentaCorriente
+    defaults: {_controller: SisGGFinalBundle:CuentaCorriente:registrarCobroCuentaCorriente}
+imp_lista_cuenta_corriente:
+      pattern: /impListaCuentasCorrientes
+      defaults: {_controller: SisGGFinalBundle:CuentaCorriente:impListaCuentasCorrientes}    
+imp_cuenta_corriente:
+      pattern: /impCuentaCorriente
+      defaults: {_controller: SisGGFinalBundle:CuentaCorriente:impCuentaCorriente}  
+detalle_cobro:
+      pattern: /detalleCobro
+      defaults: {_controller: SisGGFinalBundle:CuentaCorriente:detalleCobro}
+imp_recibo:
+      pattern: /impRecibo
+      defaults: {_controller: SisGGFinalBundle:CuentaCorriente:impRecibo} 
+#Movimientos
+movimientos:
+  pattern: /movimientos
+  defaults: {_controller: SisGGFinalBundle:Movimiento:movimientos}
+nuevo_movimiento:
+  pattern: /nuevoMovimiento
+  defaults: {_controller: SisGGFinalBundle:Movimiento:nuevoMovimiento}
+nueva_entrada:
+  pattern: /nuevaEntrada
+  defaults: {_controller: SisGGFinalBundle:Movimiento:nuevaEntrada}
+nueva_salida  :
+  pattern: /nuevaSalida
+  defaults: {_controller: SisGGFinalBundle:Movimiento:nuevaSalida}  
+
+#Lotes
+lotes:
+  pattern: /lotes
+  defaults: {_controller: SisGGFinalBundle:Lote:lotes}
+lote:
+  pattern: /lote
+  defaults: {_controller: SisGGFinalBundle:Lote:lote}  
+#Auditorias
+auditorias:
+  pattern: /auditorias
+  defaults: {_controller: SisGGFinalBundle:Auditoria:auditorias}  
+#ProveedorINICIO
+nuevoProveedor:
+      pattern: /nuevoProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:nuevoProveedor}
+      requirements:
+          _method:  GET
+altaProveedor:
+      pattern: /altaProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:altaProveedor}
+      requirements:
+          _method:  POST
+editarProveedor:
+      pattern: /editarProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:editarProveedor} 
+modificarProveedor:
+      pattern: /modificarProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:modificarProveedor}
+      requirements:
+          _method:  POST   
+proveedores:
+      pattern: /proveedores
+      defaults: {_controller: SisGGFinalBundle:Proveedor:proveedores} 
+
+activarProveedor:
+      pattern: /activarProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:activarProveedor} 
+eliminarProveedor:
+      pattern: /eliminarProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:eliminarProveedor} 
+cargarProveedor:
+      pattern: /cargarProveedor
+      defaults: {_controller: SisGGFinalBundle:Proveedor:cargarProveedor}
+      
+      
+impDetallesProv:
+      pattern: /impDetallesProv
+      defaults: {_controller: SisGGFinalBundle:Proveedor:impDetallesProv}      
+impListaProv:
+      pattern: /impListaProv
+      defaults: {_controller: SisGGFinalBundle:Proveedor:impListaProv}      
+ #ProveedorFIN
+#CategoriaPVINICIO
+nuevaCategoriaPV:
+      pattern: /nuevaCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:nuevaCategoriaPV}
+      requirements:
+          _method:  GET
+editarCategoriaPV:
+      pattern: /editarCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:editarCategoriaPV}          
+          
+enviarCategorias:
+      pattern: /enviarCategorias
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:enviarCategorias}
+enviarCategoriasPV:
+      pattern: /enviarCategoriasPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:enviarCategoriasPV}
+buscarCategoriaPV1:
+      pattern: /buscarCategoriaPV1
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:buscarCategoriaPV1}  
+altaCategoriaPV:
+      pattern: /altaCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:altaCategoriaPV}
+      requirements:
+          _method:  POST     
+modificarCategoriaPV:
+      pattern: /modificarCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:modificarCategoriaPV}
+      requirements:
+          _method:  POST             
+eliminarCategoriaPV:
+      pattern: /eliminarCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:eliminarCategoriaPV}           
+cargarCategoriaPV:
+      pattern: /cargarCategoriaPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:cargarCategoriaPV}           
+categoriasPV:
+      pattern: /categoriasPV
+      defaults: {_controller: SisGGFinalBundle:CategoriaPV:categoriasPV}       
+
+#CategoriaPVFIN
+
+#CategoriaPPINICIO
+nuevaCategoriaPP:
+      pattern: /nuevaCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:nuevaCategoriaPP}
+      requirements:
+          _method:  GET       
+enviarCategoriasP:
+      pattern: /enviarCategoriasP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:enviarCategoriasP}
+enviarCategoriasPP:
+      pattern: /enviarCategoriasPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:enviarCategoriasPP}
+buscarCategoriaPP1:
+      pattern: /buscarCategoriaPP1
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:buscarCategoriaPP1}  
+      
+altaCategoriaPP:
+      pattern: /altaCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:altaCategoriaPP}
+      requirements:
+          _method:  POST 
+editarCategoriaPP:
+      pattern: /editarCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:editarCategoriaPP} 
+modificarCategoriaPP:
+      pattern: /modificarCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:modificarCategoriaPP}
+      requirements:
+          _method:  POST 
+eliminarCategoriaPP:
+      pattern: /eliminarCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:eliminarCategoriaPP}  
+categoriasPP:
+      pattern: /categoriasPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:categoriasPP}    
+cargarCategoriaPP:
+      pattern: /cargarCategoriaPP
+      defaults: {_controller: SisGGFinalBundle:CategoriaPP:cargarCategoriaPP}
+#CategoriaPPFIN
+#MercaderiaINICIO
+nuevaMercaderia:
+      pattern: /nuevaMercaderia
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:nuevaMercaderia}
+      requirements:
+          _method:  GET
+altaMercaderia:
+      pattern: /altaMercaderia
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:altaMercaderia}
+      requirements:
+          _method:  POST
+editarMercaderia:
+      pattern: /editarMercaderia
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:editarMercaderia}           
+mercaderias:
+      pattern: /mercaderias
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:mercaderias}
+      
+modificarMercaderia:
+      pattern: /modificarMercaderia
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:modificarMercaderia}
+      requirements:
+          _method:  POST    
+eliminarMercaderia:
+      pattern: /eliminarMercaderia
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:eliminarMercaderia}
+      
+impDetallesMerca:
+      pattern: /impDetallesMerca
+      defaults: {_controller: SisGGFinalBundle:Mercaderia:impDetallesMerca}      
+#MercaderiaFIN
+
+#MateriaPrimaINICIO
+nuevaMP:
+      pattern: /nuevaMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:nuevaMP}
+      requirements:
+          _method:  GET
+altaMP:
+      pattern: /altaMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:altaMP}
+      requirements:
+          _method:  POST  
+      
+editarMP:
+      pattern: /editarMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:editarMP}      
+
+modificarMP:
+      pattern: /modificarMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:modificarMP}
+      requirements:
+          _method:  POST 
+mps:
+      pattern: /mps
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:mps}
+eliminarMP:
+      pattern: /eliminarMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:eliminarMP}      
+ 
+impDetallesMP:
+      pattern: /impDetallesMP
+      defaults: {_controller: SisGGFinalBundle:MateriaPrima:impDetallesMP}
+          
+#MateriaPrimaFIN
+#PreElaboradoINICIO
+nuevoPE:
+      pattern: /nuevoPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:nuevoPE}
+      requirements:
+          _method:  GET
+altaPE:
+      pattern: /altaPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:altaPE}
+      requirements:
+          _method:  POST  
+
+editarPE:
+      pattern: /editarPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:editarPE}
+
+modificarPE:
+      pattern: /modificarPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:modificarPE}
+      requirements:
+          _method:  POST  
+eliminarPE:
+      pattern: /eliminarPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:eliminarPE}
+impDetallesPE:
+      pattern: /impDetallesPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:impDetallesPE}      
+pes:
+      pattern: /pes
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:pes}
+popPE:
+      pattern: /popPE
+      defaults: {_controller: SisGGFinalBundle:PreElaborado:pop}
+          
+#PreElaboradoFIN
+#PlatoINICIO
+nuevoPlato:
+      pattern: /nuevoPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:nuevoPlato}
+      requirements:
+          _method:  GET
+altaPlato:
+      pattern: /altaPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:altaPlato}
+      requirements:
+          _method:  POST 
+
+editarPlato:
+      pattern: /editarPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:editarPlato}
+
+modificarPlato:
+      pattern: /modificarPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:modificarPlato}
+      requirements:
+          _method:  POST 
+eliminarPlato:
+      pattern: /eliminarPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:eliminarPlato}          
+platos:
+      pattern: /platos
+      defaults: {_controller: SisGGFinalBundle:Plato:platos}  
+
+impDetallesPlato:
+      pattern: /impDetallesPlato
+      defaults: {_controller: SisGGFinalBundle:Plato:impDetallesPlato}        
+fotosPlatos:
+      pattern: /fotosPlatos
+      defaults: {_controller: SisGGFinalBundle:Plato:fotosPlatos}    
+
+#PlatoFIN
+
+#MantenimientoINICIO
+nuevoMantenimiento:
+      pattern: /nuevoMantenimiento
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:nuevoMantenimiento}
+
+altaMantenimiento:
+      pattern: /altaMantenimiento
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:altaMantenimiento}
+      requirements:
+          _method:  POST 
+
+editarMantenimiento:
+      pattern: /editarMantenimiento
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:editarMantenimiento}
+ 
+modificarMantenimiento:
+      pattern: /modificarMantenimiento
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:modificarMantenimiento}
+      requirements:
+          _method:  POST
+
+eliminarMantenimiento:
+      pattern: /eliminarMantenimiento
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:eliminarMantenimiento}      
+      
+impDetallesMante:
+      pattern: /impDetallesMante
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:impDetallesMante}       
+      
+mantenimientos:
+      pattern: /mantenimientos
+      defaults: {_controller: SisGGFinalBundle:Mantenimiento:mantenimientos}     
+#MantenimientoFIN
+
+#ProductoINICIO
+pps:
+      pattern: /pps
+      defaults: {_controller: SisGGFinalBundle:Producto:pps}   
+pvs:
+      pattern: /pvs
+      defaults: {_controller: SisGGFinalBundle:Producto:pvs}
+actTabIng:
+      pattern: /actTabIng
+      defaults: {_controller: SisGGFinalBundle:Producto:actTabIng}
+obtenerProducto:
+      pattern: /obtenerProducto
+      defaults: {_controller: SisGGFinalBundle:Producto:obtenerProducto}
+pds:
+      pattern: /pds
+      defaults: {_controller: SisGGFinalBundle:Producto:pds} 
+
+activarProducto:
+      pattern: /activarProducto
+      defaults: {_controller: SisGGFinalBundle:Producto:activarProducto} 
+      
+impListaProducto:
+      pattern: /impListaProducto
+      defaults: {_controller: SisGGFinalBundle:Producto:impListaProducto} 
+impListaProductoCategoria:
+      pattern: /impListaProductoCategoria
+      defaults: {_controller: SisGGFinalBundle:Producto:impListaProductoCategoria}
+      
+generarHtmlFoto:
+      pattern: /generarHtmlFoto
+      defaults: {_controller: SisGGFinalBundle:Producto:generarHtmlFoto}
+generarMenuDigital:
+      pattern: /generarMenuDigital
+      defaults: {_controller: SisGGFinalBundle:Producto:generarMenuDigital}
+      
+gestionMenu:
+      pattern: /gestionMenu
+      defaults: {_controller: SisGGFinalBundle:Producto:gestionMenu}   
+impMenuCategoria:
+      pattern: /impMenuCategoria
+      defaults: {_controller: SisGGFinalBundle:Producto:impMenuCategoria}  
+      
+guardarConfigMenu:
+      pattern: /guardarConfigMenu
+      defaults: {_controller: SisGGFinalBundle:Producto:guardarConfigMenu}        
+#ProductoFIN
+
+#IngredienteINICIO
+nuevoIngrediente:
+      pattern: /nuevoIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:nuevoIngrediente}
+      requirements:
+          _method:  GET
+altaIngrediente:
+      pattern: /altaIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:altaIngrediente}
+      requirements:
+          _method:  POST 
+editarIngrediente:
+      pattern: /editarIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:editarIngrediente}
+      requirements:
+          _method:  GET
+modificarIngrediente:
+      pattern: /modificarIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:modificarIngrediente}
+      requirements:
+          _method:  POST
+cargarPP:
+      pattern: /cargarPP
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:cargarPP}
+eliminarIngrediente:
+      pattern: /eliminarIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:eliminarIngrediente}
+      
+nuevoIngredientePlato:
+      pattern: /nuevoIngredientePlato
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:nuevoIngredientePlato}
+      requirements:
+          _method:  GET
+altaIngredientePlato:
+      pattern: /altaIngredientePlato
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:altaIngredientePlato}
+      requirements:
+          _method:  POST 
+editarIngredientePlato:
+      pattern: /editarIngredientePlato
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:editarIngredientePlato}
+      requirements:
+          _method:  GET
+modificarIngredientePlato:
+      pattern: /modificarIngredientePlato
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:modificarIngredientePlato}
+      requirements:
+          _method:  POST
+eliminarIngredientePlato:
+      pattern: /eliminarIngredientePlato
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:eliminarIngredientePlato}       
+      
+costoIngrediente:
+      pattern: /costoIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:costoIngrediente}
+cargarTasaIngrediente:
+      pattern: /cargarTasaIngrediente
+      defaults: {_controller: SisGGFinalBundle:Ingrediente:cargarTasaIngrediente}            
+#IngredienteFIN
+#UnidadMedidaINICIO
+
+nuevaUM:
+      pattern: /nuevaUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:nuevaUM}
+      requirements:
+          _method:  GET
+altaUM:
+      pattern: /altaUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:altaUM}
+      requirements:
+          _method:  POST          
+editarUM:
+      pattern: /editarUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:editarUM}
+modificarUM:
+      pattern: /modificarUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:modificarUM}
+      requirements:
+          _method:  POST      
+cargarUM:
+      pattern: /cargarUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:cargarUM}  
+cargarTasa:
+      pattern: /cargarTasa
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:cargarTasa}      
+buscarUMdeTasa:
+      pattern: /buscarUMdeTasa
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:buscarUMdeTasa}
+tasaCVR:
+      pattern: /tasaCVR
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:tasaCVR}
+seleccionarTasa:
+      pattern: /seleccionarTasa
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:seleccionarTasa}
+eliminarUM:    
+      pattern: /eliminarUM
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:eliminarUM}  
+ums:
+      pattern: /ums
+      defaults: {_controller: SisGGFinalBundle:UnidadMedida:ums}          
+#UnidadMedidaFIN
+
+#TasaINICIO
+nuevaTasa:
+      pattern: /nuevaTasa
+      defaults: {_controller: SisGGFinalBundle:Tasa:nuevaTasa}
+      requirements:
+          _method:  GET
+altaTasa:
+      pattern: /altaTasa
+      defaults: {_controller: SisGGFinalBundle:Tasa:altaTasa}
+      requirements:
+          _method:  POST 
+editarTasa:
+      pattern: /editarTasa
+      defaults: {_controller: SisGGFinalBundle:Tasa:editarTasa}          
+modificarTasa:
+      pattern: /modificarTasa
+      defaults: {_controller: SisGGFinalBundle:Tasa:modificarTasa}
+      requirements:
+          _method:  POST          
+eliminarTasa:
+      pattern: /eliminarTasa
+      defaults: {_controller: SisGGFinalBundle:Tasa:eliminarTasa} 
+#TasaFIN
+
+#RegistroProduccionINICIO
+registroProduccion1:
+      pattern: /registroProduccion1
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:registroProduccion1} 
+registroProduccion2:
+      pattern: /registroProduccion2
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:registroProduccion2}
+calcularCantidad3:
+      pattern: /calcularCantidad3
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:calcularCantidad3}      
+calcularCantidad2:
+      pattern: /calcularCantidad2
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:calcularCantidad2}
+calcularCantidad1:
+      pattern: /calcularCantidad1
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:calcularCantidad1}
+datosPE:
+      pattern: /datosPE
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:datosPE}
+registrosProduccion1:
+      pattern: /registrosProduccion1
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:registros}      
+impListaRegProd:
+      pattern: /impListaRegProd
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:impListaRegProd}  
+impDetallesRegProd:
+      pattern: /impDetallesRegProd
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:impDetallesRegProd} 
+buscarRP:
+      pattern: /buscarRP
+      defaults: {_controller: SisGGFinalBundle:RegistroProduccion:buscarRP}      
+#RegistroProduccionFIN
+
+#PerdidaProduccionINICIO
+perdidaProduccion1:
+      pattern: /perdidaProduccion1
+      defaults: {_controller: SisGGFinalBundle:PerdidaProduccion:perdidaProduccion1}    
+datosPP:
+      pattern: /datosPP
+      defaults: {_controller: SisGGFinalBundle:PerdidaProduccion:datosPP}
+calcularCantidadper1:
+      pattern: /calcularCantidadper1
+      defaults: {_controller: SisGGFinalBundle:PerdidaProduccion:calcularCantidad1}      
+#PerdidaProduccionFIN
+
+#NotaPedidoINICIO
+nuevaNotaPedido:
+      pattern: /nuevaNotaPedido
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:nuevaNotaPedido}
+editarNotaPedido:
+      pattern: /editarNotaPedido
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:editarNotaPedido}
+cargarMMP:
+      pattern: /cargarMMP
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:cargarMMP}
+notas:
+      pattern: /notas
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:notas}      
+buscarNotas:
+      pattern: /buscarNotas
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:buscarNotas}  
+
+      
+impDetallesNP:
+      pattern: /impDetallesNP
+      defaults: {_controller: SisGGFinalBundle:NotaPedido:impDetallesNP}      
+#NotaPedidoFIN
+
+#CompraINICIO
+nuevaCompra:
+      pattern: /nuevaCompra
+      defaults: {_controller: SisGGFinalBundle:Compra:nuevaCompra}
+altaCompra:
+      pattern: /altaCompra
+      defaults: {_controller: SisGGFinalBundle:Compra:altaCompra}
+      requirements:
+       _method:  POST
+editarPagoCompra:
+      pattern: /editarPagoCompra
+      defaults: {_controller: SisGGFinalBundle:Compra:editarPagoCompra}
+registrarPagoCompraProv:
+      pattern: /registrarPagoCompraProv
+      defaults: {_controller: SisGGFinalBundle:Compra:registrarPagoCompraProv}
+      requirements:
+       _method:  POST      
+registrarPagoCompra:
+      pattern: /registrarPagoCompra
+      defaults: {_controller: SisGGFinalBundle:Compra:registrarPagoCompra}
+      requirements:
+       _method:  POST
+editarPagoCompraProv:
+      pattern: /editarPagoCompraProv
+      defaults: {_controller: SisGGFinalBundle:Compra:editarPagoCompraProv}       
+compras:
+      pattern: /compras
+      defaults: {_controller: SisGGFinalBundle:Compra:compras}     
+tipoFactura:
+      pattern: /tipoFactura
+      defaults: {_controller: SisGGFinalBundle:Compra:tipoFactura}
+buscarCompras:
+      pattern: /buscarCompras
+      defaults: {_controller: SisGGFinalBundle:Compra:buscarCompras} 
+      
+      
+impListaCom:
+      pattern: /impListaCom
+      defaults: {_controller: SisGGFinalBundle:Compra:impListaCom}      
+#CompraFIN
+
+#FacturaServicioINICIO
+nuevaFS:
+      pattern: /nuevaFS
+      defaults: {_controller: SisGGFinalBundle:FacturaServicio:nuevaFS}
+altaFS:
+      pattern: /altaFS
+      defaults: {_controller: SisGGFinalBundle:FacturaServicio:altaFS}
+      requirements:
+       _method:  POST       
+fs:
+      pattern: /fs
+      defaults: {_controller: SisGGFinalBundle:FacturaServicio:fs}
+buscarFacturaServicio:
+      pattern: /buscarFacturaServicio
+      defaults: {_controller: SisGGFinalBundle:FacturaServicio:buscarFacturaServicio}  
+      
+impListaFS:
+      pattern: /impListaFS
+      defaults: {_controller: SisGGFinalBundle:FacturaServicio:impListaFS}  
+#FacturaServicioFIN
+#TipoPagoINICIO
+nuevoTipoPago:
+      pattern: /nuevoTipoPago
+      defaults: {_controller: SisGGFinalBundle:Pago:nuevoTipoPago}
+editarTipoPago:
+      pattern: /editarTipoPago
+      defaults: {_controller: SisGGFinalBundle:Pago:editarTipoPago}
+eliminarTipoPago:
+      pattern: /eliminarTipoPago
+      defaults: {_controller: SisGGFinalBundle:Pago:eliminarTipoPago}
+tiposPagos:
+      pattern: /tiposPagos
+      defaults: {_controller: SisGGFinalBundle:Pago:tiposPagos}
+tiposPagosJSON:
+      pattern: /tiposPagosJSON
+      defaults: {_controller: SisGGFinalBundle:Pago:tiposPagosJSON}
+mostrarTipoPago:
+      pattern: /mostrarTipoPago
+      defaults: {_controller: SisGGFinalBundle:Pago:mostrarTipoPago}      
+pagos:
+      pattern: /pagos
+      defaults: {_controller: SisGGFinalBundle:Pago:pagos} 
+pagoRegistrable:
+      pattern: /pagoRegistrable
+      defaults: {_controller: SisGGFinalBundle:Pago:pagoRegistrable}       
+impListaPago:
+      pattern: /impListaPago
+      defaults: {_controller: SisGGFinalBundle:Pago:impListaPago}       
+nuevoAtr:
+      pattern: /nuevoAtr
+      defaults: {_controller: SisGGFinalBundle:Pago:nuevoAtr}
+obtenerValores:
+      pattern: /obtenerValores
+      defaults: {_controller: SisGGFinalBundle:Pago:obtenerValores}      
+leer:
+      pattern: /leer
+      defaults: {_controller: SisGGFinalBundle:Pago:leer}
+      
+buscarPago:
+      pattern: /buscarPago
+      defaults: {_controller: SisGGFinalBundle:Pago:buscarPago}       
+#TipoPagoFIN
+
+#IVAINICIO
+nuevoIVA:
+      pattern: /nuevoIVA
+      defaults: {_controller: SisGGFinalBundle:IVA:nuevoIVA}
+editarIVA:
+      pattern: /editarIVA
+      defaults: {_controller: SisGGFinalBundle:IVA:editarIVA}
+obtenerIVA:
+      pattern: /obtenerIVA
+      defaults: {_controller: SisGGFinalBundle:IVA:obtenerIVA} 
+eliminarIVA:
+      pattern: /eliminarIVA
+      defaults: {_controller: SisGGFinalBundle:IVA:eliminarIVA}        
+activarIVA:
+      pattern: /activarIVA
+      defaults: {_controller: SisGGFinalBundle:IVA:activarIVA}       
+ivas:
+      pattern: /ivas
+      defaults: {_controller: SisGGFinalBundle:IVA:ivas}
+#IVAFIN
+
+#IVAComprasINICIO
+    
+ivaCompras:
+      pattern: /ivaCompras
+      defaults: {_controller: SisGGFinalBundle:LibroIvaCompra:ivaCompras}
+buscarIvaCompras:
+      pattern: /buscarIvaCompras
+      defaults: {_controller: SisGGFinalBundle:LibroIvaCompra:buscarIvaCompras}
+      
+imprimirLIC:
+      pattern: /imprimirLIC
+      defaults: {_controller: SisGGFinalBundle:LibroIvaCompra:imprimirLIC}
+#IVAComprasINICIO
+
+#ServicioINICIO
+nuevoServicio:
+      pattern: /nuevoServicio
+      defaults: {_controller: SisGGFinalBundle:Servicio:nuevoServicio}
+editarServicio:
+      pattern: /editarServicio
+      defaults: {_controller: SisGGFinalBundle:Servicio:editarServicio}
+eliminarServicio:
+      pattern: /eliminarServicio
+      defaults: {_controller: SisGGFinalBundle:Servicio:eliminarServicio}
+activarServicio:
+      pattern: /activarServicio
+      defaults: {_controller: SisGGFinalBundle:Servicio:activarServicio}  
+impListaServicio:
+      pattern: /impListaServicio
+      defaults: {_controller: SisGGFinalBundle:Servicio:impListaServicio}        
+servicios:
+      pattern: /servicios
+      defaults: {_controller: SisGGFinalBundle:Servicio:servicios}
+cargarServicios:
+      pattern: /cargarServicios
+      defaults: {_controller: SisGGFinalBundle:Servicio:cargarServicios} 
+#ServicioFIN
+
+#PersonaEmpleadoINICIO
+cantidadPendientes:
+      pattern: /cantidadPendientes
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:cantidadPendientes}
+cambiarDescuento:
+      pattern: /cambiarDescuento
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:cambiarDescuento}      
+nuevaPersonaE:
+      pattern: /nuevaPersonaE
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:nuevaPersonaE}
+altaPersonaE:
+      pattern: /altaPersonaE
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:altaPersonaE}
+      requirements:
+          _method:  POST  
+editarPersonaE:
+      pattern: /editarPersonaE
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:editarPersonaE}
+modificarPersonaE:
+      pattern: /modificarPersonaE
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:modificarPersonaE}
+      requirements:
+          _method:  POST
+activarEmpleado:
+      pattern: /activarEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:activarEmpleado} 
+eliminarEmpleado:
+      pattern: /eliminarEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:eliminarEmpleado}          
+editarCargoEmp:
+      pattern: /editarCargoEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:editarCargoEmp}
+modificarCargoEmp:
+      pattern: /modificarCargoEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:modificarCargoEmp}      
+listaLiquidacion:
+      pattern: /listaLiquidacion
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:listaLiquidacion}      
+verDetallesEmpleado:
+      pattern: /verDetallesEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:verDetallesEmpleado}
+popDetallesEmpleado:
+      pattern: /popDetallesEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:popDetallesEmpleado}      
+actTablaMovEmp:
+      pattern: /actTablaMovEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:actTablaMovEmp}
+cargarMerPla:
+      pattern: /cargarMerPla
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:cargarMerPla}      
+empleados:
+      pattern: /empleados
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:empleados}
+      
+registrarPagoEmpleado:
+      pattern: /registrarPagoEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:registrarPagoEmpleado}
+      requirements:
+          _method:  POST 
+controlPagos:
+      pattern: /controlPagos
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:controlPagos} 
+      
+pendientes:
+      pattern: /pendientes
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:pendientes}  
+
+nuevoContadoEmp:
+      pattern: /nuevoContadoEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:nuevoContadoEmp}
+altaContadoEmp:
+      pattern: /altaContadoEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:altaContadoEmp}
+      requirements:
+          _method:  POST 
+          
+nuevoAdicionalEmp:
+      pattern: /nuevoAdicionalEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:nuevoAdicionalEmp}
+altaAdicionalEmp:
+      pattern: /altaAdicionalEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:altaAdicionalEmp}
+      requirements:
+          _method:  POST       
+          
+nuevoCancelarEmp:
+      pattern: /nuevoCancelarEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:nuevoCancelarEmp} 
+altaCancelarEmp:
+      pattern: /altaCancelarEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:altaCancelarEmp}
+      requirements:
+          _method:  POST   
+          
+nuevoEspeciesEmp:
+      pattern: /nuevoEspeciesEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:nuevoEspeciesEmp}    
+altaEspeciesEmp:
+      pattern: /altaEspeciesEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:altaEspeciesEmp}
+      requirements:
+          _method:  POST 
+detallesEspeciesEmp:
+      pattern: /detallesEspeciesEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:detallesEspeciesEmp}                 
+#imprimir
+
+impEgresoEmpleado:
+      pattern: /impEgresoEmpleado
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:impEgresoEmpleado}
+            
+impDetallesPerEmp:
+      pattern: /impDetallesPerEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:impDetallesPerEmp}
+
+impListaEmp:
+      pattern: /impListaEmp
+      defaults: {_controller: SisGGFinalBundle:PersonaEmpleado:impListaEmp} 
+      
+        
+#PersonaEmpleadoFIN
+#CargoINICIO
+nuevoCargo:
+      pattern: /nuevoCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:nuevoCargo}
+editarCargo:
+      pattern: /editarCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:editarCargo} 
+modificarCargo:
+      pattern: /modificarCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:modificarCargo}       
+      requirements:
+          _method:  POST
+cargarCargo:
+      pattern: /cargarCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:cargarCargo}           
+imc:
+      pattern: /imc
+      defaults: {_controller: SisGGFinalBundle:Cargo:imc}           
+obtenerCargo:
+      pattern: /obtenerCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:obtenerCargo} 
+comprobarSaldoCargo:
+      pattern: /comprobarSaldoCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:comprobarSaldoCargo}      
+cargos:
+      pattern: /cargos
+      defaults: {_controller: SisGGFinalBundle:Cargo:cargos}      
+eliminarCargo:
+      pattern: /eliminarCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:eliminarCargo}    
+activarCargo:
+      pattern: /activarCargo
+      defaults: {_controller: SisGGFinalBundle:Cargo:activarCargo}      
+#CargoFIN    
+#CargoFIN
+#MensajeINICIO
+mostrarNuevos:
+      pattern: /mostrarNuevos
+      defaults: {_controller: SisGGFinalBundle:Mensaje:mostrarNuevos}
+mostrarNotificacionesNoLeidos:
+      pattern: /mostrarNotificacionesNoLeidos
+      defaults: {_controller: SisGGFinalBundle:Mensaje:mostrarNotificacionesNoLeidos}  
+marcarLeido:
+      pattern: /marcarLeido
+      defaults: {_controller: SisGGFinalBundle:Mensaje:marcarLeido}
+      requirements:   
+        _method:  POST
+eliminarMsj:
+      pattern: /eliminarMsj
+      defaults: {_controller: SisGGFinalBundle:Mensaje:eliminarMsj}
+      requirements:   
+        _method:  POST
+eliminarTodosMsj:
+      pattern: /eliminarTodosMsj
+      defaults: {_controller: SisGGFinalBundle:Mensaje:eliminarTodosMsj}
+      requirements:   
+        _method:  POST
+  
+#MensajeFIN
+
+#AgendaINICIO
+agenda:
+      pattern: /agenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:agenda}
+nuevoAgenda:
+      pattern: /nuevoAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:nuevoAgenda} 
+altaAgenda:
+      pattern: /altaAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:altaAgenda}
+      requirements:   
+        _method:  POST
+editarAgenda:
+      pattern: /editarAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:editarAgenda} 
+modificarAgenda:
+      pattern: /modificarAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:modificarAgenda} 
+      requirements:   
+        _method:  POST
+eliminarAgenda:
+      pattern: /eliminarAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:eliminarAgenda} 
+      requirements:   
+        _method:  POST     
+cargarAgenda:
+      pattern: /cargarAgenda
+      defaults: {_controller: SisGGFinalBundle:Agenda:cargarAgenda}     
+      
+nuevaEtiqueta:
+      pattern: /nuevaEtiqueta
+      defaults: {_controller: SisGGFinalBundle:Agenda:nuevaEtiqueta}       
+altaEtiqueta:
+      pattern: /altaEtiqueta
+      defaults: {_controller: SisGGFinalBundle:Agenda:altaEtiqueta}
+      requirements:   
+        _method:  POST
+editarEtiqueta:
+      pattern: /editarEtiqueta
+      defaults: {_controller: SisGGFinalBundle:Agenda:editarEtiqueta}   
+modificarEtiqueta:
+      pattern: /modificarEtiqueta
+      defaults: {_controller: SisGGFinalBundle:Agenda:modificarEtiqueta}
+      requirements:   
+        _method:  POST  
+eliminarEtiqueta:
+      pattern: /eliminarEtiqueta
+      defaults: {_controller: SisGGFinalBundle:Agenda:eliminarEtiqueta}         
+cargarEtiquetas:
+      pattern: /cargarEtiquetas
+      defaults: {_controller: SisGGFinalBundle:Agenda:cargarEtiquetas}         
+agendasPendientes:
+      pattern: /agendasPendientes
+      defaults: {_controller: SisGGFinalBundle:Agenda:agendasPendientes}  
+#AgendaFIN
+
+#ChatInicio
+chat:
+      pattern: /chat
+      defaults: {_controller: SisGGFinalBundle:Chat:chat}
+      
+enviarChat:
+      pattern: /enviarChat
+      defaults: {_controller: SisGGFinalBundle:Chat:enviarChat}  
+      
+cargarChat:
+      pattern: /cargarChat
+      defaults: {_controller: SisGGFinalBundle:Chat:cargarChat}    
+abrirWS:
+      pattern: /abrirWS
+      defaults: {_controller: SisGGFinalBundle:Chat:abrirWS} 
+
+#ChatFIN
+
+#EstadisticasINICIO
+compras_total:
+      pattern: /compras_total
+      defaults: {_controller: SisGGFinalBundle:Estadistica:compras_total} 
+compras_comparar:
+      pattern: /compras_comparar
+      defaults: {_controller: SisGGFinalBundle:Estadistica:compras_comparar}       
+pagos_total:
+      pattern: /pagos_total
+      defaults: {_controller: SisGGFinalBundle:Estadistica:pagos_total}
+pagos_comparar:
+      pattern: /pagos_comparar
+      defaults: {_controller: SisGGFinalBundle:Estadistica:pagos_comparar}      
+#EstadisticasFIN
+#ImagenFondo
+gF:
+      pattern: /nuevoFondo
+      defaults: {_controller: SisGGFinalBundle:Default:gF}
+eF:
+      pattern: /editarFondo
+      defaults: {_controller: SisGGFinalBundle:Default:eF}      
+      
+#EMPRESA
+editarEmpresa:
+      pattern: /editarEmpresa
+      defaults: {_controller: SisGGFinalBundle:Empresa:editarEmpresa} 
+modificarEmpresa:
+      pattern: /modificarEmpresa
+      defaults: {_controller: SisGGFinalBundle:Empresa:modificarEmpresa}
+      requirements:   
+        _method:  POST
+backup:
+    pattern: /backup
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:backup}
+backups:
+    pattern: /backups
+    defaults: {_controller: SisGGFinalBundle:BackupRestore:backups}  
+#SergioFIN
+
+#Etadisticas
+estadisticas:
+    pattern:  /estadisticas
+    defaults: {_controller: SisGGFinalBundle:Estadistica:estadisticas}
+estadisticas_ventas:
+    pattern:  /estadisticasVentas
+    defaults: {_controller: SisGGFinalBundle:Estadistica:estadisticasVentas}  
+#Libro Iva
+ivaVentas:
+      pattern: /ivaVentas
+      defaults: {_controller: SisGGFinalBundle:LibroIvaVenta:ivaVentas}
+buscarIvaVentas:
+      pattern: /buscarIvaVentas
+      defaults: {_controller: SisGGFinalBundle:LibroIvaVenta:buscarIvaVentas}
+      
+imprimirLIV:
+      pattern: /imprimirLIV
+      defaults: {_controller: SisGGFinalBundle:LibroIvaVenta:imprimirLIV}
+
+#Redireccion
+nueva_redireccion:
+      pattern: /redireccionar
+      defaults: {_controller: SisGGFinalBundle:Redireccion:nuevaRedireccion}
+obtener_redireccion:
+      pattern: /obtenerRedirecciones
+      defaults: {_controller: SisGGFinalBundle:Redireccion:obtenerRedirecciones}
+generarHtmlFoto:
+      pattern: /generarHtmlFoto
+      defaults: {_controller: SisGGFinalBundle:Producto:generarHtmlFoto}
+      
+gestionMenu:
+      pattern: /gestionMenu
+      defaults: {_controller: SisGGFinalBundle:Producto:gestionMenu}   
+impMenuCategoria:
+      pattern: /impMenuCategoria
+      defaults: {_controller: SisGGFinalBundle:Producto:impMenuCategoria}  

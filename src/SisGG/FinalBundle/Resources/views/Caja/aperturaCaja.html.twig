@@ -1,0 +1,129 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Caja</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Apertura</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Apertura de Caja</legend>
+            <form class="form-horizontal" action="{{ path('apertura_caja') }}" method="post">
+                <fieldset id="formAperturaCaja">
+                    <div class='span6'>
+                        <div class="control-group">
+                            <label class="control-label">Usuario Anterior</label>
+                            <div class="controls controls-row">
+                                <input class='span9' type="text" disabled="disabled" value= "{%if caja.lotes.last%}{{caja.lotes.last.movimientos.first.usuario}}{%endif%}" />
+                            </div>    
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Saldo Anterior</label>
+                            <div class="controls controls-row">
+                                <input class='span9' type="text" disabled="disabled" value= "{{caja.saldo|number_format(2)}}" />
+                            </div>    
+                        </div>
+                    </div>
+                    <div class='span6'>
+                        <div class="control-group">
+                            <label class="control-label">Inicia su Turno</label>
+                            <div class="controls controls-row">
+                                <input class='span9' type="text" disabled="disabled" value= "{{app.user}}" />
+                            </div>    
+                        </div>
+                        {{form_row(form.fecha,{'attr':{'class':'span9'} })}}
+                        {{form_row(form.importe,{'value': caja.saldo|number_format(2, '.', '') ,'attr':{'class':'span9'} })}}
+                        {{form_row(form.aclaracion,{'attr':{'class':'span9'} })}}
+                    </div>      
+                        {{form_rest(form)}}
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button onclick='history.back();' type="button" class="btn">Cancelar</button>
+                </div>    
+            </form>
+        </div>
+    </div><!--/span-->
+</div><!--/row-->
+<hr>
+{% endblock %}
+{%block modal%}
+<div class="modal hide fade" id="busqueda">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Buscar...</h3>
+    </div>
+    <div id="dataBusqueda" class="modal-body">
+        <p>Here settings can be configured...</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+    </div>
+</div>
+<div class="modal hide fade" id="mensaje">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Atencion...</h3>
+    </div>
+    <div id="dataMensaje" class="modal-body">
+        <p>Here settings can be configured...</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn btn-primary" data-dismiss="modal">Aceptar</a>
+    </div>
+</div>
+{%endblock%}
+{%block javascripts%}
+{{parent()}}
+<script type="text/javascript">
+    $().ready(function() {
+        {%if mensaje != null%}
+        $("#dataMensaje").html("{{mensaje}}");
+        $("#mensaje").modal("show");
+        {%endif%}
+        $('.datepicker').attr('class', $('.datepicker').attr('class') + ' span9');
+    });
+    </script>    
+{%endblock%}
+{% block ajax %}
+    <form id='formularioApertura' class="form-horizontal" action="{{ path('apertura_caja') }}" method="post">
+        <fieldset id="camposFormularioApertura">
+                    <div class='span6'>
+                        <div class="control-group">
+                            <label class="control-label">Usuario Anterior</label>
+                            <div class="controls">
+                                <input type="text" disabled="disabled" value= "{%if caja.lotes.last%}{{caja.lotes.last.movimientos.first.usuario}}{%endif%}" />
+                            </div>    
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Saldo Anterior</label>
+                            <div class="controls">
+                                <input type="text" disabled="disabled" value= "{{caja.saldo|number_format(2)}}" />
+                            </div>    
+                        </div>
+                    </div>
+                    <div class='span6'>
+                        <div class="control-group">
+                            <label class="control-label">Inicia su Turno</label>
+                            <div class="controls">
+                                <input  type="text" disabled="disabled" value= "{{app.user}}" />
+                            </div>    
+                        </div>
+                        {{form_row(form.fecha)}}
+                        {{form_row(form.importe,{'value': caja.saldo|number_format(2) })}}
+                        {{form_row(form.aclaracion)}}
+                    </div>      
+                        {{form_rest(form)}}
+                </fieldset>
+    </form>
+{% endblock %}
+
+

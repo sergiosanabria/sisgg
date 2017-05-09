@@ -1,0 +1,51 @@
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th title="Mostrar datos"></th>
+                    <th id="primeraCol">Fecha (aaaa/mm/dd)</th>
+                    <th>Monto</th>
+                    <th>Tipo de pago</th>
+                     <th >Aclaración</th>
+                     <th>Relación</th>
+                     <th >Fecha y hora de registro</th>
+                     <th >Salida de caja</th>
+                    <th style="text-align: center">Acciones</th>
+                    <th style="display: none" >Datos</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+             <tr id="{{r.id}}">
+                 <td>{%if r.valores is defined and r.valores | length >0%} <a href="#" title='Mostrar Datos' onclick="detalles('{{r.id}}',this);"><i class="icon icon-chevron-right"></i></a>{%endif%}</td>
+                <td >{{r.fecha|date("Y/m/d")}}<span style="display: none;">{{r.fechaEmision | date("H:i:s")}}</span></td>
+                <td>{{r.importe}}</td>
+                <td>{{r.tipoCobro}}</td>
+                <td>{{r.aclaracion}}</td>
+                {%if r.facturaServicio%}<td title="Factura de servicio">{{r.facturaServicio.serie}} - {{r.facturaServicio.numero}}</td>{%elseif r.compra%}<td title="Factura de compra">{{r.compra.serie}} - {{r.compra.numero}}</td>{%elseif r.contado%}<td title="DNI del empleado al que se le realizó el pago">{{r.contado.cuenta.empleado.dni}} </td>{%endif%}
+                <td>{{r.fechaEmision|date("d/m/Y H:i")}}</td>
+                <td style="text-align: center;width: fit-content;">{%if r.salida%}<span style="display: none;">salida</span> <i class="fa-icon-ok"></i>{%else%}<span style="display: none;">no salida</span><i class="fa-icon-remove"></i>{%endif%}</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if app.user.role.obtenerPermiso('pago_registrar_salidad_de_caja')%}
+                        {%if r.tipoCobro == 'Efectivo no registrable'%}<a href="#" onclick="registrarPago('{{r.id}}');" title="Registrar pago en caja"><i class="fa-icon-money"></i></a>{%endif%}
+                    {%endif%}
+                    {%if r.facturaServicio%}<a href="#" onclick="detallesModalFS('{{r.facturaServicio.id}}');" title="Ver detalles de factura de servicio"><i class="fa-icon-list-alt"></i></a>{%elseif r.compra%}
+                    <a href="#" onclick="detallesModalCompra('{{r.compra.id}}');" title="Ver detalles de factura de compra"><i class="fa-icon-list-alt"></i></a>
+                    {%elseif r.contado%}
+                        <a href="{{path('verDetallesEmpleado', {'id':r.contado.cuenta.empleado.id})}}" title="Ver detalles y acciones de cobro y pago del empleado"><i class="fa-icon-list-alt"></i></a>
+                    {%endif%}
+                    {#{%if r.valores is defined and r.valores | length >0%}  
+                            <a title="Mostrar detalles de tipo de pago." href="#" id="btn{{r.id}}" onclick="pop('{{r.id}}', this);"><i class="fa-icon-eye-open"></i></a>        
+                         {%endif%} #}  
+                </td>
+                <td style="display: none;" class="datos"> 
+                    {%if r.valores is defined and r.valores | length >0%} 
+                        {%for v in r.valores%}
+                        <span class="span2"><strong>{{v.campo.nombre}}</strong>: {{v.valor}} 
+                        </span>
+                        {%endfor%}
+                    {%endif%}   
+                    </td> 
+                
+            </tr>   
+            {% endfor %}
+        </table>
+<input type="hidden" value="{{total}}" id="totalHidden">

@@ -1,0 +1,88 @@
+{% extends "::base.html.twig" %}
+{%block title%}Editar usuario{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('usuarios')}}">Usuarios</a>
+</li></a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Editar usuario</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Editar usuario</legend>
+        <form action="{{path('cambiarContrasenia')}}" method="post" class="form-horizontal">
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+                {% if msj %}
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡MUY BIEN!</h4>
+                {{ msj }}
+            </div>
+        {% endif %}
+                <div class="control-group {% if rr %}error{%endif%}">
+                    <label class="control-label" >Antigua contraseña (*)</label>
+                    <div class="controls">
+                        <input type="password" id="contrasenia" name="contrasenia" required="required" >
+                    </div>
+                    {% if rr %}
+                    <span class="help-inline">
+                        Contraseña incorrecta.
+                    </span>
+                    {%endif%}
+                </div>
+                {{ form_row(form.password) }}
+               
+                <div style="display: none;"> {{ form_rest(form) }}</div> 
+       <div class="form-actions">
+            <button type="submit" class="btn btn-primary" >Guardar Cambios</button>
+            <a href="{{path('usuarios')}}" type="button" class="btn">Cancelar</a>
+        </div>   
+        </form>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+var elemento ='sisgg_finalbundle_usuariotype_';
+$(document).ready(function  (){ 
+     $('#'+elemento+'nombre').keyup(function (ev){
+                    $('#'+elemento+'username').val(($('#'+elemento+'apellido').val()+'.'+$(this).val()).toLowerCase());
+                });
+    $('#'+elemento+'apellido').keyup(function (ev){
+         $('#'+elemento+'username').val(($(this).val()+'.'+$('#'+elemento+'nombre').val()).toLowerCase());
+    });
+    $('#'+elemento+'nombre').change(function (ev){
+                    $('#'+elemento+'username').val(($('#'+elemento+'apellido').val()+'.'+$(this).val()).toLowerCase());
+                });
+    $('#'+elemento+'apellido').change(function (ev){
+         $('#'+elemento+'username').val(($(this).val()+'.'+$('#'+elemento+'nombre').val()).toLowerCase());
+    });
+ });
+ function cambioResp(ele){
+     if ($(ele).val()==true){
+         $('#'+clase+'iva').attr('disabled', false);
+         $('#'+clase+'iva').attr('required', true);
+     }else{
+         $('#'+clase+'iva').attr('disabled', true);
+         $('#'+clase+'iva').attr('required', false);
+     }
+ }
+ </script>
+{%endblock%}

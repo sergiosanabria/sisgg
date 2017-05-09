@@ -1,0 +1,192 @@
+{% extends "::factura.html.twig" %}
+{%block tipo_hoja%}
+a4{%endblock %}
+{%block orientacion_hoja%}{%endblock%}
+
+{# landscapehorizontal#}
+{%block cabecera%}
+{{parent()}}
+
+{%endblock%}   
+{%block titulo_reporte%}Factura {%endblock titulo_reporte%}
+{%block contenido%}
+{{parent()}}
+<div font-size="10" font-type="helvetica" width='100%'>
+    <div>
+        <b>Datos del Cliente: </b>
+    </div>    
+    <table width='100%'>
+        <tr>
+            <td text-align="left"  width='100%' border.type="none">
+                <div  width='100%'>
+                    <b>Apellido y Nombre, Denominación o Razón Social: </b> {{venta.nombre}}
+                </div>
+                <div  width='100%'>
+                    <b>IVA: </b> {{venta.condicionIva}}
+                </div>    
+                <div  width='100%'>
+                    <b>Cuit: </b> {{venta.cuit}}
+                </div>
+
+                <div width="100%">
+                    <b>Domicilio: </b> {%if venta.cliente !=null%}{{venta.cliente.direccion}}{%endif%}
+                </div>    
+            </td>
+            <td border.type="none" style="text-align: left"> </td>
+
+        </tr>
+    </table>
+    <p></p>
+    <div breakable='true'>
+        {%set totalFactura = 0.00%}
+        {%if venta.operacion.tipoFactura.discriminarIva%}
+            <table border.type="none" font-size="9" >
+                <tr border.type="none" background-color="#F8F8F8" padding='50px'>
+                    <td border.type="none" padding='10px' text-align='center'>Cantidad</td>    
+                    <td border.type="none" padding='10px' width='30%' text-align='center'>Descripcion del Producto</td>
+                    <td border.type="none" padding='10px' text-align='center'>Precio Unitario(Sin Iva)</td>
+                    <td border.type="none" padding='10px' text-align='center'>Bonificacion</td>
+                    <td border.type="none" padding='10px' text-align='center'>Precio Neto(Sin Iva)</td>
+                </tr>                                                         
+                {%for linea in venta.lineasVenta%}
+                <tr border.type="none">
+                    <td border.type="none" padding='10px'>{{linea.cantidad}}</td>
+                    <td border.type="none" padding='10px'>{{linea.descripcion}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{linea.precioUnitarioSinIva|number_format(2,'.','')}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{(linea.precioNetoSinIva|number_format(2,'.',''))}}</td>
+                </tr>
+                {%endfor%}
+                {%for itemRecargo in venta.itemsRecargoVenta%}
+                <tr border.type="none">
+                    <td border.type="none" padding='10px'>1.00</td>
+                    <td border.type="none" padding='10px'>{{itemRecargo.detalle}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>0.00%</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{itemRecargo.totalRecargoSinIva|number_format(2,'.','')}}</td>
+                </tr>
+                {%endfor%} 
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none" padding='10px'>Subtotal</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{venta.subtotalSinIva|number_format(2,'.','')}}</td>
+                </tr>
+                        {%for itemDescuento in venta.itemsDescuentoVenta%}
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none" padding='10px'>Descuento {{itemDescuento.detalle}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>- $ {{itemDescuento.totalDescuentoSinIva|number_format(2,'.','')}}</td>
+                </tr>
+                        {%endfor%}
+                        {%for item in venta.itemsIvaVenta%}
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none" padding='10px'>IVA {{item.tasa|number_format(2,'.')}}</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{item.total|number_format(2,'.','')}}</td>
+                </tr>
+                        {%endfor%}   
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none" padding='10px'>Total</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{venta.total|number_format(2,'.','')}}</td>
+                </tr>
+            </table>
+                 {%set totalFactura = venta.total%}
+    {%else%}
+            <table border.type="none" font-size="9" >
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none" padding='10px' text-align='center'>Cantidad</td>    
+                    <td border.type="none" padding='10px' width='30%' text-align='center'>Descripcion del Producto</td>
+                    <td border.type="none" padding='10px' text-align='center'>Precio Unitario</td>
+                    <td border.type="none" padding='10px' text-align='center'>Bonificacion</td>
+                    <td border.type="none" padding='10px' text-align='center'>Precio Neto</td>
+                </tr>                                                         
+                {%for linea in venta.lineasVenta%}
+                    <tr border.type="none">
+                        <td border.type="none" padding='10px'>{{linea.cantidad}}</td>
+                        <td border.type="none" padding='10px'>{{linea.descripcion}}</td>
+                        <td border.type="none" padding='10px' text-align='right'>$ {{linea.precioUnitario|number_format(2,'.','')}}</td>
+                        <td border.type="none" padding='10px' text-align='right'>{{linea.bonificacion|number_format(2,'.','')}}%</td>
+                        <td border.type="none" padding='10px' text-align='right'>$ {{(linea.precioNeto|number_format(2,'.',''))}}</td>
+                    </tr>
+                {%endfor%}
+                {%for itemRecargo in venta.itemsRecargoVenta%}
+                    <tr border.type="none">
+                        <td border.type="none" padding='10px'>1.00</td>
+                        <td border.type="none" padding='10px'>{{itemRecargo.detalle}}</td>
+                        <td border.type="none" padding='10px' text-align='right'>$ {{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                        <td border.type="none" padding='10px' text-align='right'>0.00%</td>
+                        <td border.type="none" padding='10px' text-align='right'>$ {{itemRecargo.totalRecargo|number_format(2,'.','')}}</td>
+                    </tr>
+                {%endfor%} 
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                            <td border.type="none"></td>
+                            <td border.type="none"></td>
+                            <td border.type="none"></td>
+                            <td border.type="none" padding='10px'>Subtotal</td>
+                            <td border.type="none" padding='10px' text-align='right'>$ {{venta.subtotal|number_format(2,'.','')}}</td>
+                        </tr>
+                        {%for itemDescuento in venta.itemsDescuentoVenta%}
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                                <td border.type="none"></td>
+                                <td border.type="none"></td>
+                                <td border.type="none"></td>
+                                <td border.type="none" padding='10px'>Descuento {{itemDescuento.detalle}}</td>
+                                <td border.type="none" padding='10px' text-align='right'>- $ {{itemDescuento.totalDescuento|number_format(2,'.','')}}</td>
+                            </tr>
+                        {%endfor%}
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none"></td>
+                    <td border.type="none" padding='10px'>Total</td>
+                    <td border.type="none" padding='10px' text-align='right'>$ {{venta.total|number_format(2,'.','')}}</td>
+                </tr>
+            </table>
+                 {%set totalFactura = venta.total%}
+            {%endif%}             
+            <p></p>
+            <table breakable='false'>
+                <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                    <td border.type="none" padding='10px'>Tipo de Cobro</td>
+                    <td border.type="none" padding='10px'>Descripcion</td>
+                    <td border.type="none" padding='10px'>Aclaracion</td>
+                    <td border.type="none" padding='10px'>Importe</td>
+                </tr>
+                    {%set i = 0%}
+                    {%set importes = 0.00%}        
+                    {%for cobro in venta.cobros%}
+                        {%set c = cobro%}
+                        {%set importes = importes + cobro.importe%}
+                        {%set i = i+1%}
+                        <tr>
+                            <td border.type="none" padding='10px'>{{c.tipoCobro}}</td>
+                            <td border.type="none" padding='10px'>{%for valor in c.valores%}{{valor.campo.nombre}}: {{valor.valor}}{%endfor%}</td>
+                            <td border.type="none" padding='10px'>{{cobro.aclaracion}}</td>
+                            <td border.type="none" padding='10px' style='text-align: right;'>${{c.importe}}</td>
+                        </tr>
+                    {%endfor%}    
+                        <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                            <td border.type="none" padding='10px'></td>
+                            <td border.type="none" padding='10px'></td>
+                            <td border.type="none" padding='10px'>Total</td>
+                            <td style="text-align:right;" border.type="none" padding='10px'>$ {{importes|number_format(2,'.','')}}</td>
+                        </tr>
+                        <tr border.type="none" background-color="#F8F8F8" height='200px'>
+                            <td border.type="none" padding='10px'></td>
+                            <td border.type="none" padding='10px'></td>
+                            <td border.type="none" padding='10px'>Cambio</td>
+                            <td style="text-align:right;" border.type="none" padding='10px'>{%if importes > totalFactura%}$ {{(importes - totalFactura)|number_format(2,'.','')}}{%else%}$ 0.00{%endif%}</td>
+                        </tr>
+              </table>    
+            </div>
+        </div>
+{%endblock%}              

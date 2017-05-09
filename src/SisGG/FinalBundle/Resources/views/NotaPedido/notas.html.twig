@@ -1,0 +1,347 @@
+{% extends "::base.html.twig" %}
+{%block title%}Notas de pedido{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Notas de pedido</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+        <legend>Notas de pedido</legend>
+        {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡CUIDADO!</h4>
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="pull-right btn-group">
+            {%if app.user.role.obtenerPermiso('notaPedido_nuevo')%}
+            <a  href="{{path('nuevaNotaPedido')}}" title="Nueva nota de pedido"class="btn"><i class="icon-plus-sign"></i></a>
+            {% endif %}
+            {%if app.user.role.obtenerPermiso('compra_nuevo')%}
+            <a class="btn" title="Nueva compra" onclick="nuevaCompraEmpresa();"><i class="fa-icon-shopping-cart"></i></a>
+            {% endif %}
+            {%if app.user.role.obtenerPermiso('compra_listar')%}
+            <a title="Lista de compras" href="{{path('compras')}}" class="btn"><i class="icon-list-alt"></i></a>
+            {% endif %}
+        </div>
+      
+        <div><br> <br></div>
+        
+        <div>
+        <div class="accordion" id="acordion">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#acordion" href="#collapseOne">
+               Buscar por fechas
+              </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+              <div class="accordion-inner">
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#1B" data-toggle="tab">Por los últimos </a>
+                        </li>
+                        <li>
+                            <a href="#2B" data-toggle="tab">Entre dos fechas</a>
+                        </li>
+                        <li>
+                            <a href="#3B" data-toggle="tab">Por periodo</a>
+                        </li>
+                    </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active"  id="1B">
+                                
+                                 <div class="input-append">
+                                <input class="" type="number" autocomplete="off" min="0" onkeypress="return isNumberKey(this,event);" id="1BTiempo"  placeholder="##">
+                                <select id="1BCombo">
+                                    <option value="1">Días</option>
+                                    <option value="2">Semanas</option>
+                                    <option value="3">Meses</option>
+                                    <option value="4">Años</option>
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="buscar1()">Buscar  <i class="fa-icon-search"></i></button>    
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="2B"> 
+                                Desde
+                                <input type="text" id="2BFecha1" value="{{'now'| date('d/m/Y')}}"  class="datepicker">
+                                Hasta
+                                <div class="input-append">
+                                <input type="text" id="2BFecha2" value="{{'now'| date('d/m/Y')}}"  class="datepicker" >
+                                
+                                    <button type="button" class="btn btn-primary" onclick="buscar2()">Buscar  <i class="fa-icon-search"></i></button>
+                                 </div>
+                            </div>
+                            <div class="tab-pane"  id="3B">
+                                <div class="input-append">
+                                <select id="3BCombo">
+                                    <option value="0" title="Busca por la fecha exacta">Fecha exacta</option>
+                                    <option value="1" title="Busca todos hasta la fecha establecida">Hasta</option>
+                                    <option value="2" title="Busca todos desde la fecha establecida, hasta el dia de hoy">Desde</option>
+                                </select>
+                               
+                                <input type="text" id="3BFecha1" class="datepicker" value="{{'now'| date('d/m/Y')}}" >
+                                <button type="button" class="btn btn-primary" onclick="buscar3()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>
+                               <div class="input-append">
+                                <select id="4BCombo">
+                                    <option value="0" title="Busca solo por años">Buscar sólo por años</option>
+                                    <option value="1">Enero</option><option value="2">Febrero</option>
+                                    <option value="3">Marzo</option><option value="4">Abril</option>
+                                    <option value="5">Mayo</option><option value="6">Junio</option>
+                                    <option value="7">Julio</option><option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                                </select>
+                                <input class="" type="number" autocomplete="off" value="{{'now'| date('Y')}}"   min="0" onkeypress="return isNumberKey(this,event);" id="4BAño"  placeholder="Ej. 2013">
+                                <button type="button" class="btn btn-primary" onclick="buscar4()">Buscar  <i class="fa-icon-search"></i></button>
+                               </div>     
+                            </div>
+                        </div>
+                </div>  
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        </div>
+        
+        <div class="pull-left">
+                <button class="btn" type="button" onclick="restablecer()">Restablecer tabla <i class="fa-icon-refresh"></i></button>
+            </div>
+        <div>
+            <br><br>
+        </div>
+        <div id="divTabla" style="text-align: center">
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+            <thead class="header">
+                <tr>
+                    <th id="primeraCol">N°</th>
+                    <th>Proveedor</th>                   
+                    <th>Fecha y hora</th>
+                    <th style="text-align: center" >Estado</th>
+                    <th>Costo total</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for r in registros%}
+             <tr>
+                 <td>{{r.id}}</td>
+                 <td>{{r.proveedor}}</td>
+                <td>{{r.fecha|date("d/m/Y H:i:s")}}</td>
+                <td style="text-align: center;width: fit-content">{%if r.estado==1%}<span class="label label-info">Editando</span> {%endif%}
+                    {%if r.estado==2%}<span class="label label-warning">Finalizado</span>{%endif%}
+                    {%if r.estado==3%}<span class="label label-success">Entregado</span>{%endif%}
+                    {%if r.estado==4%}<span class="label label-inverse">Facturado</span>{%endif%}</td>
+                <td  style="text-align: right">{{r.total}}</td>
+                <td style="text-align: center;width: fit-content" >
+                    {%if app.user.role.obtenerPermiso('notaPedido_editar')%}
+                        <a href="#" onclick="detallesModal('{{r.id}}')" title="Ver detalles"><i class="fa-icon-list-alt"></i></a> 
+                        {%if r.estado==1%}<a href="{{path('editarNotaPedido', {'id':r.id})}}"  title="Editar"><i class="fa-icon-edit"></i></a> {%endif%}
+                        {%if r.estado==2%}<a onclick="entregado('{{path('editarNotaPedido')}}', '{{r.id}}', 3)" href="#"title="Registrar entrega"><i class="fa-icon-ok-sign"></i></a>{%endif%}
+                    {%endif%}
+                    {%if app.user.role.obtenerPermiso('compra_nuevo')%}
+                        {%if r.estado==3%}<a href="#" {#href="{{path('nuevaCompra', {'np':r.id})}}" #} onclick="nuevaCompraEmpresa('{{r.id}}')" title="Registrar facturación"><i class=" fa-icon-shopping-cart"></i></a>{%endif%}
+                    {%endif%}
+                </td>
+                </div>
+            </tr>   
+            {% endfor %}
+        </table>
+        </div>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+ {%block modal%}      
+ <div id="verModalNota" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  
+     <div class="modal-body">
+      <div id="detallesNota">
+      </div>         
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+<div id="verModalCompra" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Datalles de factura</h3>
+  </div>
+    <div class="modal-body">
+      <div id="detallesCompra">
+      </div>         
+  </div>
+</div>
+{% endblock %}
+        
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+function eliminarModal(id,txt){
+        
+        var url = "{{path('eliminarMP', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElim');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminar').attr('href',url);
+        $('#eliminarModal').modal('toggle');
+    }
+   function detallesModalCompra(id){
+        var url = "{{path('compras')}}";
+        $('#detallesCompra').load(url,{'id':id});
+        $('#verModalCompra').modal('toggle');
+    }
+    
+    function detallesModal(id){
+        var url = "{{path('notas')}}";
+        $('#detallesNota').load(url,{'id':id});
+        $('#verModalNota').modal('toggle');
+    }
+    
+    
+    $(document).ready(function  (){
+        $('#primeraCol').trigger('click');
+         });
+      function restablecer(){
+        var div = document.getElementById('divTabla');
+        $(div.firstElementChild).remove();
+        var img = document.createElement('img');
+        img.src='{{asset('images/loading.gif')}}';      
+        $(div).append(img);
+        $(div).load('{{path('buscarNotas')}}',{'tipo':'-1'}, function (){
+                cargarTabla();
+               // $("#totalCompras").val($("#totalHidden").val()); 
+            });
+    } 
+ 
+    function eliminarModalIng(id,txt){
+        
+        var url = "{{path('eliminarIngrediente', { 'id': '__id__' })}}".replace(/__id__/g, id);       
+        var par= document.getElementById('txtElimIng');
+        par.removeChild(par.firstChild);
+        var contenido = document.createTextNode(txt);
+        par.appendChild(contenido);
+        $('#btnEliminarIng').attr('href',url);
+        $('#eliminarModalIng').modal('toggle');
+    }
+        var flag;
+
+    function entregado(url, id, tipo){
+
+       $.post(url, {id:id, tipo:tipo} , function(data) {
+         
+    });
+        setTimeout( function (){location.reload();}, 1000);
+    }
+    
+    function buscar1(){
+        var tiempo=$('#1BTiempo').val(); 
+        var clase= $("#1BCombo").val() ;
+        if ($.isNumeric(tiempo)&&tiempo>=0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarNotas')}}',{'tipo':'0','tiempo':tiempo, 'clase':clase}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    function buscar2(){
+    var tabla = document.getElementById('example');
+        var fecha1=$('#2BFecha1').val();
+        var fecha2=$('#2BFecha2').val();      
+        if (isDate(fecha1)&&isDate(fecha2)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarNotas')}}',{'tipo':'1','fecha1':fecha1, 'fecha2':fecha2}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar las fechas');
+        
+    }
+    
+    function buscar3(){
+        var fecha1=$('#3BFecha1').val();
+        var clase= $("#3BCombo").val() ;
+        if (isDate(fecha1)) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarNotas')}}',{'tipo':'2','fecha1':fecha1, 'clase':clase}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar la fecha');
+        
+    }
+    function buscar4(){
+        var año=$('#4BAño').val(); 
+        var mes= $("#4BCombo").val() ;
+        if ($.isNumeric(año)&&año>0) {
+            var div = document.getElementById('divTabla');
+            $(div.firstElementChild).remove();
+            var img = document.createElement('img');
+            img.src='{{asset('images/loading.gif')}}';      
+            $(div).append(img);
+            $(div).load('{{path('buscarNotas')}}',{'tipo':'3','año':año, 'mes':mes}, function (){
+                cargarTabla();
+            });
+       } else
+            msjWC('Error al ingresar el tiempo.'); 
+    }
+    
+    function cargarTabla(){
+        $('.table.table-striped.table-bordered').dataTable( {
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+		"oLanguage": {
+			"sLengthMenu": "_MENU_ Registros por página",
+                        "sSearch": "Buscar:",
+                        "sInfo": " Mostrado _START_ a _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrado 0 a 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sZeroRecords": "Ningun registro encontrado",
+                        "oPaginate": {
+				             "sPrevious": "Anterior",
+                                             "sNext": "Siguiente"
+				     }
+		}
+	} );
+    }
+    function imprimirDetalle(ele, id){
+       var url = "{{path('impDetallesNP', { 'id': '__id__' , '_format':'pdf'})}}".replace(/__id__/g,id);
+       url= url.replace('amp;', ''); 
+       $(ele).attr('href',url);
+    }
+    </script>
+{% endblock%}

@@ -1,0 +1,306 @@
+{% extends "::base.html.twig" %}
+{%block title%}Registrar pérdida producción{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{ path('pps') }}">Productos produccion</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{ path('registrosProduccion1') }}">Registros de producción</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <form action="{{ path('perdidaProduccion1') }}" method="post" class="form-horizontal" name="f">
+    <legend>Registrar pérdida producción</legend>
+        {% if error %}
+    <div class="alert alert-error">
+        <button type='button' class='close' data-dismiss='alert'>×</button>
+        <strong>{{ error }}</strong> 
+    </div>  
+        {% endif %}
+    {% if msj %}
+            <div class="alert alert-success">
+            <button type='button' class='close' data-dismiss='alert'>×</button>
+            <strong>Muy bien! </strong> {{ msj }}
+            </div>  
+        {% endif %}
+   
+    <p></p>
+
+    <input type="hidden" id="id" name="id">
+    <div class="row-fluid sortable ui-sortable">
+        
+    <div class="box span12">
+            <div class="box-header">
+                <h2 id="pe" onclick="verTabla()" title="Buscar producto para registrar la pérdida en producción" ><i class="icon-th"></i><span class="break"></span>Producto (click para buscar)</h2>
+                    <div class="box-icon">
+                        <a href="javascript:void(0);" id="editar" class="btn-setting"><i class="icon-edit"></i></a>
+                         <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+                    </div>
+            </div>
+            <div class="box-content" id="datos">
+            </div>
+    </div><!--/span-->
+    </div>
+        <input type="hidden" id="tasa" name="tasa">
+    
+    <div class="control-group">
+        <label class="control-label">Cantidad</label>
+        <div class="controls">
+            <div class="input-prepend input-append" id="divCombo">
+                <span class="add-on">#</span><input id="cantidad" autocomplete="off" placeholder="##.##" onkeyup="txtCal()"  onkeypress="return isNumberKey(this,event);"  type="text" name="cantidad">
+            </div>
+                                <button type="button"  onclick="calcularCantidad ();" disabled="disabled" class="btn btn-primary" id="calcular">Estimar consumo</button>
+
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Descripción</label>
+        <div class="controls">
+            <textarea rows="5" id="obsProd" name="obsProd" placeholder="Añada una descripción a la producción"></textarea>
+        </div>
+    </div>
+    <div class="row-fluid sortable ui-sortable">
+        <div class="box span12">
+    <div class="box-header">
+        <h2><i class="icon-th"></i><span class="break"></span>Resultados</h2>
+        <div class="box-icon">
+                <a href="#" class="btn-setting"><i class="icon-wrench"></i></a>
+                <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+        <p id="resultado">
+            
+              </p>                 
+    </div>
+</div>
+            </div>
+
+    <div class="form-actions">
+        <button type="button" onclick="verIng()" id="confirmar" disabled="disabled" class="btn btn-primary" >Guardar Cambios</button>
+        <a href="{{path('pes')}}" type="button" class="btn">Cancelar</a>
+    </div>        
+</form>
+     </div>
+    </div>
+</div>    
+{%endblock%}
+{%block modal%}
+ <div id="verModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Regitrar producción</h3>
+  </div>
+  <div class="modal-body">
+      <div id="detalles"> La cantidad que desea produccir supera la cantidad de ingredientes disponibles. Desea registrar la producción de todas formas?
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button onclick="confirmar()" class="btn btn-primary"  data-dismiss="modal" aria-hidden="true">Aceptar</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+</div>
+<div id="verTabla" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 750px;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Seleccione un producto</h3>
+  </div>
+  <div class="modal-body">
+      <div class="row-fluid sortable">
+          <div class="box-content">
+ 
+      <table cellpadding="0"  cellspacing="0" border="0" class="table table-striped table-bordered"  id="example" >
+            <thead class="header">
+                <tr>
+                    <th>Nombre</th>                   
+                    <th>Cantidad</th>
+                    <th>Categoria</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            {% for pe in pes%}
+             <tr>
+
+                <td>{{pe.nombre}}</td>
+                <td>{{pe.cantidad}}</td>
+                <td>{{pe.categoria}}</td>
+                
+                <td style="text-align: center;width: fit-content" >
+                    <button type="button" title="Seleeciona el producto"  onclick="seleccionarPP({{pe.id}},{% if pe.isPreElaborado%}'1'{%else%}'0'{%endif%},'{{pe.tasa}}')"><i class="icon icon-ok"></i></button>                   
+                </td>
+                </div>
+            </tr>   
+            {% endfor %}
+        </table> 
+          </div>
+              </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Aceptar</button>
+  </div>
+</div>
+{%endblock%}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+    var prov='';         
+            
+$(document).ready(function  (){ 
+        
+            $(document).keypress(function(e){
+                if(e.which == 13){
+                  return false;
+                }
+              });
+              
+         });
+   
+    function seleccionarPP(id,pp){
+        $('#datos').load("{{ path('datosPP')}}",  {'id':id}, function() {  
+            $('#calcular').attr('disabled',false);
+            $('#confirmar').attr('disabled',true);
+            $('#cantidad').val('');
+            $('#total').val('0.00'); 
+            $('#id').val(id);
+            if (pp=='1'){
+                var url = "{{path('editarPE', { 'id': '__id__' })}}".replace(/__id__/g, id);             
+                $('#editar').attr('href',url);
+                $('#cantidad').focus()
+                $('#pe').text('Producto pre-elaborado: '+$('#sisgg_finalbundle_preelaboradotype_nombre').val()+' (click para buscar otro)');
+                if (($('#comboTasa').length=='1')){
+                    $('#comboTasa').remove();
+                    $('#ings').remove();
+                }
+                var comboTasa = document.createElement("select");
+                var tasa = document.getElementById('sisgg_finalbundle_preelaboradotype_tasa');
+                var nombre = tasa.options[tasa.selectedIndex].text;
+                seleccionarTasa(nombre, comboTasa);
+                $('#divCombo').append(comboTasa);
+                comboTasa.id='comboTasa';
+                comboTasa.disabled=false;
+                $('#tasa').val(tasa.options[tasa.selectedIndex].value);
+                $(comboTasa).change(function(e){
+                    var tasa = document.getElementById('comboTasa');
+                    var nombre = tasa.options[tasa.selectedIndex].value;
+                    $('#tasa').val(nombre);
+                   if ($('#id').val()&&$('#cantidad').val()!=''){calcularCantidad();}
+                  });
+            }else{
+                var url = "{{path('editarMP', { 'id': '__id__' })}}".replace(/__id__/g, id);             
+                $('#editar').attr('href',url);
+                $('#cantidad').focus()
+                $('#pe').text('Materia prima: '+$('#sisgg_finalbundle_materiaprimatype_nombre').val()+' (click para buscar otro)');
+                if (($('#comboTasa').length=='1')){
+                    $('#comboTasa').remove();
+                    $('#ings').remove();
+                }
+                var comboTasa = document.createElement("select");
+                var tasa = document.getElementById('sisgg_finalbundle_materiaprimatype_tasa');
+                var nombre = tasa.options[tasa.selectedIndex].text;
+                seleccionarTasa(nombre, comboTasa);
+                $('#divCombo').append(comboTasa);
+                comboTasa.id='comboTasa';
+                comboTasa.disabled=false;
+                $('#tasa').val(tasa.options[tasa.selectedIndex].value);
+                $(comboTasa).change(function(e){
+                    var tasa = document.getElementById('comboTasa');
+                    var nombre = tasa.options[tasa.selectedIndex].value;
+                    $('#tasa').val(nombre);
+                   if ($('#id').val()&&$('#cantidad').val()!=''){calcularCantidad();}
+                  });
+            }
+            
+        }); 
+        
+         $('#verTabla').modal('hide');
+         
+    }
+    
+    function seleccionarTasa(tasa,comboTasa ){
+        $(comboTasa).load("{{ path('seleccionarTasa')}}",{'name':tasa}, function() {             
+            });
+    }
+    
+    function calcularCantidad (e){
+        if ($('#id').val()!=''){
+            if (($.isNumeric($('#cantidad').val()))&&($('#cantidad').val()>0.00)){
+                var tasa = document.getElementById('comboTasa');
+                var nombre = tasa.options[tasa.selectedIndex].value;
+                $('#resultado').load("{{ path('calcularCantidadper1')}}",  {'id':$('#id').val(), 'cantidad':$('#cantidad').val(), 'tasa':nombre}, function() {             
+                    $('#confirmar').attr('disabled',false);
+                });
+            }else{
+            msjWC('Error campo cantidad: Ingrese un número mayor a 0 (cero)');
+            $('#cantidad').focus()
+            }
+        }
+        else{
+            msjIC('Debe seleccionar un producto para estimar la cantidad de productos necesarios');
+        }
+    }
+    
+  
+    
+    function verIng(){
+        if ($('#flag').val()=='1'){
+            $('#verModal').modal('toggle');
+        }else{
+        confirmar();
+        }
+    }
+    
+    function confirmar(){
+        if ($('#id').val()!=''){
+            if (($.isNumeric($('#cantidad').val()))&&($('#cantidad').val()>0.00)){
+                document.f.submit();
+            }else{
+            msjWC('Error campo cantidad: Ingrese un número mayor a 0 (cero)');
+            $('#cantidad').focus();
+            }
+        }
+        else{
+            msjIC('Debe seleccionar un producto para estimar la cantidad de productos necesarios');
+        }
+    }
+    function verTabla(){
+        $('#txtBuscarTabla').focus();
+        $('#verTabla').modal('toggle');
+    } 
+    function txtCal(){
+     if ($('#id').val()&&$('#cantidad').val()!=''){calcularCantidad();}
+    }
+    function txt(){
+       $("#txtBuscarTabla").keyup (function() {
+            
+
+               });
+   }
+   
+   
+   
+   function sumarCosto(){
+        var table = document.getElementById('ings');
+        var rows = table.getElementsByTagName('tr');
+        var total = parseFloat('0.00');
+        for (var i = 1; i <rows.length; ++i) {
+            var check =rows[i].cells[0].firstChild;
+        if (check.checked){
+            var num =$(rows[i].cells[11]).text(); 
+            if (!($.isNumeric(num))){
+                num = parseFloat('0.00');;
+            }else{
+                num = parseFloat(num);             
+            }
+            total=num+total;
+        }
+        }
+        if ($.isNumeric(total))
+        $('#total').val(total.toFixed(2)); 
+   }
+    </script>
+{% endblock%}

@@ -1,0 +1,11 @@
+
+                {%for sector in sectores%}
+                <div class="tab-pane " id="mesa{{sector.id}}">
+                    {%for mesa in sector.mesas%}
+                            <a class="quick-button-small span2 mesa" onclick="seleccionarMesa({{mesa.id}}, event);">
+                                <p id="numero" class="numero">{{mesa.numero}}</p>
+                                <span id="estado{{mesa.id}}" class="notification {%if mesa.estado == "Ocupado" %}red{%endif%}" {%if mesa.estado == "Ocupado" %}data-idpedido='{{mesa.pedidoActivo.id}}'{%endif%}>{{mesa.estado}}</span>
+                            </a>
+                    {%endfor%}
+                    </div>
+                {%endfor%}

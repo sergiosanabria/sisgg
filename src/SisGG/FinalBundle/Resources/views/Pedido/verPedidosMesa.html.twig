@@ -1,0 +1,47 @@
+{%if sectores == null%}
+<table class="table table-striped table-bordered datatable">
+    <thead>
+        <tr>
+            <th>Sector</th>
+            <th>Mesa</th>
+            <th>Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+                {%for pedido in pedidoMesa%}
+                    {%if(pedido.mesa != null)%}
+            <tr>
+                <td>{{pedido.mesa.sector}}</td>
+                <td>{{pedido.mesa}}</td>
+                <td>{%if(pedido.precio != null)%}$ {{pedido.precio}}{%endif%}</td>
+                <td><a rel="tooltip" title="Editar" href="{{path('editar_pedido_delivery',{'id':pedido.id})}}"><i class="icon-edit"></i></a>
+                    <a rel="tooltip" title="Eliminar" href="" data-toggle="modal"><i class="icon-remove"></i></a></td>
+            </tr>
+                    {%endif%}
+                {%endfor%}
+        </tbody>
+    </table>
+{%else%}
+    <div style="display: -webkit-box;margin-top: 60px;">
+        <div style="width: 15%;">
+            <div class="box-header" data-original-title="">
+                <h2>Sectores</h2>
+            </div>    
+            <div class="sectores">    
+                {%for sector in sectores%}
+                    <a class="sector quick-button" onclick="cargarMesas({{sector.id}});">
+                        <p>{{sector.nombre}}</p>
+                    </a>
+                                {%endfor%}
+                </div>
+            </div>         
+            <div style="width: 82%; margin-left: 2%;">
+                <div class="box-header" data-original-title="">
+                    <h2>Mesas</h2>
+                </div>
+                <div class="mesas" id="mesas">
+                </div>
+            </div>
+        </div>
+{%endif%}

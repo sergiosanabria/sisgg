@@ -1,0 +1,56 @@
+{%if form %}{% form_theme form "SisGGFinalBundle:Form:personalizarCampos.html.twig" %}{%endif%}
+{%if r==1 %}
+<form class="form-horizontal" id="contadoFORM">
+    {%if error %}
+     <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                {{error}}
+            </div>
+        {%endif%}
+<fieldset id="datos">
+    <table class="table table-bordered table-hover" id="pagos">
+                    <thead class="header">
+                        <th>Haber</th>
+                        <th>Debe</th>
+                        <th>Saldo</th>
+                        <th>Descubierto</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="haber" class="blue" data-value="{{empleado.cuenta.haber | number_format(2,'.', '')}}" >{{empleado.cuenta.haber | number_format(2,'.', '')}}</td>    
+                            <td id="debe" class="yellow" data-value="{{empleado.cuenta.debe | number_format(2,'.', '')}}">{{empleado.cuenta.debe| number_format(2,'.', '')}}</td>
+                            {%set saldo= empleado.cuenta.haber - empleado.cuenta.debe %}
+                            <td id="saldo" data-value="{{saldo | number_format(2,'.', '')}}">{{saldo | number_format(2,'.', '')}}</td>
+                            <td id="negativo" style="color: red" data-value="{{empleado.cargo.negativo | number_format(2,'.', '')}}" ><b>{{empleado.cargo.negativo  | number_format(2,'.', '')}}</b></td>    
+                        </tr>
+                    </tbody>
+                </table>
+
+    {{form_row(form.monto)}}
+        {{form_row(form.fecha)}}
+        {{form_row(form.descripcion)}}
+        {{form_errors(form)}}
+            {{form_rest(form)}}
+ <div class="form-actions">
+     <button class="btn btn-primary"  type="submit">Aceptar</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+  </div>
+        <div id="divCuenta" style="display: none"> <input type="hidden" id="cuenta" name="cuenta"> </div>
+
+         
+</fieldset>
+</form>
+{%elseif r==-1%}
+        <div class="alert alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <h4>¡Cuidado!</h4>
+                El empleado no existe o no se encuentra activo.
+            </div>
+{%elseif r==0%}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>¡Muy bien!</h4>
+    El pago ha sido correctamente registrado. <a target="_blank" class="btn" onclick="imprimirRetiro('{{mov}}', 'efectivo' ,this);" title="Imprimir el datos del retiro de dinero por parte del personal."><i class="fa-icon-print"></i></a>
+</div>
+{%endif%}

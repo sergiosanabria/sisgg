@@ -1,0 +1,22 @@
+<form class='form-horizontal'>
+<div class='controls-row'>
+    <label class='control-label'>
+        Usuario: 
+    </label>
+    <div class='controls'>
+        <label > {{pedido.usuario.apellido}},{{pedido.usuario.nombre}}({{pedido.usuario}})</label>
+    </div>
+</div>
+<div class='controls-row'>
+    <label class='control-label'>
+        Solicita: 
+    </label>
+    <div class='controls'>
+        {%for item in pedido.itemPedido%}
+             {%if item.estado != 'Listo' and item.estado != 'listo'and item.estado != 'cancelado' and item.estado != 'Cancelado'%}
+                    <label>{{item.cantidad}} - {{item}}</label>
+             {%endif%}
+        {%endfor%}
+    </div>
+</div>
+</form>

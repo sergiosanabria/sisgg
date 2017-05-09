@@ -1,0 +1,356 @@
+{% extends "::base.html.twig" %}
+{%block title%}Parámetros de sistema{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+
+<li>
+    <a href="#">Parámetros de sistema</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend style="font-size: 27px;">Parámetros de sistema</legend>
+        <div class="accordion" id="acor1">
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle"  data-toggle="collapse" data-parent="#acor1" href="#col12">
+                   <strong> Descuentos</strong>
+                </a>
+              </div>
+              <div id="col12" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      <div class="desc-param">Conjunto de descuentos apĺicables a clientes y aplicables a productos.</div>
+                      <div class="desc-param">
+                            {%if app.user.role.obtenerPermiso('descuento_nuevo')%}
+                                <a href="{{path('nuevo_descuento_cliente')}}" class="btn">Nuevo descuento a Cliente</a>  
+                            {%endif%}
+                            {%if app.user.role.obtenerPermiso('descuento_listar')%}
+                                <a href="{{path('descuentos_clientes')}}" class="btn">Descuentos a Cliente</a>                       
+                            {%endif%}
+                          <br>
+                          {%if app.user.role.obtenerPermiso('descuento_nuevo')%}
+                            <a href="{{path('nuevo_descuento_producto_venta')}}" class="btn">Nuevo descuento sobre productos</a>  
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('descuento_listar')%}
+                            <a href="{{path('descuentos_producto_ventas')}}" class="btn">Descuentos sobre Productos</a>                       
+                          {%endif%}
+                     </div>
+                      
+                </div>
+              </div>
+            </div>
+            {%if app.user.role.obtenerPermiso('auditoria_elegir_carpeta')%}
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle"  data-toggle="collapse" data-parent="#acor1" href="#col10">
+                   <strong> Carpeta de auditoria</strong>
+                </a>
+              </div>
+              <div id="col10" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      
+                      <div class="desc-param">Elija un directorio en el cual se almacenarán el archivo CSV de auditoria.</div>
+                      <div class="desc-param"><a href="{{path('elegirCarpetaAuditoria')}}" class="btn">Elegir directorio</a>
+                          
+                    </div>
+                      
+                </div>
+              </div>
+            </div>
+                {%endif%}
+                {%if app.user.role.obtenerPermiso('backup_elegir_carpeta')%}
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col9">
+                  <strong>  Carpeta back-up</strong>
+                </a>
+              </div>
+              <div id="col9" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      <div class="desc-param">Elija un directorio en el cual se almacenarán los archivos de back-up del sistema.</div>
+                      <div class="desc-param"><a href="{{path('elegirCarpetaBackup')}}" class="btn">Elegir directorio</a>
+                      </div>
+                      
+                </div>
+              </div>
+            </div>
+                {%endif%}
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col1">
+                   <strong> Categorias de productos producción</strong>
+                </a>
+              </div>
+              <div id="col1" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      
+                      <div class="desc-param">Conjunto de categorias que contienen otras categorias del mismo tipo y/o productos destinados a la producción.</div>
+                      
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('categoriaProductoProduccion_nuevo')%}
+                          <a href="{{path('nuevaCategoriaPP')}}" class="btn">Nueva categoria</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('categoriaProductoProduccion_listar')%}
+                          <a href="{{path('categoriasPP')}}" class="btn">Todas las categorias</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col2">
+                  <strong> Categorias de productos de venta</strong>
+                </a>
+              </div>
+              <div id="col2" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Conjunto de categorias que contienen otras categorias del mismo tipo y/o productos destinados a la venta.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('categoriaProductoVenta_nuevo')%}
+                          <a href="{{path('nuevaCategoriaPV')}}" class="btn">Nueva categoria</a> 
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('categoriaProductoVenta_listar')%}
+                          <a href="{{path('categoriasPV')}}" class="btn">Todas las categorias</a>
+                          {%endif%}
+                          </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col3">
+                  <strong> Ciudad y provincia</strong>
+                </a>
+              </div>
+              <div id="col3" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Ciudades y provincias para las direcciones.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('ciudad_nuevo')%}
+                          <a href="{{path('nuevaCiudad')}}" class="btn">Nueva ciudad</a> 
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('ciudad_listar')%}
+                          <a href="{{path('ciudades')}}" class="btn">Todas las ciudades</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('provincia_nuevo')%}
+                          <a href="{{path('nueva_provincia')}}" class="btn">Nueva provincia</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('provincia_listar')%}
+                          <a href="{{path('provincias')}}" class="btn">Todas las provincias</a>  
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+                <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col11">
+                   <strong> Condiciones de IVA y operaciones permitidas</strong>
+                </a>
+              </div>
+              <div id="col11" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      
+                      <div class="desc-param">Conjunto de condiciones frente a IVA junto a las operaciones y tipos de facturas permitidas según el la condición.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('condiciones IVA_nuevo')%}
+                          <a href="{{path('nuevo_condicion_iva')}}" class="btn">Nueva condición frente al IVA</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('condiciones IVA_listar')%}
+                          <a href="{{path('condiciones_iva')}}" class="btn">Condiciones frente al IVA</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('operaciones_nuevo')%}
+                          <a href="{{path('nuevo_operacion')}}" class="btn">Nueva comprobantes de operación</a>
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('operaciones_listar')%}
+                          <a href="{{path('operaciones')}}" class="btn">Comprobantes de operaciones</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+                <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col4">
+                  <strong> Grupos de Clientes</strong>
+                </a>
+              </div>
+              <div id="col4" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Conjuntos de clientes de caracteristicas similares.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('grupo_cliente_nuevo')%}
+                          <a href="{{path('nuevo_grupo_cliente')}}" class="btn">Nuevo grupo</a> 
+                         {%endif%}
+                          {%if app.user.role.obtenerPermiso('grupo_cliente_listar')%}
+                          <a href="{{path('grupos_clientes')}}" class="btn">Todos los grupos</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+                <div class="accordion-group">
+              <div class="accordion-heading">
+                  <a class="accordion-toggle"  data-toggle="collapse" data-parent="#acor1" href="#col13">
+                   <strong> Recargos</strong>
+                </a>
+              </div>
+              <div id="col13" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                      
+                      <div class="desc-param">Conjunto de recargos apĺicables a los pedidos.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('recargo_nuevo')%}
+                          <a href="{{path('nuevo_recargo')}}" class="btn">Nuevo recago</a>  
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('recargo_listar')%}
+                          <a href="{{path('recargos')}}" class="btn">Recargos</a>                       
+                           {%endif%}
+                      </div>
+                      
+                </div>
+              </div>
+            </div>
+                   <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col7">
+                  <strong> Roles de usuario</strong>
+                </a>
+              </div>
+              <div id="col7" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Conjunto de privilegios que se le otorgaran a los usuarios según el rol que ocupan.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('rol_nuevo')%}
+                          <a href="{{path('rol_nuevo')}}" class="btn">Nuevo rol de usuario</a> 
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('rol_listar')%}
+                          <a href="{{path('gestion_roles')}}" class="btn">Todos los roles de usuario</a>
+                          {%endif%}
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col4">
+                  <strong> Sectores</strong>
+                </a>
+              </div>
+              <div id="col4" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Distintos tipos sectores de la empresa en los cuales se ubicaran las mesas de los mismos.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('sector_nuevo')%}
+                          <a href="{{path('nuevo_sector')}}" class="btn">Nuevo sector</a> 
+                         {%endif%}
+                          {%if app.user.role.obtenerPermiso('sector_listar')%}
+                          <a href="{{path('sectores')}}" class="btn">Todos los sectores</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+             
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col5">
+                  <strong> Tipo de cobro y pagos</strong>
+                </a>
+              </div>
+              <div id="col5" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Tipos y formas en las cuales se emitiran los cobros y pagos.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('tipoCobro_nuevo')%}
+                          <a href="{{path('nuevo_tipo_cobro')}}" class="btn">Nuevo tipo de cobro/pago</a> 
+                            {%endif%}
+                          {%if app.user.role.obtenerPermiso('tipoCobro_listar')%}
+                          <a href="{{path('tipos_cobro')}}" class="btn">Todos los tipo cobro/pago</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col6">
+                  <strong> Tasas de IVA</strong>
+                </a>
+              </div>
+              <div id="col6" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Distintas tasas con respectivos sus valores del IVA.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('IVA_nuevo')%}
+                          <a href="{{path('nuevoIVA')}}" class="btn">Nuevo tasa de IVA</a> 
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('IVA_listar')%}
+                          <a href="{{path('ivas')}}" class="btn">Todas la tasas de IVA</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#acor1" href="#col8">
+                  <strong> Unidades de medida y sus tasas</strong>
+                </a>
+              </div>
+              <div id="col8" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <div class="desc-param">Unidades de medida representa una cantidad determinada magnitud física, con la posibilidad de personalizar las tasas de cada unidad de medida.</div>
+                      <div class="desc-param">
+                          {%if app.user.role.obtenerPermiso('unidad de medida y tasas_Gestion')%}
+                          <a href="{{path('nuevaUM')}}" class="btn">Nueva unidad de medida</a> 
+                          {%endif%}
+                          {%if app.user.role.obtenerPermiso('unidad de medida y tasas_listar')%}
+                          <a href="{{path('ums')}}" class="btn">Todos las unidades de medida y tasas</a>
+                          {%endif%}
+                      </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+
+<script type="text/javascript">
+var clase ='sisgg_finalbundle_serviciotype_';
+$(document).ready(function  (){ 
+ });
+ function cambioResp(ele){
+     if ($(ele).val()==true){
+         $('#'+clase+'iva').attr('disabled', false);
+         $('#'+clase+'iva').attr('required', true);
+     }else{
+         $('#'+clase+'iva').attr('disabled', true);
+         $('#'+clase+'iva').attr('required', false);
+     }
+ }
+ </script>
+{%endblock%}
+ {% block css %}
+    {{parent()}}
+
+<style type="text/css">
+.desc-param {
+padding: 0px 20px 10px 45px;
+}
+.div-btn-param{
+    text-align: center;
+}
+
+ </style>
+{% endblock%}

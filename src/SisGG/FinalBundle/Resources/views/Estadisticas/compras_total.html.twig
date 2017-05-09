@@ -1,0 +1,14 @@
+<table class="table table-condensed" id="etiquetas">
+        <thead>
+            <th>Fecha</th>
+            <th style="text-align: center">Totales </th>
+        </thead>
+        <tbody>
+            {%for i in totales%}
+            <tr>
+                <td  id="haber">{{i.fecha}}</td>    
+                <td style="text-align: right;width: fit-content" >i.total</td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>

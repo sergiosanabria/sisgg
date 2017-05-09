@@ -1,0 +1,134 @@
+{% extends "::base.html.twig" %}
+{%block title%}Platos{%endblock%}
+{%block ruta%}
+<li>
+    <a href="{{path('index')}}">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="{{path('pvs')}}">Productos para la venta</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Platos</a>
+</li>
+{%endblock%}
+{% block content %}
+<div id="stats-chart"  class="center" style="height:300px" ></div>
+<div id="piechart" style="height:300px"></div>
+{%endblock%}
+{% block javascripts %}
+        
+    {{parent()}}
+
+<script>
+     $(document).ready(function  (){
+    charts();
+    pie ();
+         });
+         
+         
+         
+         function charts() {
+	
+	function randNum(){
+		return (Math.floor( Math.random()* (1+40-20) ) ) + 20;
+	}
+	
+	/* ---------- Chart with points ---------- */
+	if($("#stats-chart").length)
+	{
+		var pageviews = [[1, 5+randNum()], [2, 10+randNum()], [3, 15+randNum()], [4, 20+randNum()],[5, 25+randNum()],[6, 30+randNum()],[7, 35+randNum()],[8, 40+randNum()],[9, 45+randNum()],[10, 50+randNum()],[11, 55+randNum()],[12, 60+randNum()],[13, 65+randNum()],[14, 70+randNum()],[15, 75+randNum()],[16, 80+randNum()],[17, 85+randNum()],[18, 90+randNum()],[19, 85+randNum()],[20, 80+randNum()],[21, 75+randNum()],[22, 80+randNum()],[23, 75+randNum()],[24, 70+randNum()],[25, 65+randNum()],[26, 75+randNum()],[27,80+randNum()],[28, 85+randNum()],[29, 90+randNum()], [30, 95+randNum()]];
+		var visitors = [[1, randNum()-10], [2, randNum()-10], [3, randNum()-10], [4, randNum()],[5, randNum()],[6, 4+randNum()],[7, 5+randNum()],[8, 6+randNum()],[9, 6+randNum()],[10, 8+randNum()],[11, 9+randNum()],[12, 10+randNum()],[13,11+randNum()],[14, 12+randNum()],[15, 13+randNum()],[16, 14+randNum()],[17, 15+randNum()],[18, 15+randNum()],[19, 16+randNum()],[20, 17+randNum()],[21, 18+randNum()],[22, 19+randNum()],[23, 20+randNum()],[24, 21+randNum()],[25, 14+randNum()],[26, 24+randNum()],[27,25+randNum()],[28, 26+randNum()],[29, 27+randNum()], [30, 31+randNum()]];
+
+		var plot = $.plot($("#stats-chart"),
+			   [ { data: pageviews, label: "pageviews"}, { data: visitors, label: "visitors" } ], {
+				   series: {
+					   lines: { show: true,
+								lineWidth: 3,
+								fill: true, fillColor: { colors: [ { opacity: 0.08 }, { opacity: 0.01 } ] }
+							 },
+					   points: { show: true },
+					   shadowSize: 2
+				   },
+				   grid: { hoverable: true, 
+						   clickable: true, 
+						   tickColor: "#eee",
+						   borderWidth: 0,
+						 },
+				   colors: ["#FA5833", "#2FABE9"],
+					xaxis: {ticks:11, tickDecimals: 0},
+					yaxis: {ticks:11, tickDecimals: 0},
+				 });
+
+		function showTooltip(x, y, contents) {
+			$('<div id="tooltip">' + contents + '</div>').css( {
+				position: 'absolute',
+				display: 'none',
+				top: y + 5,
+				left: x + 5,
+				border: '1px solid #fdd',
+				padding: '2px',
+				'background-color': '#dfeffc',
+				opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		}
+
+		var previousPoint = null;
+		$("#stats-chart").bind("plothover", function (event, pos, item) {
+			$("#x").text(pos.x.toFixed(2));
+			$("#y").text(pos.y.toFixed(2));
+
+				if (item) {
+					if (previousPoint != item.dataIndex) {
+						previousPoint = item.dataIndex;
+
+						$("#tooltip").remove();
+						var x = item.datapoint[0].toFixed(2),
+							y = item.datapoint[1].toFixed(2);
+
+						showTooltip(item.pageX, item.pageY,
+									item.series.label + " of " + x + " = " + y);
+					}
+				}
+				else {
+					$("#tooltip").remove();
+					previousPoint = null;
+				}
+		});}}
+            
+        function pie (){
+            var n='{{ pie }}';
+             var data=convertirJSON(n);
+
+            //data=$().html(data);;
+            alert(data);
+	
+	if($("#piechart").length)
+	{
+		$.plot($("#piechart"), data,
+		{
+			series: {
+					pie: {
+							show: true
+					}
+			},
+			grid: {
+					hoverable: true,
+					clickable: true
+			},
+			legend: {
+				show: false
+			},
+			colors: ["#FA5833", "#2FABE9", "#FABB3D", "#78CD51"]
+		});
+		
+		function pieHover(event, pos, obj)
+		{
+			if (!obj)
+					return;
+			percent = parseFloat(obj.series.percent).toFixed(2);
+			$("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+		}
+		$("#piechart").bind("plothover", pieHover);
+	}}
+    </script>
+{% endblock%}

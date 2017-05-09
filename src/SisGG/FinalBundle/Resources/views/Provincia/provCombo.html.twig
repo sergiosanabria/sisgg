@@ -1,0 +1,7 @@
+<select id="provincias" name="provincias" class="provincias" onClick="cambio();">
+                    {% for provincia in provincias%}
+                            <option id="{{provincia.id}}" name="{{provincia.id}}" value="{{provincia}}">
+                            {{provincia}} 
+                                </option>
+                    {% endfor %}    
+ </select>

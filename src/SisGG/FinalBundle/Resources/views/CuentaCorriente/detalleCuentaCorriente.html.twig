@@ -1,0 +1,134 @@
+{% extends app.request.isXmlHttpRequest ? "::ajax.html.twig" : "SisGGFinalBundle:Cajero:cajero.html.twig" %}
+{%if form%}{% form_theme form "SisGGFinalBundle:Form:fields.html.twig" %}{%endif%}
+{%block ruta%}
+<li>
+    <a href="#">Inicio</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Cuenta Corriente</a> <span class="divider">/</span>
+</li>
+<li>
+    <a href="#">Detalles de cuenta Corriente</a>
+</li>
+{%endblock%}
+{% block content %}
+<div class="row-fluid sortable">
+    <div class="box span12">
+        <div class="box-content">
+            <legend>Detalles de cuenta Corriente
+                <div class="btn-group" style='float:right;'>
+                    <a title="Editar cuenta corriente" href="{{path('editar_cuenta_corriente')}}?id={{unaCuentaCorriente.id}}" class="btn"><i class=" fa-icon-edit"></i></a>
+                    <a class='btn' rel="tooltip" title="Imprimir" href="{{path('imp_cuenta_corriente')}}?id={{unaCuentaCorriente.id}}&_format=pdf"><i class="icon-print"></i></a>
+                </div>
+                <small>
+                    <ul class="nav nav-pills" id="myTab">
+                        <li class="active"><a href="#general">General</a></li>
+                        <li><a href="#movimientos">Movimientos</a></li>
+                    </ul>
+                </small>
+            </legend>
+            <form class="form-horizontal" method="post">
+                <fieldset id="formNuevoCondicionIva">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="general">
+                            <div class="span6">
+                                <div class='control-group'>
+                                    <label class='control-label'>Número de Cuenta</label>
+                                    <div class='controls'>
+                                        <input class='span9' type='text' disabled="disabled" value='{{unaCuentaCorriente.numero}}'/>
+                                    </div>    
+                                </div>
+                                <div class='control-group'>
+                                    <label class='control-label'>Cliente</label>
+                                    <div class='controls'>
+                                        <input class='span9' type='text' disabled="disabled" value='{{unaCuentaCorriente.cliente}}'/>
+                                    </div>    
+                                </div>
+                                <div class='control-group'>
+                                    <label class='control-label'>Saldo Actual</label>
+                                    <div class='controls'>
+                                        <input class='span9' style='text-align: right' type='text' disabled="disabled" value='{{unaCuentaCorriente.saldo|number_format(2,'.','')}}'/>
+                                    </div>    
+                                </div>    
+                            </div>
+                                <div class="span6">
+                                
+                                    </div>
+                        </div>
+                            <div class="tab-pane active" id="movimientos">
+                            <table class="table table-striped table-bordered" id="movimientos">
+                                <thead class="header">
+                                    <tr>
+                                        <th>Fecha y hora</th>
+                                        <th>Comprobante</th>
+                                        <th>Debe</th>
+                                        <th>Haber</th>
+                                        <th width='30px'>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>     
+                                {% for movimiento in unaCuentaCorriente.movimientos%}  
+                                        <tr>
+                                            <td>{{movimiento.fecha|date('d/m/Y g:i a')}}</td>
+                                            {%if movimiento.isHaber%}
+                                                <td>{{movimiento.unRecibo}}</td>
+                                                <td style='text-align: center'>---</td>
+                                                <td style='text-align: right'>{{movimiento.importe}}</td>
+                                            {%endif%}
+                                            {%if movimiento.isDebe%}
+                                                <td>{{movimiento.unaVenta}}</td>
+                                                <td style='text-align: right'>{{movimiento.importe}}</td>
+                                                <td style='text-align: center'>---</td>
+                                            {%endif%}
+                                            <td style='text-align: center'>
+                                            {%if movimiento.isHaber%}
+                                                <a rel="tooltip" title="Detalles Cobro" href="{{path('detalle_cobro')}}?id={{movimiento.unRecibo.id}}"><i class="fa-icon-list-alt"></i></a>    
+                                            {%endif%}
+                                            {%if movimiento.isDebe%}
+                                                <a rel="tooltip" title="Detalles Venta" href="{{path('detalles_venta')}}?id={{movimiento.unaVenta.id}}"><i class="fa-icon-list-alt"></i></a>
+                                            {%endif%}
+                                            </td>
+                                        </tr>    
+                                {% endfor %}       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>    
+                        </div>       
+                    </fieldset>
+                </form>
+            </div>
+        </div><!--/span-->
+    </div><!--/row-->
+    <hr>
+{% endblock %}
+{%block javascripts%}
+{{parent()}}
+    <script type="text/javascript">
+            $().ready(function() {
+                $("#myTab a").each(function() {
+                    $(this).tab("show");
+                });
+                $("#myTab a:first").each(function() {
+                    $(this).tab("show");
+                });
+            });
+            </script>    
+{%endblock%}
+{%block modal%}
+{{parent()}}
+        <div class="modal hide fade" id="busqueda">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Buscar...</h3>
+            </div>
+            <div id="dataBusqueda" class="modal-body">
+                <p>Here settings can be configured...</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+            </div>
+        </div>
+{% endblock %}
+{% block ajax %}
+{% endblock %}

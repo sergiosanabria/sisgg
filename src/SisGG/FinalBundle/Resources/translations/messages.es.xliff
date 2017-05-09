@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">    
+    <file source-language="en" datatype="plaintext" original="file.ext">        
+        <body>            
+            <trans-unit id="1">                 
+                <source>The presented password cannot be empty.</source>                 
+                <target>El campo contraseña no puede estar vacío.</target>             
+            </trans-unit>             
+            <trans-unit id="2">                 
+                <source>Bad credentials</source>                 
+                <target>Combinación Usuario/clave invalida</target>             
+            </trans-unit>             
+            <trans-unit id="3">                 
+                <source>The presented password is invalid.</source>                 
+                <target>La contrseña es invalida</target>             
+            </trans-unit>
+            <trans-unit id="101">                 
+                <source>Switching Protocols</source>                 
+                <target>Conmutando protocolos</target>             
+            </trans-unit>
+            <trans-unit id="102">                 
+                <source>Processing</source>                 
+                <target>Procesando</target>             
+            </trans-unit> 
+            <trans-unit id="201">                 
+                <source>Created</source>                 
+                <target>Creado</target>             
+            </trans-unit> 
+            <trans-unit id="202">                 
+                <source>Accepted</source>                 
+                <target>Aceptado</target>             
+            </trans-unit>
+            <trans-unit id="203">                 
+                <source>Non-Authoritative Information</source>                 
+                <target>Información no autorizada</target>             
+            </trans-unit>
+             <trans-unit id="204">                 
+                <source>No Content</source>                 
+                <target>Sin contenido</target>             
+            </trans-unit>
+            <trans-unit id="205">                 
+                <source>Reset Content</source>                 
+                <target>Sin contenido</target>             
+            </trans-unit>
+            <trans-unit id="206">                 
+                <source>Partial Content</source>                 
+                <target>Contenido parcial</target>             
+            </trans-unit>
+             <trans-unit id="207">                 
+                <source>Multi-Status</source>                 
+                <target>Estado múltiple</target>             
+            </trans-unit> 
+            <trans-unit id="208">                 
+                <source>Already Reported</source>                 
+                <target>Ya se ha informado</target>             
+            </trans-unit>
+            <trans-unit id="226">                 
+                <source>IM Used</source>                 
+                <target>IM usados</target>             
+            </trans-unit>
+            <trans-unit id="300">                 
+                <source>Multiple Choices</source>                 
+                <target>Múltiples opciones</target>             
+            </trans-unit>
+            <trans-unit id="301">                 
+                <source>Moved Permanently</source>                 
+                <target>Movido permanentemente</target>             
+            </trans-unit>
+            <trans-unit id="302">                 
+                <source>Found</source>                 
+                <target>Encontrado</target>             
+            </trans-unit>
+            <trans-unit id="303">                 
+                <source>See Other</source>                 
+                <target>Vea otra</target>             
+            </trans-unit>
+            <trans-unit id="304">                 
+                <source>Not Modified</source>                 
+                <target>No modificado</target>             
+            </trans-unit>
+            <trans-unit id="305">                 
+                <source>Use Proxy</source>                 
+                <target>Utilice un proxy</target>             
+            </trans-unit>
+            <trans-unit id="306">                 
+                <source>Reserved</source>                 
+                <target>Reservado</target>             
+            </trans-unit>
+            <trans-unit id="307">                 
+                <source>Temporary Redirect</source>                 
+                <target>Redirección temporal</target>             
+            </trans-unit>
+            <trans-unit id="308">                 
+                <source>Permanent Redirect</source>                 
+                <target>Redirección permanente</target>             
+            </trans-unit>
+            <trans-unit id="400">                 
+                <source>Bad Request</source>                 
+                <target>Solicitud incorrecta</target>             
+            </trans-unit>
+            <trans-unit id="401">                 
+                <source>Unauthorized</source>                 
+                <target>No autorizado</target>             
+            </trans-unit>
+            <trans-unit id="402">                 
+                <source>Payment Required</source>                 
+                <target>Pago requerido</target>             
+            </trans-unit>
+            <trans-unit id="403">                 
+                <source>Forbidden</source>                 
+                <target>Prohibido</target>             
+            </trans-unit>
+            <trans-unit id="404">                 
+                <source>Not Found</source>                 
+                <target>No encontrado</target>             
+            </trans-unit>
+            <trans-unit id="405">                 
+                <source>Method Not Allowed</source>                 
+                <target>Método no permitido</target>             
+            </trans-unit>
+            <trans-unit id="406">                 
+                <source>Not Acceptable</source>                 
+                <target>No aceptable</target>             
+            </trans-unit>
+            <trans-unit id="407">                 
+                <source>Proxy Authentication Required</source>                 
+                <target>Autenticación Proxy requerida</target>             
+            </trans-unit>
+            <trans-unit id="408">                 
+                <source>Request Timeout</source>                 
+                <target>Tiempo de espera agotado</target>             
+            </trans-unit>
+            <trans-unit id="409">                 
+                <source>Conflict</source>                 
+                <target>Conflicto</target>             
+            </trans-unit>
+            <trans-unit id="410">                 
+                <source>Gone</source>                 
+                <target>Ya no disponible</target>             
+            </trans-unit>
+            <trans-unit id="411">                 
+                <source>Length Required</source>                 
+                <target>Requiere longitud</target>             
+            </trans-unit>
+            <trans-unit id="412">                 
+                <source>Precondition Failed</source>                 
+                <target>Falló precondición</target>             
+            </trans-unit>
+            <trans-unit id="413">                 
+                <source>Request Entity Too Large</source>                 
+                <target>Solicitud demasiado larga</target>             
+            </trans-unit>
+            <trans-unit id="414">                 
+                <source>Request-URI Too Long</source>                 
+                <target>URI demasiado larga</target>             
+            </trans-unit>
+            <trans-unit id="415">                 
+                <source>Unsupported Media Type</source>                 
+                <target>Tipo de medio no soportado</target>             
+            </trans-unit>
+            <trans-unit id="416">                 
+                <source>Requested Range Not Satisfiable</source>                 
+                <target>Rango solicitado no disponible</target>             
+            </trans-unit>
+            <trans-unit id="417">                 
+                <source>Expectation Failed</source>                 
+                <target>Falló expectativa</target>             
+            </trans-unit>
+            <trans-unit id="422">                 
+                <source>Unprocessable Entity</source>                 
+                <target>Entidad no procesable</target>             
+            </trans-unit>
+            <trans-unit id="423">                 
+                <source>Locked</source>                 
+                <target>Bloqueado</target>             
+            </trans-unit>
+            <trans-unit id="424">                 
+                <source>Failed Dependency</source>                 
+                <target>Falló dependencia</target>             
+            </trans-unit>
+            <trans-unit id="425">                 
+                <source>Reserved for WebDAV advanced collections expired proposal</source>                 
+                <target>Colección sin ordenar</target>             
+            </trans-unit>
+            <trans-unit id="426">                 
+                <source>Upgrade Required</source>                 
+                <target>Actualización requerida</target>             
+            </trans-unit>
+            <trans-unit id="428">                 
+                <source>Precondition Required</source>                 
+                <target>Requisito Obligatorio</target>             
+            </trans-unit>
+            <trans-unit id="429">                 
+                <source>Too Many Requests</source>                 
+                <target>Demasiadas solicitudes</target>             
+            </trans-unit>
+            <trans-unit id="431">                 
+                <source>Request Header Fields Too Large</source>                 
+                <target>Solicitar Campos de cabecera demasiado grandes</target>             
+            </trans-unit> 
+            <trans-unit id="500">                 
+                <source>Internal Server Error</source>                 
+                <target>Error interno</target>             
+            </trans-unit> 
+            <trans-unit id="501">                 
+                <source>Not Implemented</source>                 
+                <target>No implementado</target>             
+            </trans-unit> 
+            <trans-unit id="502">                 
+                <source>Bad Gateway</source>                 
+                <target>Pasarela incorrecta</target>             
+            </trans-unit> 
+            <trans-unit id="503">                 
+                <source>Service Unavailable</source>                 
+                <target>Servicio no disponible</target>             
+            </trans-unit> 
+            <trans-unit id="504">                 
+                <source>Gateway Timeout</source>                 
+                <target>Tiempo de espera de la pasarela agotado</target>             
+            </trans-unit>  
+            <trans-unit id="505">                 
+                <source>HTTP Version Not Supported</source>                 
+                <target>Versión de HTTP no soportada</target>             
+            </trans-unit>
+            <trans-unit id="506">                 
+                <source>Variant Also Negotiates (Experimental)</source>                 
+                <target>Variante también negocia</target>             
+            </trans-unit> 
+            <trans-unit id="507">                 
+                <source>Insufficient Storage</source>                 
+                <target>Almacenamiento insuficiente</target>             
+            </trans-unit> 
+            <trans-unit id="508">                 
+                <source>Loop Detected</source>                 
+                <target>Bucle detectado</target>             
+            </trans-unit> 
+            <trans-unit id="510">                 
+                <source>Not Extended</source>                 
+                <target>No extendido</target>             
+            </trans-unit> 
+            <trans-unit id="511">                 
+                <source>Network Authentication Required</source>                 
+                <target>Autenticación de Red requerida</target>             
+            </trans-unit>
+            <trans-unit id="512">                 
+                <source>The password fields must match</source>                 
+                <target>Los campos de la contraseña deben coincidir</target>             
+            </trans-unit>
+            <trans-unit id="600">                 
+                <source>create</source>                 
+                <target>Creado</target>             
+            </trans-unit>
+            <trans-unit id="601">                 
+                <source>update</source>                 
+                <target>Modificado</target>             
+            </trans-unit>
+            <trans-unit id="602">                 
+                <source>remove</source>                 
+                <target>Borrado</target>             
+            </trans-unit>
+            
+        </body>    
+    </file>
+</xliff>
