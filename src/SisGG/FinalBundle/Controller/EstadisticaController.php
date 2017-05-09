@@ -183,7 +183,7 @@ class EstadisticaController extends Controller {
         }
     }
 
-    private function compararCompras($array, $tipo, $año1, $año2, $mes1 = null, $mes1 = null) {
+    private function compararCompras($array, $tipo, $año1, $año2, $mes1 = null, $mes2 = null) {
         $retorno = null;
         $g1 = null;
         $g2 = null;
@@ -360,7 +360,7 @@ class EstadisticaController extends Controller {
         }
     }
 
-    private function compararPagos($array, $tipo, $año1, $año2, $mes1 = null, $mes1 = null) {
+    private function compararPagos($array, $tipo, $año1, $año2, $mes1 = null, $mes2 = null) {
         $retorno = null;
         $g1 = null;
         $g2 = null;
